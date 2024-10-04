@@ -79,7 +79,7 @@ const fetchData = async () => {
   setLoading(true)
   setError(null)
 
-  try {
+try {
     const [
       totalIncidentsData,
       severeIncidentsData,
@@ -88,7 +88,6 @@ const fetchData = async () => {
       categoryData,
       severityData,
       crossAnalysisData,
-      previousPeriodData,
       timeOfDayData
     ] = await Promise.all([
       fetchTotalIncidents(),
@@ -98,7 +97,6 @@ const fetchData = async () => {
       fetchCategoryData(),
       fetchSeverityData(),
       fetchCrossAnalysisData(),
-      fetchPreviousPeriodData(),
       fetchTimeOfDayData()
     ])
 
