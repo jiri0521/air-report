@@ -17,7 +17,7 @@ export function SignIn({
 }
 
 export function SignOut({
-  provider,
+
   ...props
 }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
   return (
