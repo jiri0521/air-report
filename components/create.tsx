@@ -390,6 +390,9 @@ export default function Component() {
       party.confetti(document.body, {
         count: party.variation.range(50, 200)
       })
+      useEffect(() => {
+        console.log('Incidents:', incidents);
+    }, [incidents]);
     }
   }
 
