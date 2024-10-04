@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+<<<<<<< HEAD
 import { BarChart, Calendar,  Repeat, TrendingUp } from "lucide-react"
+=======
+import { BarChart, Calendar, Repeat, TrendingUp } from "lucide-react"
+>>>>>>> 57db9cbc7927d56df5c58c445f220c88356997db
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts'
 
 // Supabaseクライアントの初期化
@@ -79,7 +83,7 @@ const fetchData = async () => {
   setLoading(true)
   setError(null)
 
-  try {
+try {
     const [
       totalIncidentsData,
       severeIncidentsData,
