@@ -1,7 +1,7 @@
 "use client"
-import Head from 'next/head';
+
 import { useEffect } from 'react';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { TriangleAlert } from 'lucide-react';
 
 export default function AccessRestricted() {
