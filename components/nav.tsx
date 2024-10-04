@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Bell, Menu, User } from "lucide-react"
-import Header from "./header"
 
 export function NavComponent() {
   const pathname = usePathname()

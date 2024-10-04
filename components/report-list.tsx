@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileCheck, File, FileText} from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText} from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js";
@@ -137,6 +137,7 @@ export default function ReportListPage() {
       if (error) {
         console.error('Error updating countermeasures:', error)
       } else {
+        console.log('Updated data:', data); // dataを使用
         setSelectedIncident({ ...selectedIncident, countermeasures: newCountermeasures })
         fetchIncidents() // Refresh the incident list
       }

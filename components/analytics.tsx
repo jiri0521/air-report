@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Calendar, PieChart as PieChartIcon, Repeat, TrendingUp } from "lucide-react"
+import { BarChart, Calendar,  Repeat, TrendingUp } from "lucide-react"
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts'
-import { LabelList } from 'recharts';
+
 // Supabaseクライアントの初期化
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
@@ -88,7 +88,6 @@ const fetchData = async () => {
       categoryData,
       severityData,
       crossAnalysisData,
-      previousPeriodData,
       timeOfDayData
     ] = await Promise.all([
       fetchTotalIncidents(),
@@ -98,7 +97,6 @@ const fetchData = async () => {
       fetchCategoryData(),
       fetchSeverityData(),
       fetchCrossAnalysisData(),
-      fetchPreviousPeriodData(),
       fetchTimeOfDayData()
     ])
 
@@ -282,14 +280,6 @@ const isRecurring = (incident: Incident, allIncidents: Incident[]): boolean => {
   )
 }
 
-const fetchPreviousPeriodData = async () => {
-  // Placeholder function, implement actual logic as needed
-  return {
-    totalIncidents: 1000,
-    severeIncidents: 20,
-    recurrenceRate: 10
-  }
-}
 
 const getDateRangeStart = () => {
   const now = new Date()

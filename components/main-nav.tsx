@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import CustomLink from "@/components/costum-link";
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -9,11 +8,7 @@ import { HomeIcon, AlertTriangle, FileText, PieChart, Settings } from "lucide-re
 export function MainNav() {
     const pathname = usePathname();
     const isActive = (path: string) => pathname === path;
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const handleLinkClick = () => {
-        setIsMenuOpen(false);
-    };
 
     return (
         <div className="flex gap-6 items-center relative">
