@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+        
+
+model Incident {
+  id                         Int      @id @default(autoincrement())
+  patientGender              String
+  patientAge                 String
+  patientRespirator          String
+  patientDialysis            String
+  involvedPartyProfession    String
+  involvedPartyExperience     String
+  discovererProfession       String
+  occurrenceDateTime         DateTime
+  location                   String
+  reportToDoctor             DateTime
+  reportToSupervisor         DateTime
+  category                   String
+  lifeThreat                 String
+  trustImpact                String
+  impactLevel                String
+  cause                      String
+  details                    String
+  summary                    String
+  workStatus                 String
+  involvedPartyFactors       String[]
+  workBehavior               String[]
+  physicalCondition          String[]
+  psychologicalState         String[]
+  medicalEquipment           String[]
+  medication                 String[]
+  system                     String[]
+  cooperation                String[]
+  explanation                String[]
+  countermeasures            String? // New field for countermeasures (optional)
+ 
+
+  @@map("incidents") // これにより、このモデルがデータベースの "incidents" テーブルにマッピングされる
+}
+
