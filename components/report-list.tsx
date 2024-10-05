@@ -215,6 +215,7 @@ export default function ReportListPage() {
       </Card>
 
       <div className="text-sm overflow-x-auto">
+        <div className='text-gray-500 text-sm'>影響度が3b,4,5は背景赤色</div>
         <Table>
           <TableHeader>
             <TableRow>
