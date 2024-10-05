@@ -1,4 +1,4 @@
-import { auth, signIn } from "@/auth";
+import { auth } from "@/auth";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
