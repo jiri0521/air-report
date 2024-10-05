@@ -208,7 +208,6 @@ const professions = [
 export default function Component() {
  
 
-  const [incidents, setIncidents] = useState<Incident[]>([])
   const [formData, setFormData] = useState<Incident>({
     patientGender: '',
     patientAge: '',
@@ -241,37 +240,7 @@ export default function Component() {
   })
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
-  useEffect(() => {
-    fetchIncidents()
-  }, [])
-
-  const fetchIncidents = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('incidents')
-      .select('*')
-    if (error) {
-      console.error('Error fetching incidents:', error)
-    } else {
-      setIncidents(data.map((incident: Incident) => ({
-        ...incident,
-        cause: ensureArray(incident.cause),
-        involvedPartyFactors: ensureArray(incident.involvedPartyFactors),
-        workBehavior: ensureArray(incident.workBehavior),
-        physicalCondition: ensureArray(incident.physicalCondition),
-        psychologicalState: ensureArray(incident.psychologicalState),
-        medicalEquipment: ensureArray(incident.medicalEquipment),
-        medication: ensureArray(incident.medication),
-        system: ensureArray(incident.system),
-        cooperation: ensureArray(incident.cooperation),
-        explanation: ensureArray(incident.explanation)
-      })))
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchIncidents()
-  }, [fetchIncidents])
-
+ 
 
   const ensureArray = (value: unknown): string[] => {
     if (Array.isArray(value)) {
@@ -341,26 +310,13 @@ export default function Component() {
       explanation: formData.explanation.length > 0 ? formData.explanation : null
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('incidents')
       .insert([formattedData])
-      .select()
+
     if (error) {
       console.error('Error inserting incident:', error)
     } else {
-      setIncidents(prev => [...prev, ...data.map((incident: Incident) => ({
-        ...incident,
-        cause: ensureArray(incident.cause),
-        involvedPartyFactors: ensureArray(incident.involvedPartyFactors),
-        workBehavior: ensureArray(incident.workBehavior),
-        physicalCondition: ensureArray(incident.physicalCondition),
-        psychologicalState: ensureArray(incident.psychologicalState),
-        medicalEquipment: ensureArray(incident.medicalEquipment),
-        medication: ensureArray(incident.medication),
-        system: ensureArray(incident.system),
-        cooperation: ensureArray(incident.cooperation),
-        explanation: ensureArray(incident.explanation)
-      }))])
       setFormData({
         patientGender: '',
         patientAge: '',
