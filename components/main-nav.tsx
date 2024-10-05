@@ -34,31 +34,31 @@ export function MainNav() {
                 <CustomLink href="/">
                     <div className={`md:hidden text-center`}>
                         <HomeIcon className="text-gray-700" />
-                        <div className={`text-xs hover:text-blue-400 ${isActive('/') ? 'border-b-2 border-blue-500' : ''}`}>ホーム</div>
+                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/') ? 'border-b-2 border-blue-500' : ''}`}>ホーム</div>
                     </div>
                 </CustomLink>
                 <CustomLink href="/create">
                     <div className={`md:hidden text-center`}>
                         <AlertTriangle className="text-red-700" />
-                        <div className={`text-xs hover:text-blue-400 ${isActive('/create') ? 'border-b-2 border-blue-500' : ''}`}>作成</div>
+                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/create') ? 'border-b-2 border-blue-500' : ''}`}>作成</div>
                     </div>
                 </CustomLink>
                 <CustomLink href="/reports">
                     <div className={`md:hidden text-center`}>
                         <FileText className="text-blue-500" />
-                        <div className={`text-xs hover:text-blue-400 ${isActive('/reports') ? 'border-b-2 border-blue-500' : ''}`}>一覧</div>
+                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/reports') ? 'border-b-2 border-blue-500' : ''}`}>一覧</div>
                     </div>
                 </CustomLink>
                 <CustomLink href="/analytics">
                     <div className={`md:hidden text-center`}>
                         <PieChart className="text-green-500" />
-                        <div className={`text-xs hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
+                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
                     </div>
                 </CustomLink>
                 <CustomLink href="/settings">
                     <div className={`md:hidden text-center`}>
                         <Settings className="text-gray-500" />
-                        <div className={`text-xs hover:text-blue-400 ${isActive('/settings') ? 'border-b-2 border-blue-500' : ''}`}>設定</div>
+                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/settings') ? 'border-b-2 border-blue-500' : ''}`}>設定</div>
                     </div>
                 </CustomLink>
             </div>
