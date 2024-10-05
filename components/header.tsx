@@ -13,7 +13,7 @@ export default function Header() {
             alt="Logo"
             width={80} // 適切な幅を指定
             height={80} // 適切な高さを指定
-            className="mr-8" // 右にマージンを追加（必要に応じて）
+            className="mr-8 hidden md:block" // スマホでは非表示、mdサイズ以上で表示、右にマージン
           />
           <MainNav />
         </div>
