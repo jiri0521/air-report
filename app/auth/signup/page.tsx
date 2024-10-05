@@ -21,11 +21,8 @@ export default function SignUp() {
     e.preventDefault()
     setError(null)
 
-<<<<<<< HEAD
+
     const { error } = await supabase.auth.signUp({
-=======
-  const { error } = await supabase.auth.signUp({
->>>>>>> 57db9cbc7927d56df5c58c445f220c88356997db
       email,
       password,
     })
