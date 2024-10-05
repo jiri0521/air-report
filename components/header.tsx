@@ -9,10 +9,10 @@ export default function Header() {
         <div className="flex items-center">
           {/* ロゴ画像 */}
           <Image
-            src="/icon-512.webp" // ロゴ画像のパスを指定
+            src="/report-bg-remove-icon.png" // ロゴ画像のパスを指定
             alt="Logo"
-            width={40} // 適切な幅を指定
-            height={40} // 適切な高さを指定
+            width={80} // 適切な幅を指定
+            height={80} // 適切な高さを指定
             className="mr-8" // 右にマージンを追加（必要に応じて）
           />
           <MainNav />
