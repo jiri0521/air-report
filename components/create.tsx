@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -241,16 +241,6 @@ export default function Component() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
  
-
-  const ensureArray = (value: unknown): string[] => {
-    if (Array.isArray(value)) {
-      return value
-    }
-    if (typeof value === 'string') {
-      return value.split(',').map(item => item.trim())
-    }
-    return []
-  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string, fieldName?: string) => {
     if (typeof e === 'string' && fieldName) {

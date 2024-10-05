@@ -1,13 +1,14 @@
-`use client`
+'use client'
 
 import ReportListPage from '@/components/report-list'
 import React from 'react'
-const page = () => {
+
+function ReportsPage() {
   return (
     <div>
-        <ReportListPage />
+      <ReportListPage />
     </div>
   )
 }
 
-export default page
+export default ReportsPage
