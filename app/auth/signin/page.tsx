@@ -18,13 +18,13 @@ export default function AccessRestricted() {
   }, [status, session]);
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center">
       <div className="bg-white shadow-md rounded-lg p-6 w-80">
         <h1 className="text-2xl font-bold mb-4 text-center flex items-center justify-center">
           アクセス制限
           <TriangleAlert className="text-yellow-500 ml-2" />
         </h1>
-        <p className="mb-4 text-center">左上のボタンからログインしてください。</p>
+        <p className="mb-4 text-center">右上のボタンからログインしてください。</p>
       </div>
     </div>
   );
