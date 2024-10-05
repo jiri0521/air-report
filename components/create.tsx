@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -245,14 +245,14 @@ export default function Component() {
     fetchIncidents()
   }, [])
 
-  const fetchIncidents = async () => {
+  const fetchIncidents = useCallback(async () => {
     const { data, error } = await supabase
       .from('incidents')
       .select('*')
     if (error) {
       console.error('Error fetching incidents:', error)
     } else {
-      setIncidents(data.map((incident: any) => ({
+      setIncidents(data.map((incident: Incident) => ({
         ...incident,
         cause: ensureArray(incident.cause),
         involvedPartyFactors: ensureArray(incident.involvedPartyFactors),
@@ -266,9 +266,14 @@ export default function Component() {
         explanation: ensureArray(incident.explanation)
       })))
     }
-  }
+  }, [])
 
-  const ensureArray = (value: any): string[] => {
+  useEffect(() => {
+    fetchIncidents()
+  }, [fetchIncidents])
+
+
+  const ensureArray = (value: unknown): string[] => {
     if (Array.isArray(value)) {
       return value
     }
@@ -343,7 +348,7 @@ export default function Component() {
     if (error) {
       console.error('Error inserting incident:', error)
     } else {
-      setIncidents(prev => [...prev, ...data.map((incident: any) => ({
+      setIncidents(prev => [...prev, ...data.map((incident: Incident) => ({
         ...incident,
         cause: ensureArray(incident.cause),
         involvedPartyFactors: ensureArray(incident.involvedPartyFactors),
@@ -391,9 +396,6 @@ export default function Component() {
       party.confetti(document.body, {
         count: party.variation.range(50, 200)
       })
-      useEffect(() => {
-        console.log('Incidents:', incidents);
-    }, [incidents]);
     }
   }
 
@@ -408,9 +410,9 @@ export default function Component() {
           body: JSON.stringify({
               inputs: formData.details,
               parameters: {
-                  max_length: 130, // 出力の最大長を設定
-                  min_length: 30,  // 出力の最小長を設定
-                  do_sample: false, // サンプリングを無効にする
+                  max_length: 130,
+                  min_length: 30,
+                  do_sample: false,
               }
           }),
       });
@@ -422,10 +424,10 @@ export default function Component() {
 
       const data = await response.json();
       setFormData(prev => ({ ...prev, summary: data[0].summary_text }));
-  } catch (error) {
+    } catch (error) {
       console.error('Error generating summary:', error);
+    }
   }
-}
 
 
 

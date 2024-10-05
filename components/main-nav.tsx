@@ -1,7 +1,7 @@
 "use client";
 
 import CustomLink from "@/components/costum-link";
-import React, { useState } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import { HomeIcon, AlertTriangle, FileText, PieChart, Settings } from "lucide-react";
 
