@@ -41,10 +41,10 @@ export default function SettingsPage() {
   if (!mounted) return null
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl dark:border-white">
+    <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">設定</h1>
 
-      <Tabs defaultValue="profile" className="space-y-4 dark:border-white">
+      <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
           <TabsTrigger value="profile">プロフィール</TabsTrigger>
           <TabsTrigger value="notifications">通知</TabsTrigger>
@@ -54,7 +54,7 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile">
-          <Card>
+          <Card className='dark:border-white'>
             <CardHeader>
               <CardTitle>プロフィール設定</CardTitle>
               <CardDescription>あなたの個人情報を更新します。</CardDescription>
@@ -76,7 +76,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="notifications">
-          <Card>
+          <Card className='dark:border-white'>
             <CardHeader>
               <CardTitle>通知設定</CardTitle>
               <CardDescription>通知の受け取り方を設定します。</CardDescription>
@@ -106,7 +106,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="display">
-          <Card>
+          <Card className='dark:border-white'>
             <CardHeader>
               <CardTitle>表示設定</CardTitle>
               <CardDescription>アプリケーションの表示方法を設定します。</CardDescription>
@@ -149,7 +149,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="language">
-          <Card>
+          <Card className='dark:border-white'>
             <CardHeader>
               <CardTitle>言語設定</CardTitle>
               <CardDescription>アプリケーションの表示言語を設定します。</CardDescription>
@@ -177,7 +177,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="data">
-          <Card>
+          <Card className='dark:border-white'>
             <CardHeader>
               <CardTitle>データ管理</CardTitle>
               <CardDescription>データのエクスポートや削除を行います。</CardDescription>
