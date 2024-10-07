@@ -44,7 +44,7 @@ export default function SettingsPage() {
     <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">設定</h1>
 
-      <Tabs defaultValue="profile" className="space-y-4">
+      <Tabs defaultValue="profile" className="space-y-4 dark:border-white">
         <TabsList>
           <TabsTrigger value="profile">プロフィール</TabsTrigger>
           <TabsTrigger value="notifications">通知</TabsTrigger>
