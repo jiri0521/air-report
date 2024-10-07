@@ -493,7 +493,7 @@ type IncidentFormProps = {
       <br></br>
 
       <div className='rounded-md'>
-        <Label className="block mb-2">発生の原因（タブを切替えで複数選択可能）</Label>
+        <Label className="block mb-2">発生の原因（タブ切替えで複数選択可能）</Label>
         <div className="flex flex-wrap gap-4">
           {['人的要因', '環境・物理的要因'].map((cause) => (
             <div key={cause} className="flex items-center space-x-2">
