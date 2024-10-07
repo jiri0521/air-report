@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileText} from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js";
@@ -61,7 +61,8 @@ export default function ReportListPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [filterCategory, setFilterCategory] = useState('all')
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null)
-  const [newCountermeasures, setNewCountermeasures] = useState('')
+  const [editingField, setEditingField] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState('')
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
 
@@ -118,31 +119,47 @@ export default function ReportListPage() {
 
   const handleViewDetails = (incident: Incident) => {
     setSelectedIncident(incident)
-    setNewCountermeasures(incident.countermeasures || '')
     setIsDetailsDialogOpen(true)
   }
 
-  const handleAddCountermeasures = async () => {
-    setIsConfirmDialogOpen(true)
+  const handleEditField = (field: string, value: string) => {
+    setEditingField(field)
+    setEditValue(value)
   }
-  
+
+  const handleSaveEdit = async () => {
+    if (selectedIncident && editingField) {
+      const { data, error } = await supabase
+        .from('incidents')
+        .update({ [editingField]: editValue })
+        .eq('id', selectedIncident.id)
+        .select()
+
+      if (error) {
+        console.error('Error updating incident:', error)
+      } else {
+        setSelectedIncident({ ...selectedIncident, [editingField]: editValue })
+        fetchIncidents()
+      }
+      setEditingField(null)
+    }
+  }
+
   const handleConfirmAddCountermeasures = async () => {
     if (selectedIncident) {
       const { data, error } = await supabase
         .from('incidents')
-        .update({ countermeasures: newCountermeasures })
+        .update({ countermeasures: editValue })
         .eq('id', selectedIncident.id)
         .select()
 
       if (error) {
         console.error('Error updating countermeasures:', error)
       } else {
-        console.log('Updated data:', data); // dataを使用
-        setSelectedIncident({ ...selectedIncident, countermeasures: newCountermeasures })
-        fetchIncidents() // Refresh the incident list
+        setSelectedIncident({ ...selectedIncident, countermeasures: editValue })
+        fetchIncidents()
       }
     }
-    // Trigger confetti effect
     party.confetti(document.body, {
       count: party.variation.range(20, 200)
     })
@@ -150,13 +167,32 @@ export default function ReportListPage() {
     setIsDetailsDialogOpen(false)
   }
 
-  const renderDetailRow = (label: string, value: string | string[] | null | undefined) => {
+  const renderDetailRow = (label: string, value: string | string[] | null | undefined, field: string) => {
     if (value === null || value === undefined) return null
     const displayValue = Array.isArray(value) ? value.join(', ') : value
+
     return (
       <div className="grid grid-cols-3 gap-4 py-2">
         <div className="font-semibold">{label}:</div>
-        <div className="col-span-2">{displayValue}</div>
+        <div className="col-span-2 flex items-center">
+          {editingField === field ? (
+            <>
+              <Textarea
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="flex-grow mr-2"
+              />
+              <Button onClick={handleSaveEdit} size="sm">保存</Button>
+            </>
+          ) : (
+            <>
+              <span className="flex-grow">{displayValue}</span>
+              <Button onClick={() => handleEditField(field, displayValue)} size="sm" variant="ghost">
+                <Pen className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     )
   }
@@ -215,7 +251,7 @@ export default function ReportListPage() {
       </Card>
 
       <div className="text-sm overflow-x-auto">
-    <span className='text-gray-500 text-sm'>※影響度が3b,4,5は<span className='text-pink-500 text-sm'>背景赤色</span></span>
+        <span className='text-gray-500 text-sm'>※影響度が3b,4,5は<span className='text-pink-500 text-sm'>背景赤色</span></span>
         <Table>
           <TableHeader>
             <TableRow>
@@ -303,52 +339,37 @@ export default function ReportListPage() {
             <div className="space-y-2">
               {selectedIncident && (
                 <>
-                  {renderDetailRow('患者の性別', selectedIncident.patientGender)}
-                  {renderDetailRow('患者の年齢', selectedIncident.patientAge)}
-                  {renderDetailRow('呼吸器の有無', selectedIncident.patientRespirator)}
-                  {renderDetailRow('透析の有無', selectedIncident.patientDialysis)}
-                  {renderDetailRow('当事者の職種', selectedIncident.involvedPartyProfession)}
-                  {renderDetailRow('当事者の経験年数', selectedIncident.involvedPartyExperience)}
-                  {renderDetailRow('発見者の職種', selectedIncident.discovererProfession)}
-                  {renderDetailRow('発生日時', formatDate(selectedIncident.occurrenceDateTime))}
-                  {renderDetailRow('発生場所', selectedIncident.location)}
-                  {renderDetailRow('医師への報告日時', formatDate(selectedIncident.reportToDoctor))}
-                  {renderDetailRow('所属長への報告日時', formatDate(selectedIncident.reportToSupervisor))}
-                  {renderDetailRow('カテゴリー', selectedIncident.category)}
-                  {renderDetailRow('生命への危険度', selectedIncident.lifeThreat)}
-                  {renderDetailRow('患者・家族の信頼度', selectedIncident.trustImpact)}
-                  {renderDetailRow('影響レベル', selectedIncident.impactLevel)}
-                  {renderDetailRow('勤務状況', selectedIncident.workStatus)}
-                  {renderDetailRow('発生の原因', selectedIncident.cause)}
-                  {renderDetailRow('当事者の要因', selectedIncident.involvedPartyFactors)}
-                  {renderDetailRow('作業行動', selectedIncident.workBehavior)}
-                  {renderDetailRow('身体的状態', selectedIncident.physicalCondition)}
-                  {renderDetailRow('心理的状態', selectedIncident.psychologicalState)}
-                  {renderDetailRow('医療機器', selectedIncident.medicalEquipment)}
-                  {renderDetailRow('薬剤', selectedIncident.medication)}
-                  {renderDetailRow('システム', selectedIncident.system)}
-                  {renderDetailRow('連携', selectedIncident.cooperation)}
-                  {renderDetailRow('説明', selectedIncident.explanation)}
-                  {renderDetailRow('詳細', selectedIncident.details)}
-                  {renderDetailRow('要約', selectedIncident.summary)}
-                  {renderDetailRow('対策', selectedIncident.countermeasures)}
+                  {renderDetailRow('患者の性別', selectedIncident.patientGender, 'patientGender')}
+                  {renderDetailRow('患者の年齢', selectedIncident.patientAge, 'patientAge')}
+                  {renderDetailRow('呼吸器の有無', selectedIncident.patientRespirator, 'patientRespirator')}
+                  {renderDetailRow('透析の有無', selectedIncident.patientDialysis, 'patientDialysis')}
+                  {renderDetailRow('当事者の職種', selectedIncident.involvedPartyProfession, 'involvedPartyProfession')}
+                  {renderDetailRow('当事者の経験年数', selectedIncident.involvedPartyExperience, 'involvedPartyExperience')}
+                  {renderDetailRow('発見者の職種', selectedIncident.discovererProfession, 'discovererProfession')}
+                  {renderDetailRow('発生日時', formatDate(selectedIncident.occurrenceDateTime), 'occurrenceDateTime')}
+                  {renderDetailRow('発生場所', selectedIncident.location, 'location')}
+                  {renderDetailRow('医師への報告日時', formatDate(selectedIncident.reportToDoctor), 'reportToDoctor')}
+                  {renderDetailRow('所属長への報告日時', formatDate(selectedIncident.reportToSupervisor), 'reportToSupervisor')}
+                  {renderDetailRow('カテゴリー', selectedIncident.category, 'category')}
+                  {renderDetailRow('生命への危険度', selectedIncident.lifeThreat, 'lifeThreat')}
+                  {renderDetailRow('患者・家族の信頼度', selectedIncident.trustImpact, 'trustImpact')}
+                  {renderDetailRow('影響レベル', selectedIncident.impactLevel, 'impactLevel')}
+                  {renderDetailRow('勤務状況', selectedIncident.workStatus, 'workStatus')}
+                  {renderDetailRow('発生の原因', selectedIncident.cause, 'cause')}
+                  {renderDetailRow('当事者の要因', selectedIncident.involvedPartyFactors.join(', '), 'involvedPartyFactors')}
+                  {renderDetailRow('作業行動', selectedIncident.workBehavior.join(', '), 'workBehavior')}
+                  {renderDetailRow('身体的状態', selectedIncident.physicalCondition.join(', '), 'physicalCondition')}
+                  {renderDetailRow('心理的状態', selectedIncident.psychologicalState.join(', '), 'psychologicalState')}
+                  {renderDetailRow('医療機器', selectedIncident.medicalEquipment.join(', '), 'medicalEquipment')}
+                  {renderDetailRow('薬剤', selectedIncident.medication.join(', '), 'medication')}
+                  {renderDetailRow('システム', selectedIncident.system.join(', '), 'system')}
+                  {renderDetailRow('連携', selectedIncident.cooperation.join(', '), 'cooperation')}
+                  {renderDetailRow('説明', selectedIncident.explanation.join(', '), 'explanation')}
+                  {renderDetailRow('詳細', selectedIncident.details, 'details')}
+                  {renderDetailRow('要約', selectedIncident.summary, 'summary')}
+                  {renderDetailRow('対策', selectedIncident.countermeasures || '未対策', 'countermeasures')}
                 </>
               )}
-            </div>
-            <div className="mx-auto p-4">
-              <Label className='text-sm font-bold text-blue-500' htmlFor="countermeasures">対策入力欄</Label>
-              <Textarea
-                id="countermeasures"
-                value={newCountermeasures}
-                onChange={(e) => setNewCountermeasures(e.target.value)}
-                rows={4}
-                className="mt-1"
-              />
-               <div className="flex justify-end mt-2">
-              <Button onClick={handleAddCountermeasures} className="bg-blue-500 mt-2 right-4">
-                対策を更新
-              </Button>
-              </div>
             </div>
           </ScrollArea>
         </DialogContent>
@@ -365,7 +386,7 @@ export default function ReportListPage() {
           <div className="mt-4">
             <Label className="text-sm font-bold">新しい対策:</Label>
             <div className="mt-2 p-2 bg-gray-100 rounded-md">
-              {newCountermeasures || '(対策が入力されていません)'}
+              {editValue || '(対策が入力されていません)'}
             </div>
           </div>
           <DialogFooter className="mt-4">
