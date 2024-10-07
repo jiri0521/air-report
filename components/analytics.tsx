@@ -447,7 +447,7 @@ const sortedPieChartData = orderedLevels
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
-        <Card>
+        <Card className='dark:border-white'>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">総インシデント数</CardTitle>
             <BarChart className="h-4 w-4 text-muted-foreground" />
@@ -460,7 +460,7 @@ const sortedPieChartData = orderedLevels
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className='dark:border-white'>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">重大インシデント</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -473,7 +473,7 @@ const sortedPieChartData = orderedLevels
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className='dark:border-white'>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">再発率</CardTitle>
             <Repeat className="h-4 w-4 text-muted-foreground" />
@@ -487,8 +487,8 @@ const sortedPieChartData = orderedLevels
         </Card>
       </div>
 
-      <Tabs defaultValue="trends" className="space-y-4">
-        <TabsList>
+      <Tabs defaultValue="trends" className="space-y-4 className='dark:border-white'">
+        <TabsList className='dark:border-white'>
           <TabsTrigger value="trends">トレンド</TabsTrigger>
           <TabsTrigger value="categories">カテゴリー別</TabsTrigger>
           <TabsTrigger value="severity">重要度別</TabsTrigger>
