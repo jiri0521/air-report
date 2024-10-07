@@ -536,7 +536,7 @@ export default function Component() {
             onChange={handleInputChange}
           />
         </div>
-        <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 text-white'>
+        <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
           <Label className="block mb-2 ">インシデトのカテゴリー</Label>
           <RadioGroup
             name="category"
@@ -553,7 +553,7 @@ export default function Component() {
             ))}
           </RadioGroup>
         </div>
-        <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 text-white'>
+        <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
           <Label className="block mb-2">生命への危険度</Label>
           <RadioGroup
             name="lifeThreat"
@@ -570,7 +570,7 @@ export default function Component() {
             ))}
           </RadioGroup>
         </div>
-        <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 text-white'>
+        <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
           <Label className="block mb-2">患者・家族の信頼度</Label>
           <RadioGroup
             name="trustImpact"
@@ -587,7 +587,7 @@ export default function Component() {
             ))}
           </RadioGroup>
         </div>
-        <div className='bg-pink-100 p-4 rounded-md dark:bg-gray-800 text-white'>
+        <div className='bg-pink-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
           <Label className="block mb-2">影響レベル</Label>
           <RadioGroup
             name="impactLevel"
@@ -629,7 +629,7 @@ export default function Component() {
           <Label className="block mb-2">発生の原因（複数選択可）</Label>
           <div className="flex flex-wrap gap-4">
             {['人的要因', '環境・物理的要因'].map((cause) => (
-              <div key={cause} className="flex items-center space-x-2 dark:bg-gray-800 text-white">
+              <div key={cause} className="flex items-center space-x-2 dark:bg-gray-800 dark:text-white">
                 <Checkbox
                   id={`cause-${cause}`}
                   checked={formData.cause.includes(cause)}
@@ -645,7 +645,7 @@ export default function Component() {
             <TabsTrigger value="human">人的要因</TabsTrigger>
             <TabsTrigger value="environmental">環境・物理的要因</TabsTrigger>
           </TabsList>
-          <TabsContent value="human" className="bg-gray-50 p-4 rounded-md dark:bg-gray-800 text-white">
+          <TabsContent value="human" className="bg-gray-50 p-4 rounded-md dark:bg-gray-800 dark:text-white">
             <HumanFactorsCheckboxes formData={formData} setFormData={setFormData} />
           </TabsContent>
           <TabsContent value="environmental" className="bg-gray-50 p-4 rounded-md ">
