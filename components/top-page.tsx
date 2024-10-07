@@ -35,7 +35,7 @@ export function TopPage() {
               <CardDescription>過去のレポートを確認</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full" asChild>
+              <Button variant="outline" className="w-full dark:bg-gray-800 text-white" asChild>
                 <Link href="/reports">一覧を見る</Link>
               </Button>
             </CardContent>
@@ -49,7 +49,7 @@ export function TopPage() {
               <CardDescription>インシデントの分析</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full" asChild>
+              <Button variant="outline" className="w-full dark:bg-gray-800 text-white" asChild>
                 <Link href="/analytics">統計を見る</Link>
               </Button>
             </CardContent>
@@ -63,7 +63,7 @@ export function TopPage() {
               <CardDescription>システム設定</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full" asChild>
+              <Button variant="outline" className="w-full dark:bg-gray-800 text-white" asChild>
                 <Link href="/settings">設定を開く</Link>
               </Button>
             </CardContent>
