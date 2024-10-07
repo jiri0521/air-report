@@ -587,7 +587,7 @@ export default function Component() {
             ))}
           </RadioGroup>
         </div>
-        <div className='bg-pink-100 p-4 rounded-md'>
+        <div className='bg-pink-100 p-4 rounded-md dark:bg-gray-800'>
           <Label className="block mb-2">影響レベル</Label>
           <RadioGroup
             name="impactLevel"
