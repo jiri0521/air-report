@@ -129,7 +129,7 @@ export default function ReportListPage() {
 
   const handleSaveEdit = async () => {
     if (selectedIncident && editingField) {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('incidents')
         .update({ [editingField]: editValue })
         .eq('id', selectedIncident.id)
@@ -147,7 +147,7 @@ export default function ReportListPage() {
 
   const handleConfirmAddCountermeasures = async () => {
     if (selectedIncident) {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('incidents')
         .update({ countermeasures: editValue })
         .eq('id', selectedIncident.id)
