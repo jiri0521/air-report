@@ -35,7 +35,7 @@ export function TopPage() {
               <CardDescription>過去のレポートを確認</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full text-black dark:bg-gray-800 text-white" asChild>
+              <Button variant="outline" className="w-full text-black-800 dark:bg-gray-800 text-white" asChild>
                 <Link href="/reports">一覧を見る</Link>
               </Button>
             </CardContent>
@@ -49,7 +49,7 @@ export function TopPage() {
               <CardDescription>インシデントの分析</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full text-black dark:bg-gray-800 text-white" asChild>
+              <Button variant="outline" className="w-full text-black-800 dark:bg-gray-800 text-white" asChild>
                 <Link href="/analytics">統計を見る</Link>
               </Button>
             </CardContent>
@@ -63,7 +63,7 @@ export function TopPage() {
               <CardDescription>システム設定</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" className="w-full text-black dark:bg-gray-800 text-white" asChild>
+              <Button variant="outline" className="w-full text-black-800 dark:bg-gray-800 text-white" asChild>
                 <Link href="/settings">設定を開く</Link>
               </Button>
             </CardContent>
@@ -74,7 +74,7 @@ export function TopPage() {
    
     <footer className="bg-white shadow mt-8 dark:bg-gray-800 text-white">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 dark:bg-gray-800 text-white">
-        <p className="text-center text-sm text-black dark:bg-gray-800 text-white">
+        <p className="text-center text-sm text-black-800 dark:bg-gray-800 text-white">
           © 2024 医療安全インシデントレポートシステム. All rights reserved.
         </p>
       </div>
