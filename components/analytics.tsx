@@ -304,6 +304,63 @@ const getPreviousPeriodStart = () => {
   return new Date(start.getTime() - diff).toISOString()
 }
 
+
+const calculatePercentageChange = (current: number, previous: number) => {
+  if (previous === 0) return current > 0 ? 100 : 0
+  return Number(((current - previous) / previous * 100).toFixed(2))
+}
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#000000']; // Add black for level 5
+
+const handleExportCSV = () => {
+  const monthlyData = lineChartData.map(item => [item.name, item.incidents]);
+  const categoryData = barChartData.map(item => [item.category, item.incidents]);
+  const severityData = sortedPieChartData.map(item => [item.name, item.value]);
+  
+  const crossAnalysisCSV = [
+    ['カテゴリー', ...orderedLevels],
+    ...crossAnalysisChartData.map(item => [
+      item.category,
+      ...orderedLevels.map(level => item[level] || 0)
+    ])
+  ];
+
+  const timeOfDayCSV = timeOfDayData.map(item => [item.hour, item.incidents]);
+
+  const csvContent = [
+    ['月別インシデント件数'],
+    ['月', '件数'],
+    ...monthlyData,
+    [''],
+    ['カテゴリー別件数'],
+    ['カテゴリー', '件数'],
+    ...categoryData,
+    [''],
+    ['重要度別件数'],
+    ['重要度', '件数'],
+    ...severityData,
+    [''],
+    ['カテゴリー別重要度クロス分析'],
+    ...crossAnalysisCSV,
+    [''],
+    ['時間帯別インシデント発生率'],
+    ['時間', '件数'],
+    ...timeOfDayCSV
+  ].map(row => row.join(',')).join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'incident_analysis.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}
+
 const fetchTimeOfDayData = async (): Promise<TimeOfDayData[]> => {
   const { data, error } = await supabase
     .from('incidents')
@@ -322,39 +379,12 @@ const fetchTimeOfDayData = async (): Promise<TimeOfDayData[]> => {
     hourCounts[hour]++
   })
 
-  return Object.entries(hourCounts).map(([hour, incidents]) => ({
-    hour: `${hour}:00`,
-    incidents
-  }))
-}
-
-const calculatePercentageChange = (current: number, previous: number) => {
-  if (previous === 0) return current > 0 ? 100 : 0
-  return Number(((current - previous) / previous * 100).toFixed(2))
-}
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#000000']; // Add black for level 5
-
-const handleExportCSV = () => {
-  const csvContent = [
-    ['カテゴリー', '件数'],
-    ...barChartData.map(item => [item.category, item.incidents]),
-    ['', ''],
-    ['重要度', '件数'],
-    ...pieChartData.map(item => [item.name, item.value])
-  ].map(row => row.join(',')).join('\n');
-
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'incident_data.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  return Object.entries(hourCounts)
+    .sort(([a], [b]) => parseInt(a) - parseInt(b))
+    .map(([hour, incidents]) => ({
+      hour: `${hour}:00`,
+      incidents
+    }))
 }
 
 if (loading) {
