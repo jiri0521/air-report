@@ -65,7 +65,8 @@ export default function ReportListPage() {
   const [editValue, setEditValue] = useState('')
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -73,6 +74,9 @@ export default function ReportListPage() {
   }, [currentPage, searchTerm, sortField, sortOrder, filterCategory])
 
   const fetchIncidents = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
     let query = supabase
       .from('incidents')
       .select('*', { count: 'exact' })
@@ -89,11 +93,14 @@ export default function ReportListPage() {
 
     const { data, error, count } = await query
 
-    if (error) {
-      console.error('Error fetching incidents:', error)
-    } else {
+      if (error) throw error
+
       setIncidents(data || [])
       setTotalPages(Math.ceil((count || 0) / itemsPerPage))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -170,6 +177,9 @@ export default function ReportListPage() {
   const renderDetailRow = (label: string, value: string | string[] | null | undefined, field: string) => {
     if (value === null || value === undefined) return null
     const displayValue = Array.isArray(value) ? value.join(', ') : value
+
+    if (isLoading) return <div>読み込み中...</div>
+    if (error) return <div>エラーが発生しました: {error}</div>
 
     return (
       <div className="grid grid-cols-3 gap-4 py-2">
