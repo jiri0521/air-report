@@ -8,18 +8,18 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Textarea } from "@/components/ui/textarea"
 import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import party from "party-js";
+import party from "party-js"
+import IncidentForm from './incident-form'
 
 // Supabaseクライアントの初期化
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
-type Incident = {
+export type Incident = {
   id: number
   patientGender: string
   patientAge: string
@@ -36,7 +36,7 @@ type Incident = {
   lifeThreat: string
   trustImpact: string
   impactLevel: string
-  cause: string
+  cause: string[]
   details: string
   summary: string
   workStatus: string
@@ -61,37 +61,32 @@ export default function ReportListPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [filterCategory, setFilterCategory] = useState('all')
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null)
-  const [editingField, setEditingField] = useState<string | null>(null)
-  const [editValue, setEditValue] = useState('')
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const itemsPerPage = 10
 
-  useEffect(() => {
-    fetchIncidents()
-  }, [currentPage, searchTerm, sortField, sortOrder, filterCategory])
+  const itemsPerPage = 10
 
   const fetchIncidents = async () => {
     setIsLoading(true)
     setError(null)
     try {
-    let query = supabase
-      .from('incidents')
-      .select('*', { count: 'exact' })
-      .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1)
-      .order(sortField, { ascending: sortOrder === 'asc' })
+      let query = supabase
+        .from('incidents')
+        .select('*', { count: 'exact' })
+        .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1)
+        .order(sortField, { ascending: sortOrder === 'asc' })
 
-    if (searchTerm) {
-      query = query.or(`details.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,involvedPartyProfession.ilike.%${searchTerm}%`)
-    }
+      if (searchTerm) {
+        query = query.or(`details.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,involvedPartyProfession.ilike.%${searchTerm}%`)
+      }
 
-    if (filterCategory !== 'all') {
-      query = query.eq('category', filterCategory)
-    }
+      if (filterCategory !== 'all') {
+        query = query.eq('category', filterCategory)
+      }
 
-    const { data, error, count } = await query
+      const { data, error, count } = await query
 
       if (error) throw error
 
@@ -129,84 +124,28 @@ export default function ReportListPage() {
     setIsDetailsDialogOpen(true)
   }
 
-  const handleEditField = (field: string, value: string) => {
-    setEditingField(field)
-    setEditValue(value)
+  const handleEdit = (incident: Incident) => {
+    setSelectedIncident(incident)
+    setIsEditDialogOpen(true)
   }
 
-  const handleSaveEdit = async () => {
-    if (selectedIncident && editingField) {
+  const handleUpdateIncident = async (updatedIncident: Incident) => {
+    try {
       const { error } = await supabase
         .from('incidents')
-        .update({ [editingField]: editValue })
-        .eq('id', selectedIncident.id)
-        .select()
+        .update(updatedIncident)
+        .eq('id', updatedIncident.id)
 
-      if (error) {
-        console.error('Error updating incident:', error)
-      } else {
-        setSelectedIncident({ ...selectedIncident, [editingField]: editValue })
-        fetchIncidents()
-      }
-      setEditingField(null)
+      if (error) throw error
+
+      setIncidents(incidents.map(inc => inc.id === updatedIncident.id ? updatedIncident : inc))
+      party.confetti(document.body, {
+        count: party.variation.range(20, 200)
+      })
+      setIsEditDialogOpen(false)
+    } catch (err) {
+      console.error('Error updating incident:', err)
     }
-  }
-
-  const handleConfirmAddCountermeasures = async () => {
-    if (selectedIncident) {
-      const { error } = await supabase
-        .from('incidents')
-        .update({ countermeasures: editValue })
-        .eq('id', selectedIncident.id)
-        .select()
-
-      if (error) {
-        console.error('Error updating countermeasures:', error)
-      } else {
-        setSelectedIncident({ ...selectedIncident, countermeasures: editValue })
-        fetchIncidents()
-      }
-    }
-    party.confetti(document.body, {
-      count: party.variation.range(20, 200)
-    })
-    setIsConfirmDialogOpen(false)
-    setIsDetailsDialogOpen(false)
-  }
-
-  const renderDetailRow = (label: string, value: string | string[] | null | undefined, field: string) => {
-    if (value === null || value === undefined) {
-      value = field === 'countermeasures' ? '未対策' : ''
-    }
-    const displayValue = Array.isArray(value) ? value.join(', ') : value
-    
-    if (isLoading) return <div>読み込み中...</div>
-    if (error) return <div>エラーが発生しました: {error}</div>
-
-    return (
-      <div className="grid grid-cols-3 gap-4 py-2">
-        <div className="font-semibold">{label}:</div>
-        <div className="col-span-2 flex items-center">
-          {editingField === field ? (
-            <>
-              <Textarea
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                className="flex-grow mr-2"
-              />
-              <Button onClick={handleSaveEdit} size="sm">保存</Button>
-            </>
-          ) : (
-            <>
-              <span className="flex-grow">{displayValue}</span>
-              <Button onClick={() => handleEditField(field, displayValue)} size="sm" variant="ghost">
-                <Pen className="h-4 w-4" />
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-    )
   }
 
   const formatDate = (dateString: string) => {
@@ -221,6 +160,9 @@ export default function ReportListPage() {
     const highImpactLevels = ['レベル3b', 'レベル4', 'レベル5']
     return highImpactLevels.includes(impactLevel) ? 'bg-pink-100' : ''
   }
+
+  if (isLoading) return <div>読み込み中...</div>
+  if (error) return <div>エラーが発生しました: {error}</div>
 
   return (
     <div className="container mx-auto p-4">
@@ -268,6 +210,7 @@ export default function ReportListPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[80px] text-sm">詳細</TableHead>
+              <TableHead className="w-[80px] text-sm">編集</TableHead>
               <TableHead className="w-[120px] text-sm">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('occurrenceDateTime')}>発生日時</Button>
               </TableHead>
@@ -294,6 +237,11 @@ export default function ReportListPage() {
                 <TableCell>
                   <Button variant="outline" size="sm" onClick={() => handleViewDetails(incident)}>
                     <FileText className='text-blue-500'/>
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(incident)}>
+                    <Pen className='text-green-500'/>
                   </Button>
                 </TableCell>
                 <TableCell className='text-sm'>{formatDate(incident.occurrenceDateTime)}</TableCell>
@@ -350,65 +298,152 @@ export default function ReportListPage() {
           <ScrollArea className="max-h-[80vh] overflow-y-auto">
             <div className="space-y-2">
               {selectedIncident && (
-               <>
-               {renderDetailRow('患者の性別', selectedIncident.patientGender, 'patientGender')}
-               {renderDetailRow('患者の年齢', selectedIncident.patientAge, 'patientAge')}
-               {renderDetailRow('呼吸器の有無', selectedIncident.patientRespirator, 'patientRespirator')}
-               {renderDetailRow('透析の有無', selectedIncident.patientDialysis, 'patientDialysis')}
-               {renderDetailRow('当事者の職種', selectedIncident.involvedPartyProfession, 'involvedPartyProfession')}
-               {renderDetailRow('当事者の経験年数', selectedIncident.involvedPartyExperience, 'involvedPartyExperience')}
-               {renderDetailRow('発見者の職種', selectedIncident.discovererProfession, 'discovererProfession')}
-               {renderDetailRow('発生日時', formatDate(selectedIncident.occurrenceDateTime), 'occurrenceDateTime')}
-               {renderDetailRow('発生場所', selectedIncident.location, 'location')}
-               {renderDetailRow('医師への報告日時', formatDate(selectedIncident.reportToDoctor), 'reportToDoctor')}
-               {renderDetailRow('所属長への報告日時', formatDate(selectedIncident.reportToSupervisor), 'reportToSupervisor')}
-               {renderDetailRow('カテゴリー', selectedIncident.category, 'category')}
-               {renderDetailRow('生命への危険度', selectedIncident.lifeThreat, 'lifeThreat')}
-               {renderDetailRow('患者・家族の信頼度', selectedIncident.trustImpact, 'trustImpact')}
-               {renderDetailRow('影響レベル', selectedIncident.impactLevel, 'impactLevel')}
-               {renderDetailRow('勤務状況', selectedIncident.workStatus, 'workStatus')}
-               {renderDetailRow('発生の原因', selectedIncident.cause, 'cause')}
-               {renderDetailRow('当事者の要因', selectedIncident.involvedPartyFactors, 'involvedPartyFactors')}
-               {renderDetailRow('作業行動', selectedIncident.workBehavior, 'workBehavior')}
-               {renderDetailRow('身体的状態', selectedIncident.physicalCondition, 'physicalCondition')}
-               {renderDetailRow('心理的状態', selectedIncident.psychologicalState, 'psychologicalState')}
-               {renderDetailRow('医療機器', selectedIncident.medicalEquipment, 'medicalEquipment')}
-               {renderDetailRow('薬剤', selectedIncident.medication, 'medication')}
-               {renderDetailRow('システム', selectedIncident.system, 'system')}
-               {renderDetailRow('連携', selectedIncident.cooperation, 'cooperation')}
-               {renderDetailRow('説明', selectedIncident.explanation, 'explanation')}
-               {renderDetailRow('詳細', selectedIncident.details, 'details')}
-               {renderDetailRow('要約', selectedIncident.summary, 'summary')}
-               {renderDetailRow('対策', selectedIncident.countermeasures, 'countermeasures')}
-             </>
+                <>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">患者の性別:</div>
+                    <div className="col-span-2">{selectedIncident.patientGender}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">患者の年齢:</div>
+                    <div className="col-span-2">{selectedIncident.patientAge}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">呼吸器の有無:</div>
+                    <div className="col-span-2">{selectedIncident.patientRespirator}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">透析の有無:</div>
+                    <div className="col-span-2">{selectedIncident.patientDialysis}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">当事者の職種:</div>
+                    <div className="col-span-2">{selectedIncident.involvedPartyProfession}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">当事者の経験年数:</div>
+                    <div className="col-span-2">{selectedIncident.involvedPartyExperience}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">発見者の職種:</div>
+                    <div className="col-span-2">{selectedIncident.discovererProfession}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">発生日時:</div>
+                    <div className="col-span-2">{formatDate(selectedIncident.occurrenceDateTime)}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">発生場所:</div>
+                    <div className="col-span-2">{selectedIncident.location}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">医師への報告日時:</div>
+                    <div className="col-span-2">{formatDate(selectedIncident.reportToDoctor)}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">所属長への報告日時:</div>
+                    <div className="col-span-2">{formatDate(selectedIncident.reportToSupervisor)}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">カテゴリー:</div>
+                    <div className="col-span-2">{selectedIncident.category}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">生命への危険度:</div>
+                    <div className="col-span-2">{selectedIncident.lifeThreat}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">患者・家族の信頼度:</div>
+                    <div className="col-span-2">{selectedIncident.trustImpact}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">影響レベル:</div>
+                    <div className="col-span-2">{selectedIncident.impactLevel}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">勤務状況:</div>
+                    <div className="col-span-2">{selectedIncident.workStatus}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">発生の原因:</div>
+                    <div className="col-span-2">{selectedIncident.cause.join(', ')}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">当事者の要因:</div>
+                    <div className="col-span-2">{selectedIncident.involvedPartyFactors?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">作業行動:</div>
+                    <div className="col-span-2">{selectedIncident.workBehavior?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">身体的状態:</div>
+                    <div className="col-span-2">{selectedIncident.physicalCondition?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">心理的状態:</div>
+                    <div className="col-span-2">{selectedIncident.psychologicalState?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">医療機器:</div>
+                    <div className="col-span-2">{selectedIncident.medicalEquipment?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">薬剤:</div>
+                    <div className="col-span-2">{selectedIncident.medication?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">システム:</div>
+                    <div className="col-span-2">{selectedIncident.system?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">連携:</div>
+                    <div className="col-span-2">{selectedIncident.cooperation?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">説明:</div>
+                    <div className="col-span-2">{selectedIncident.explanation?.join(', ') || '未対策'}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">詳細:</div>
+                    <div className="col-span-2">{selectedIncident.details}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">要約:</div>
+                    <div className="col-span-2">{selectedIncident.summary}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">対策:</div>
+                    <div className="col-span-2">{selectedIncident.countermeasures || '未対策'}</div>
+                  </div>
+                </>
               )}
             </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
-        <DialogContent>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>確認</DialogTitle>
-            <DialogDescription>
-              この内容で登録します。よろしいですか。
-            </DialogDescription>
+            <DialogTitle>インシデント編集 (ID: {selectedIncident?.id})</DialogTitle>
           </DialogHeader>
-          <div className="mt-4">
-            <Label className="text-sm font-bold">新しい対策:</Label>
-            <div className="mt-2 p-2 bg-gray-100 rounded-md">
-              {editValue || '(対策が入力されていません)'}
-            </div>
-          </div>
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)}>
-              キャンセル
-            </Button>
-            <Button onClick={handleConfirmAddCountermeasures}>
-              はい
-            </Button>
-          </DialogFooter>
+          {selectedIncident && (
+            <IncidentForm
+            initialData={{
+              ...selectedIncident,
+              workBehavior: selectedIncident.workBehavior || [],
+              physicalCondition: selectedIncident.physicalCondition || [], // ここを修正
+              psychologicalState: selectedIncident.psychologicalState || [], // ここを修正
+              medicalEquipment: selectedIncident.medicalEquipment || [], // ここを修正
+              medication: selectedIncident.medication || [], // ここを修正
+              system: selectedIncident.system || [], // ここを修正
+              cooperation: selectedIncident.cooperation || [], // ここを修正
+              explanation: selectedIncident.explanation || [], // ここを修正
+            }}
+              onSubmit={handleUpdateIncident}
+              onCancel={() => setIsEditDialogOpen(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
