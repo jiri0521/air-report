@@ -216,7 +216,6 @@ export default function ReportListPage() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[80px] text-sm">詳細</TableHead>
-              <TableHead className="w-[80px] text-sm">編集</TableHead>
               <TableHead className="w-[120px] text-sm">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('occurrenceDateTime')}>発生日時</Button>
               </TableHead>
@@ -235,6 +234,7 @@ export default function ReportListPage() {
               <TableHead className="w-[120px]">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('involvedPartyProfession')}>当事者職種</Button>
               </TableHead>
+              <TableHead className="w-[80px] text-sm">編集</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -244,12 +244,7 @@ export default function ReportListPage() {
                   <Button variant="outline" size="sm" onClick={() => handleViewDetails(incident)}>
                     <FileText className='text-blue-500'/>
                   </Button>
-                </TableCell>
-                <TableCell>
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(incident)}>
-                    <Pen className='text-green-500'/>
-                  </Button>
-                </TableCell>
+                </TableCell>              
                 <TableCell className='text-sm'>{formatDate(incident.occurrenceDateTime)}</TableCell>
                 <TableCell className='text-sm'>{incident.category}</TableCell>
                 <TableCell className='text-sm'>{incident.impactLevel}</TableCell>
@@ -274,6 +269,11 @@ export default function ReportListPage() {
                 </TableCell>
                 <TableCell className='text-sm'>{incident.location}</TableCell>
                 <TableCell className='text-sm'>{incident.involvedPartyProfession}</TableCell>
+                <TableCell>
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(incident)}>
+                    <Pen className='text-green-500'/>
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
