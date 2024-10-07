@@ -12,7 +12,7 @@ export function TopPage() {
     <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
+          <Card className="dark:bg-gray-800 text-white">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <AlertTriangle className="mr-2 text-red-700" />
@@ -26,7 +26,7 @@ export function TopPage() {
               </Button>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="dark:bg-gray-800 text-white">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <FileText className="mr-2 text-blue-500" />
@@ -40,7 +40,7 @@ export function TopPage() {
               </Button>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="dark:bg-gray-800 text-white">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <PieChart className="mr-2 text-green-500" />
@@ -54,7 +54,7 @@ export function TopPage() {
               </Button>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="dark:bg-gray-800 text-white">
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Settings className="mr-2 text-gray-500" />

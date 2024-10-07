@@ -648,7 +648,7 @@ export default function Component() {
           <TabsContent value="human" className="bg-gray-50 p-4 rounded-md dark:bg-gray-800 text-white">
             <HumanFactorsCheckboxes formData={formData} setFormData={setFormData} />
           </TabsContent>
-          <TabsContent value="environmental" className="bg-gray-50 p-4 rounded-md dark:bg-gray-800 text-white">
+          <TabsContent value="environmental" className="bg-gray-50 p-4 rounded-md ">
             <EnvironmentalFactorsCheckboxes formData={formData} setFormData={setFormData} />
           </TabsContent>
         </Tabs>
