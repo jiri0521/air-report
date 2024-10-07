@@ -40,15 +40,15 @@ type Incident = {
   details: string
   summary: string
   workStatus: string
-  involvedPartyFactors: string[]
-  workBehavior: string[]
-  physicalCondition: string[]
-  psychologicalState: string[]
-  medicalEquipment: string[]
-  medication: string[]
-  system: string[]
-  cooperation: string[]
-  explanation: string[]
+  involvedPartyFactors: string[] | null
+  workBehavior: string[] | null
+  physicalCondition: string[] | null
+  psychologicalState: string[] | null
+  medicalEquipment: string[] | null
+  medication: string[] | null
+  system: string[] | null
+  cooperation: string[] | null
+  explanation: string[] | null
   countermeasures: string | null
 }
 
@@ -348,37 +348,37 @@ export default function ReportListPage() {
           <ScrollArea className="max-h-[80vh] overflow-y-auto">
             <div className="space-y-2">
               {selectedIncident && (
-                <>
-                  {renderDetailRow('患者の性別', selectedIncident.patientGender, 'patientGender')}
-                  {renderDetailRow('患者の年齢', selectedIncident.patientAge, 'patientAge')}
-                  {renderDetailRow('呼吸器の有無', selectedIncident.patientRespirator, 'patientRespirator')}
-                  {renderDetailRow('透析の有無', selectedIncident.patientDialysis, 'patientDialysis')}
-                  {renderDetailRow('当事者の職種', selectedIncident.involvedPartyProfession, 'involvedPartyProfession')}
-                  {renderDetailRow('当事者の経験年数', selectedIncident.involvedPartyExperience, 'involvedPartyExperience')}
-                  {renderDetailRow('発見者の職種', selectedIncident.discovererProfession, 'discovererProfession')}
-                  {renderDetailRow('発生日時', formatDate(selectedIncident.occurrenceDateTime), 'occurrenceDateTime')}
-                  {renderDetailRow('発生場所', selectedIncident.location, 'location')}
-                  {renderDetailRow('医師への報告日時', formatDate(selectedIncident.reportToDoctor), 'reportToDoctor')}
-                  {renderDetailRow('所属長への報告日時', formatDate(selectedIncident.reportToSupervisor), 'reportToSupervisor')}
-                  {renderDetailRow('カテゴリー', selectedIncident.category, 'category')}
-                  {renderDetailRow('生命への危険度', selectedIncident.lifeThreat, 'lifeThreat')}
-                  {renderDetailRow('患者・家族の信頼度', selectedIncident.trustImpact, 'trustImpact')}
-                  {renderDetailRow('影響レベル', selectedIncident.impactLevel, 'impactLevel')}
-                  {renderDetailRow('勤務状況', selectedIncident.workStatus, 'workStatus')}
-                  {renderDetailRow('発生の原因', selectedIncident.cause, 'cause')}
-                  {renderDetailRow('当事者の要因', selectedIncident.involvedPartyFactors.join(', '), 'involvedPartyFactors')}
-                  {renderDetailRow('作業行動', selectedIncident.workBehavior.join(', '), 'workBehavior')}
-                  {renderDetailRow('身体的状態', selectedIncident.physicalCondition.join(', '), 'physicalCondition')}
-                  {renderDetailRow('心理的状態', selectedIncident.psychologicalState.join(', '), 'psychologicalState')}
-                  {renderDetailRow('医療機器', selectedIncident.medicalEquipment.join(', '), 'medicalEquipment')}
-                  {renderDetailRow('薬剤', selectedIncident.medication.join(', '), 'medication')}
-                  {renderDetailRow('システム', selectedIncident.system.join(', '), 'system')}
-                  {renderDetailRow('連携', selectedIncident.cooperation.join(', '), 'cooperation')}
-                  {renderDetailRow('説明', selectedIncident.explanation.join(', '), 'explanation')}
-                  {renderDetailRow('詳細', selectedIncident.details, 'details')}
-                  {renderDetailRow('要約', selectedIncident.summary, 'summary')}
-                  {renderDetailRow('対策', selectedIncident.countermeasures || '未対策', 'countermeasures')}
-                </>
+               <>
+               {renderDetailRow('患者の性別', selectedIncident.patientGender, 'patientGender')}
+               {renderDetailRow('患者の年齢', selectedIncident.patientAge, 'patientAge')}
+               {renderDetailRow('呼吸器の有無', selectedIncident.patientRespirator, 'patientRespirator')}
+               {renderDetailRow('透析の有無', selectedIncident.patientDialysis, 'patientDialysis')}
+               {renderDetailRow('当事者の職種', selectedIncident.involvedPartyProfession, 'involvedPartyProfession')}
+               {renderDetailRow('当事者の経験年数', selectedIncident.involvedPartyExperience, 'involvedPartyExperience')}
+               {renderDetailRow('発見者の職種', selectedIncident.discovererProfession, 'discovererProfession')}
+               {renderDetailRow('発生日時', selectedIncident.occurrenceDateTime, 'occurrenceDateTime')}
+               {renderDetailRow('発生場所', selectedIncident.location, 'location')}
+               {renderDetailRow('医師への報告日時', selectedIncident.reportToDoctor, 'reportToDoctor')}
+               {renderDetailRow('所属長への報告日時', selectedIncident.reportToSupervisor, 'reportToSupervisor')}
+               {renderDetailRow('カテゴリー', selectedIncident.category, 'category')}
+               {renderDetailRow('生命への危険度', selectedIncident.lifeThreat, 'lifeThreat')}
+               {renderDetailRow('患者・家族の信頼度', selectedIncident.trustImpact, 'trustImpact')}
+               {renderDetailRow('影響レベル', selectedIncident.impactLevel, 'impactLevel')}
+               {renderDetailRow('勤務状況', selectedIncident.workStatus, 'workStatus')}
+               {renderDetailRow('発生の原因', selectedIncident.cause, 'cause')}
+               {renderDetailRow('当事者の要因', selectedIncident.involvedPartyFactors, 'involvedPartyFactors')}
+               {renderDetailRow('作業行動', selectedIncident.workBehavior, 'workBehavior')}
+               {renderDetailRow('身体的状態', selectedIncident.physicalCondition, 'physicalCondition')}
+               {renderDetailRow('心理的状態', selectedIncident.psychologicalState, 'psychologicalState')}
+               {renderDetailRow('医療機器', selectedIncident.medicalEquipment, 'medicalEquipment')}
+               {renderDetailRow('薬剤', selectedIncident.medication, 'medication')}
+               {renderDetailRow('システム', selectedIncident.system, 'system')}
+               {renderDetailRow('連携', selectedIncident.cooperation, 'cooperation')}
+               {renderDetailRow('説明', selectedIncident.explanation, 'explanation')}
+               {renderDetailRow('詳細', selectedIncident.details, 'details')}
+               {renderDetailRow('要約', selectedIncident.summary, 'summary')}
+               {renderDetailRow('対策', selectedIncident.countermeasures, 'countermeasures')}
+             </>
               )}
             </div>
           </ScrollArea>
