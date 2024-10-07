@@ -27,6 +27,7 @@ const notoSansJP = localFont({
 export const metadata: Metadata = {
   title: "医療安全レポート",
   description: "インシデントレポートの登録と集計を行うWebアプリです",
+  manifest:'/manifest.json'
 };
 
 export default function RootLayout({
