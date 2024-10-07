@@ -162,7 +162,7 @@ export default function ReportListPage() {
 
   const getRowBackgroundColor = (impactLevel: string) => {
     const highImpactLevels = ['レベル3b', 'レベル4', 'レベル5']
-    return highImpactLevels.includes(impactLevel) ? 'bg-pink-100' : ''
+    return highImpactLevels.includes(impactLevel) ? 'bg-pink-100 dark:bg-gray-600 text-white' : ''
   }
 
   
@@ -174,7 +174,7 @@ export default function ReportListPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">インシデントレポート一覧</h1>
 
-      <Card className="mb-4">
+      <Card className="mb-4 dark:bg-gray-800 text-white">
         <CardHeader>
           <CardTitle>検索とフィルター</CardTitle>
         </CardHeader>

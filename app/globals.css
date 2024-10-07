@@ -41,11 +41,11 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 20%; /* 明るくした背景 */
+    --background: 0 0% 15%; /* 明るくした背景 */
     --foreground: 0 0% 98%;
-    --card: 0 0% 20%; /* カード背景も調整 */
+    --card: 0 0% 15%; /* カード背景も調整 */
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 20%; /* ポップオーバー背景も調整 */
+    --popover: 0 0% 15%; /* ポップオーバー背景も調整 */
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
