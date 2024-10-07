@@ -629,7 +629,7 @@ export default function Component() {
           <Label className="block mb-2">発生の原因（複数選択可）</Label>
           <div className="flex flex-wrap gap-4">
             {['人的要因', '環境・物理的要因'].map((cause) => (
-              <div key={cause} className="flex items-center space-x-2">
+              <div key={cause} className="flex items-center space-x-2 dark:bg-gray-800 text-white">
                 <Checkbox
                   id={`cause-${cause}`}
                   checked={formData.cause.includes(cause)}
@@ -645,10 +645,10 @@ export default function Component() {
             <TabsTrigger value="human">人的要因</TabsTrigger>
             <TabsTrigger value="environmental">環境・物理的要因</TabsTrigger>
           </TabsList>
-          <TabsContent value="human" className="bg-gray-50 p-4 rounded-md">
+          <TabsContent value="human" className="bg-gray-50 p-4 rounded-md dark:bg-gray-800 text-white">
             <HumanFactorsCheckboxes formData={formData} setFormData={setFormData} />
           </TabsContent>
-          <TabsContent value="environmental" className="bg-gray-50 p-4 rounded-md">
+          <TabsContent value="environmental" className="bg-gray-50 p-4 rounded-md dark:bg-gray-800 text-white">
             <EnvironmentalFactorsCheckboxes formData={formData} setFormData={setFormData} />
           </TabsContent>
         </Tabs>
