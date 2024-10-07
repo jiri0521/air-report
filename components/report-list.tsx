@@ -282,17 +282,19 @@ export default function ReportListPage() {
 
       <div className="flex justify-between items-center mt-4">
         <Button
+          className='bg-blue-500'
           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
-          <ChevronLeft className="mr-2 h-4 w-4 bg-bule-500" /> 前ページ
+          <ChevronLeft className="mr-2 h-4 w-4" /> 前ページ
         </Button>
         <span>ページ {currentPage} / {totalPages}</span>
         <Button
+          className='bg-blue-500'
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
         >
-          次ページ <ChevronRight className="ml-2 h-4 w-4 bg-blue-500" />
+          次ページ <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
 
