@@ -536,7 +536,7 @@ export default function Component() {
             onChange={handleInputChange}
           />
         </div>
-        <div className='bg-blue-100 p-4 rounded-md dark:bg-dark-bg text-gray-800 dark:text-dark-text'>
+        <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 text-white'>
           <Label className="block mb-2 ">インシデトのカテゴリー</Label>
           <RadioGroup
             name="category"
@@ -553,30 +553,30 @@ export default function Component() {
             ))}
           </RadioGroup>
         </div>
-        <div className='bg-gray-100 p-4 rounded-md'>
+        <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 text-white'>
           <Label className="block mb-2">生命への危険度</Label>
           <RadioGroup
             name="lifeThreat"
             value={formData.lifeThreat}
             onValueChange={(value) => handleInputChange(value, 'lifeThreat')}
-            className="flex flex-wrap gap-4"
+            className="flex flex-wrap gap-4 dark:bg-gray-800 text-white"
             required
           >
             {['ない', '低い', '可能性あり', '高い', 'きわめて高い', '死亡'].map((level) => (
-              <div key={level} className="flex items-center space-x-2">
+              <div key={level} className="flex items-center space-x-2 ">
                 <RadioGroupItem value={level} id={`lifeThreat-${level}`} />
                 <Label htmlFor={`lifeThreat-${level}`}>{level}</Label>
               </div>
             ))}
           </RadioGroup>
         </div>
-        <div className='bg-gray-100 p-4 rounded-md'>
+        <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 text-white'>
           <Label className="block mb-2">患者・家族の信頼度</Label>
           <RadioGroup
             name="trustImpact"
             value={formData.trustImpact}
             onValueChange={(value) => handleInputChange(value, 'trustImpact')}
-            className="flex flex-wrap gap-4"
+            className="flex flex-wrap gap-4 dark:bg-gray-800 text-white"
             required
           >
             {['損なわない', 'あまり損なわない', '少し損なう', '大きく損なう'].map((level) => (
@@ -587,7 +587,7 @@ export default function Component() {
             ))}
           </RadioGroup>
         </div>
-        <div className='bg-pink-100 p-4 rounded-md dark:bg-gray-800'>
+        <div className='bg-pink-100 p-4 rounded-md dark:bg-gray-800 text-white'>
           <Label className="block mb-2">影響レベル</Label>
           <RadioGroup
             name="impactLevel"
