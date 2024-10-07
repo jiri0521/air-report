@@ -175,9 +175,11 @@ export default function ReportListPage() {
   }
 
   const renderDetailRow = (label: string, value: string | string[] | null | undefined, field: string) => {
-    if (value === null || value === undefined) return null
+    if (value === null || value === undefined) {
+      value = field === 'countermeasures' ? '未対策' : ''
+    }
     const displayValue = Array.isArray(value) ? value.join(', ') : value
-
+    
     if (isLoading) return <div>読み込み中...</div>
     if (error) return <div>エラーが発生しました: {error}</div>
 
@@ -356,10 +358,10 @@ export default function ReportListPage() {
                {renderDetailRow('当事者の職種', selectedIncident.involvedPartyProfession, 'involvedPartyProfession')}
                {renderDetailRow('当事者の経験年数', selectedIncident.involvedPartyExperience, 'involvedPartyExperience')}
                {renderDetailRow('発見者の職種', selectedIncident.discovererProfession, 'discovererProfession')}
-               {renderDetailRow('発生日時', selectedIncident.occurrenceDateTime, 'occurrenceDateTime')}
+               {renderDetailRow('発生日時', formatDate(selectedIncident.occurrenceDateTime), 'occurrenceDateTime')}
                {renderDetailRow('発生場所', selectedIncident.location, 'location')}
-               {renderDetailRow('医師への報告日時', selectedIncident.reportToDoctor, 'reportToDoctor')}
-               {renderDetailRow('所属長への報告日時', selectedIncident.reportToSupervisor, 'reportToSupervisor')}
+               {renderDetailRow('医師への報告日時', formatDate(selectedIncident.reportToDoctor), 'reportToDoctor')}
+               {renderDetailRow('所属長への報告日時', formatDate(selectedIncident.reportToSupervisor), 'reportToSupervisor')}
                {renderDetailRow('カテゴリー', selectedIncident.category, 'category')}
                {renderDetailRow('生命への危険度', selectedIncident.lifeThreat, 'lifeThreat')}
                {renderDetailRow('患者・家族の信頼度', selectedIncident.trustImpact, 'trustImpact')}
