@@ -74,7 +74,7 @@ export function TopPage() {
    
     <footer className="bg-white shadow mt-8 dark:bg-gray-800 text-white">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 dark:bg-gray-800 text-white">
-        <p className="text-center text-sm text-gray-500 dark:bg-gray-800 text-white">
+        <p className="text-center text-sm dark:bg-gray-800 text-white">
           © 2024 医療安全インシデントレポートシステム. All rights reserved.
         </p>
       </div>
