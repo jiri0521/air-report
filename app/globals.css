@@ -41,7 +41,7 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 10%; /* 明るくした背景 */
+    --background: 0 0% 20%; /* 明るくした背景 */
     --foreground: 0 0% 98%;
     --card: 0 0% 10%; /* カード背景も調整 */
     --card-foreground: 0 0% 98%;
