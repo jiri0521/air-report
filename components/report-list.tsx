@@ -369,43 +369,43 @@ export default function ReportListPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">発生の原因:</div>
-                    <div className="col-span-2">{selectedIncident.cause.join(', ')}</div>
+                    {Array.isArray(selectedIncident.cause) ? selectedIncident.cause.join(', ') : '未記入'}
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">当事者の要因:</div>
-                    <div className="col-span-2">{selectedIncident.involvedPartyFactors?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.involvedPartyFactors?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">作業行動:</div>
-                    <div className="col-span-2">{selectedIncident.workBehavior?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.workBehavior?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">身体的状態:</div>
-                    <div className="col-span-2">{selectedIncident.physicalCondition?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.physicalCondition?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">心理的状態:</div>
-                    <div className="col-span-2">{selectedIncident.psychologicalState?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.psychologicalState?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">医療機器:</div>
-                    <div className="col-span-2">{selectedIncident.medicalEquipment?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.medicalEquipment?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">薬剤:</div>
-                    <div className="col-span-2">{selectedIncident.medication?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.medication?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">システム:</div>
-                    <div className="col-span-2">{selectedIncident.system?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.system?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">連携:</div>
-                    <div className="col-span-2">{selectedIncident.cooperation?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.cooperation?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">説明:</div>
-                    <div className="col-span-2">{selectedIncident.explanation?.join(', ') || '未対策'}</div>
+                    <div className="col-span-2">{selectedIncident.explanation?.join(', ') || '未記入'}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">詳細:</div>
