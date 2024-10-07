@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -63,12 +63,46 @@ export default function ReportListPage() {
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null)
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [isLoading] = useState(true)
- 
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const itemsPerPage = 10
 
-  
+  const fetchIncidents = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      let query = supabase
+        .from('incidents')
+        .select('*', { count: 'exact' })
+        .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1)
+        .order(sortField, { ascending: sortOrder === 'asc' })
+
+      if (searchTerm) {
+        query = query.or(`details.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,involvedPartyProfession.ilike.%${searchTerm}%`)
+      }
+
+      if (filterCategory !== 'all') {
+        query = query.eq('category', filterCategory)
+      }
+
+      const { data, error, count } = await query
+
+      if (error) throw error
+
+      setIncidents(data || [])
+      setTotalPages(Math.ceil((count || 0) / itemsPerPage))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchIncidents()
+  }, [currentPage, searchTerm, sortField, sortOrder, filterCategory])
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
     setCurrentPage(1)
@@ -132,7 +166,7 @@ export default function ReportListPage() {
   }
 
   if (isLoading) return <div>読み込み中...</div>
-  
+  if (error) return <div>エラーが発生しました: {error}</div>
 
   return (
     <div className="container mx-auto p-4">
