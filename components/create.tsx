@@ -536,7 +536,7 @@ export default function Component() {
             onChange={handleInputChange}
           />
         </div>
-        <div className='bg-blue-100 p-4 rounded-md'>
+        <div className='bg-blue-100 p-4 rounded-md dark:bg-dark-bg text-gray-800 dark:text-dark-text'>
           <Label className="block mb-2 ">インシデトのカテゴリー</Label>
           <RadioGroup
             name="category"
