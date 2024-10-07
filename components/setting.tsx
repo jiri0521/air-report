@@ -41,7 +41,7 @@ export default function SettingsPage() {
   if (!mounted) return null
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
+    <div className="container mx-auto p-4 max-w-4xl dark:border-white">
       <h1 className="text-3xl font-bold mb-6">設定</h1>
 
       <Tabs defaultValue="profile" className="space-y-4 dark:border-white">
