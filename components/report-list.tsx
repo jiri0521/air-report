@@ -162,7 +162,7 @@ export default function ReportListPage() {
 
   const getRowBackgroundColor = (impactLevel: string) => {
     const highImpactLevels = ['レベル3b', 'レベル4', 'レベル5']
-    return highImpactLevels.includes(impactLevel) ? 'bg-pink-100 dark:bg-gray-600 text-white' : ''
+    return highImpactLevels.includes(impactLevel) ? 'bg-pink-100 dark:bg-gray-600 text-pink-200' : ''
   }
 
   
@@ -174,7 +174,7 @@ export default function ReportListPage() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">インシデントレポート一覧</h1>
 
-      <Card className="mb-4 dark:bg-gray-800 text-white">
+      <Card className="mb-4">
         <CardHeader>
           <CardTitle>検索とフィルター</CardTitle>
         </CardHeader>
@@ -211,7 +211,7 @@ export default function ReportListPage() {
       </Card>
 
       <div className="text-sm overflow-x-auto">
-        <span className='text-gray-500 text-sm'>※影響度が3b,4,5は<span className='text-pink-500 text-sm'>背景赤色</span></span>
+        <span className='text-gray-500 text-sm'>※影響度が3b,4,5は<span className='text-pink-500 text-sm dark:text-pink-200'>背景赤色</span></span>
         <Table>
           <TableHeader>
             <TableRow>
