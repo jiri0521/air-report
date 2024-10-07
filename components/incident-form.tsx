@@ -412,7 +412,7 @@ type IncidentFormProps = {
           className="flex flex-wrap gap-4"
           required
         >
-          {['薬物', '検査', 'チュー類抜去', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
+          {['薬物', '検査', 'チューブ類抜去', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
             <div key={category} className="flex items-center space-x-2">
               <RadioGroupItem value={category} id={`category-${category}`} />
               <Label htmlFor={`category-${category}`}>{category}</Label>
@@ -493,7 +493,7 @@ type IncidentFormProps = {
       <br></br>
 
       <div className='rounded-md'>
-        <Label className="block mb-2">発生の原���（複数選択���）</Label>
+        <Label className="block mb-2">発生の原因（タブを切替えで複数選択可能）</Label>
         <div className="flex flex-wrap gap-4">
           {['人的要因', '環境・物理的要因'].map((cause) => (
             <div key={cause} className="flex items-center space-x-2">
@@ -539,7 +539,7 @@ type IncidentFormProps = {
       </div>
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>キャンセル</Button>
-        <Button type="submit">保存</Button>
+        <Button type="submit" className='bg-blue-500'>保存</Button>
       </div>
     </form>
   )
