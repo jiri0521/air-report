@@ -21,7 +21,7 @@ export function TopPage() {
               <CardDescription>インシデントを報告する</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full dark:bg-gray-500 text-white" asChild>
+              <Button className="w-full bg-gray-800 dark:bg-gray-500 text-white" asChild>
                 <Link href="/create">レポート作成</Link>
               </Button>
             </CardContent>
