@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
+import { useSession } from 'next-auth/react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Download } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { toast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
   const [name, setName] = useState('')
@@ -20,21 +22,73 @@ export default function SettingsPage() {
   const [fontSize, setFontSize] = useState('medium')
   const [language, setLanguage] = useState('日本語')
   const { theme, setTheme } = useTheme()
-  
+  const { data: session, status } = useSession()
+  const [role, setRole] = useState('USER')
 
-  // Ensure theme is only accessed on the client side
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  if (!mounted) {
-    return null // または、ローディング表示を返す
+  useEffect(() => {
+    setMounted(true)
+    if (status === 'authenticated' && session?.user) {
+      fetchUserSettings()
+    }
+  }, [status, session])
+
+  const fetchUserSettings = async () => {
+    try {
+      const response = await fetch('/api/user/settings')
+      if (response.ok) {
+        const settings = await response.json()
+        setName(settings.name || '')
+        setEmail(settings.email || '')
+        setEmailNotifications(settings.emailNotifications)
+        setPushNotifications(settings.pushNotifications)
+        setFontSize(settings.fontSize)
+        setLanguage(settings.language)
+        setRole(settings.role)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user settings:', error)
+    }
   }
-  const handleSave = () => {
-    // Here you would typically save the settings to your backend
-    console.log('Settings saved:', { name, email, emailNotifications, pushNotifications, theme, fontSize, language })
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/user/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          emailNotifications,
+          pushNotifications,
+          fontSize,
+          language,
+          theme,
+        }),
+      })
+
+      if (response.ok) {
+        toast({
+          title: "設定が保存されました",
+          description: "変更が正常に適用されました。",
+        })
+      } else {
+        throw new Error('Failed to save settings')
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error)
+      toast({
+        title: "エラー",
+        description: "設定の保存中にエラーが発生しました。",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleExportData = () => {
-    // Here you would typically implement the data export logic
+    // Implement data export logic here
     console.log('Exporting data...')
   }
 
@@ -51,6 +105,7 @@ export default function SettingsPage() {
           <TabsTrigger value="display">表示</TabsTrigger>
           <TabsTrigger value="language">言語</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
+          {role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="profile">
@@ -148,34 +203,6 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="language">
-          <Card className='dark:border-white'>
-            <CardHeader>
-              <CardTitle>言語設定</CardTitle>
-              <CardDescription>アプリケーションの表示言語を設定します。</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1">
-                <Label htmlFor="language">言語</Label>
-                <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger id="language">
-                    <SelectValue placeholder="言語を選択" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="日本語">日本語</SelectItem>
-                    <SelectItem value="English">English</SelectItem>
-                    <SelectItem value="中文">中文</SelectItem>
-                    <SelectItem value="한국어">한국어</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={handleSave}>保存</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="data">
           <Card className='dark:border-white'>
             <CardHeader>
@@ -189,6 +216,21 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {role === 'ADMIN' && (
+          <TabsContent value="permissions">
+            <Card className='dark:border-white'>
+              <CardHeader>
+                <CardTitle>権限管理</CardTitle>
+                <CardDescription>ユーザーの権限を管理します。</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {/* Implement user permission management UI here */}
+                <p>この機能は管理者のみが利用できます。ユーザー権限の管理UIをここに実装してください。</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )
