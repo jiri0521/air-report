@@ -559,7 +559,7 @@ export default function Component() {
             name="lifeThreat"
             value={formData.lifeThreat}
             onValueChange={(value) => handleInputChange(value, 'lifeThreat')}
-            className="flex flex-wrap gap-4 dark:bg-gray-800 text-white"
+            className="flex flex-wrap gap-4 dark:bg-gray-800 dark:text-white"
             required
           >
             {['ない', '低い', '可能性あり', '高い', 'きわめて高い', '死亡'].map((level) => (
@@ -576,7 +576,7 @@ export default function Component() {
             name="trustImpact"
             value={formData.trustImpact}
             onValueChange={(value) => handleInputChange(value, 'trustImpact')}
-            className="flex flex-wrap gap-4 dark:bg-gray-800 text-white"
+            className="flex flex-wrap gap-4 dark:bg-gray-800 dark:text-white"
             required
           >
             {['損なわない', 'あまり損なわない', '少し損なう', '大きく損なう'].map((level) => (

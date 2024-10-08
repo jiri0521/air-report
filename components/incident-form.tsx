@@ -403,7 +403,7 @@ type IncidentFormProps = {
           onChange={handleInputChange}
         />
       </div>
-      <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 text-white'>
+      <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
         <Label className="block mb-2 ">インシデトのカテゴリー</Label>
         <RadioGroup
           name="category"
