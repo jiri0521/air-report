@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
@@ -14,7 +14,7 @@ import { Download } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
 
-export default async function SettingsPage() {
+export default function SettingsPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [emailNotifications, setEmailNotifications] = useState(true)
