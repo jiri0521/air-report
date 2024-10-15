@@ -211,8 +211,11 @@ export default function ReportListPage() {
       </Card>
 
       <div className="text-sm overflow-x-auto">
+       
         <span className='text-gray-500 text-sm'>※影響度が3b,4,5は<span className='text-pink-500 text-sm dark:text-pink-400'>背景or文字が赤色です</span></span>
-        <Table>
+         <br></br>
+         <br></br>
+         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[80px] text-sm">詳細</TableHead>

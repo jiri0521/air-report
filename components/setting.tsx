@@ -14,7 +14,7 @@ import { Download } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [emailNotifications, setEmailNotifications] = useState(true)
@@ -22,8 +22,8 @@ export default function SettingsPage() {
   const [fontSize, setFontSize] = useState('medium')
   const [language, setLanguage] = useState('日本語')
   const { theme, setTheme } = useTheme()
-  const { data: session, status } = useSession()
-  const [role, setRole] = useState('USER')
+  const { data: session, status } =   useSession()
+  const [role, setRole] = useState('ADMIN')
 
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
@@ -94,6 +94,7 @@ export default function SettingsPage() {
 
   if (!mounted) return null
 
+
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">設定</h1>
@@ -103,7 +104,6 @@ export default function SettingsPage() {
           <TabsTrigger value="profile">プロフィール</TabsTrigger>
           <TabsTrigger value="notifications">通知</TabsTrigger>
           <TabsTrigger value="display">表示</TabsTrigger>
-          <TabsTrigger value="language">言語</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
           {role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>

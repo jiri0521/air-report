@@ -54,6 +54,7 @@ type Incident = {
   system: string[]
   cooperation: string[]
   explanation: string[]
+  userId:string
 }
 
 type FactorsCheckboxesProps = {
@@ -236,7 +237,8 @@ export default function Component() {
     medication: [],
     system: [],
     cooperation: [],
-    explanation: []
+    explanation: [],
+    userId:""
   })
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
@@ -335,7 +337,8 @@ export default function Component() {
         medication: [],
         system: [],
         cooperation: [],
-        explanation: []
+        explanation: [],
+        userId:''
       })
       setIsSuccessModalOpen(true)
       // Trigger confetti effect
