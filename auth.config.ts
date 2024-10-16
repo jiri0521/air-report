@@ -1,4 +1,9 @@
 import type { NextAuthConfig } from "next-auth"
+import {
+  DefaultSession,
+  //NextAuthOptions,
+  //getServerSession,
+} from "next-auth";
 import Credentials from "next-auth/providers/credentials"
 import { LoginSchema } from "@/schemas"
 import { getUserByEmail } from "@/data/user"
@@ -6,8 +11,20 @@ import bcrypt from "bcryptjs"
 import Google from "next-auth/providers/google"
 import Github from "next-auth/providers/github"
 
+declare module "next-auth" {
+  interface User {
+    role: string;
+  }
+ interface Session extends DefaultSession {
+   user: {
+     id: string;
+     role: string;
+   } & DefaultSession["user"];
+ }
+}
 
 export default {
+  
   providers: [
     Google({
         clientId: process.env.GOOGLE_CLIENT_ID,
@@ -39,4 +56,5 @@ export default {
       }
     })
   ],
+  
 } satisfies NextAuthConfig

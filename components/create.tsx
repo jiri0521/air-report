@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useSession } from "next-auth/react";
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import party from "party-js";
-
+import SessionData from "@/components/session-data";
 
 
 // Supabaseクライアントの初期化
@@ -299,7 +300,8 @@ export default function Component() {
       medication: formData.medication.length > 0 ? formData.medication : null,
       system: formData.system.length > 0 ? formData.system : null,
       cooperation: formData.cooperation.length > 0 ? formData.cooperation : null,
-      explanation: formData.explanation.length > 0 ? formData.explanation : null
+      explanation: formData.explanation.length > 0 ? formData.explanation : null,
+      userId:session?.user.id
     }
 
     const { error } = await supabase
@@ -379,6 +381,7 @@ export default function Component() {
   }
 
 
+  const { data: session, status } = useSession();
 
 
 
@@ -673,6 +676,11 @@ export default function Component() {
           )}
         </div>
         <Button type="submit">レポート提出</Button>
+        {status === "loading" ? (
+        <div>Loading...</div>
+      ) : (
+        <SessionData session={session} />
+      )}
       </form>
 
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
@@ -693,7 +701,9 @@ export default function Component() {
             >
               閉じる
             </Button>
+           
           </div>
+
         </DialogContent>
       </Dialog>
 

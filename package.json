@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/core": "^0.37.0",
+    "@auth/prisma-adapter": "^2.7.0",
     "@auth/supabase-adapter": "^1.5.3",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.20.0",

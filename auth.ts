@@ -1,55 +1,57 @@
 import NextAuth, { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
-import Github from "next-auth/providers/github";
+import github from "next-auth/providers/github";
 import authConfig from "@/auth.config";
+import { db } from "./lib/db";
 
 
-
-import { LoginSchema } from "@/schemas";
-
-export default {
-    providers: [
-        Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        }),
-        Github({
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        }),
-        Credentials({
-            credentials: {
-                email: { label: "メールアドレス", type: "email" },
-                password: { label: "パスワード", type: "password" },
-            },
-            async authorize(credentials) {
-                const validatedFields = LoginSchema.safeParse(credentials);
-
-                if (!validatedFields.success) {
-                    return null;
-                }
-
-                const { email, password } = validatedFields.data;
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/token`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: `email_address=${email}&password=${password}`
-                });
-
-                const token = await res.json();
-
-                if (token) {
-                    return { email: email as string, accessToken: token.access_token };
-                }
-                return null;
-            },
-        }),
-    ],
-    secret: process.env.AUTH_SECRET,
-} satisfies NextAuthConfig;
-
+export const config: NextAuthConfig = { // 修正: コロンの後にイコールを追加
+  theme: {
+    logo: "/icon-512.webp"
+  },
+  providers: [
+    Credentials({
+      credentials: {
+        username: { label: "Username" },
+        password: { label: "Password", type: "password" },
+      },
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    github({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    }),
+  ], 
+  basePath: "/api/auth",
+  pages: {
+    signIn: "/login", // カスタムログインページのパス
+  },
+  
+  callbacks: {
+    authorized({ request, auth }){
+        try {
+            const { pathname } = request.nextUrl;
+            const protectedPaths = ["/settings", "/create","/reports", "/analytics"];
+            if(protectedPaths.includes(pathname)) return !!auth;
+            return true;
+        } catch (error) {
+            console.log(error)
+        }
+    },
+   async jwt({token,user}){
+    if (user) { // User is available during sign-in
+      token.id = user.id
+    }
+    return token
+  },
+  },
+};
 export const { handlers, auth, signIn, signOut} =  NextAuth({
   session: { strategy: 'jwt' },
   ...authConfig,
-});
+}
+);

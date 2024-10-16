@@ -5,9 +5,14 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { getUserByEmail } from '@/data/user';
 import { RegisterSchema } from "@/schemas"; 
+import { redirect } from 'next/navigation';
+//import { PrismaClient } from '@prisma/client';
+
 
 
 export const register = async( values: z.infer<typeof RegisterSchema> ) =>{
+    
+ 
     const validatedFields = RegisterSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -31,10 +36,10 @@ export const register = async( values: z.infer<typeof RegisterSchema> ) =>{
         },
     });
 
-
+    redirect('/login');
     //TODO: send varification token Email
 
-    return { success: "新規登録完了！"};
+    
     
 }
 
