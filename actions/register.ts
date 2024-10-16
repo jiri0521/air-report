@@ -35,13 +35,13 @@ try {
             email,
             password: hashedPassword,
         },
-    });
+        
+    })
+    return { success: "Logged in successfully!" };
+    
 } catch (error) {
     throw error;
-  }
-
-  redirect('/login');
-    
-    
+  }  
 }
 
+ redirect('/login');

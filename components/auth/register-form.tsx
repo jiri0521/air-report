@@ -44,7 +44,7 @@ const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     register(values)
         .then ((data) => {
             setError(data.error);
-            //setSuccess(data.success);
+            setSuccess(data.success);
         })
     });
 }
