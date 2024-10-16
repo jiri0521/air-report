@@ -10,11 +10,22 @@ import {
 import { SignIn, SignOut } from "@/components/auth-components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserRound } from "lucide-react"
-
+import Link from "next/link"
 
 export default async function UserButton() {
-    const session = await auth();
-    if (!session?.user) return <SignIn provider="google"/>;
+    
+  const session = await auth();
+   // ユーザーがログインしていない場合
+  if (!session?.user) {
+    return (
+      <div>
+        <Link href="/login">
+          <Button className="bg-red-400 rouded-xl">ログイン</Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="flex gap-2 items-center">
       <span className="hidden text-sm sm:inline-flex"></span>
