@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { SignIn, SignOut } from "@/components/auth-components";
+import { SignOut } from "@/components/auth-components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserRound } from "lucide-react"
 import Link from "next/link"
