@@ -5,7 +5,6 @@ import github from "next-auth/providers/github";
 import authConfig from "@/auth.config";
 
 
-
 export const config: NextAuthConfig = { // 修正: コロンの後にイコールを追加
   theme: {
     logo: "/icon-512.webp"
@@ -48,6 +47,7 @@ export const config: NextAuthConfig = { // 修正: コロンの後にイコー�
     }
     return token
   },
+  
   },
 };
 export const { handlers, auth, signIn, signOut} =  NextAuth({
