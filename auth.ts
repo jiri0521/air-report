@@ -3,7 +3,7 @@ import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import github from "next-auth/providers/github";
 import authConfig from "@/auth.config";
-import { db } from "./lib/db";
+
 
 
 export const config: NextAuthConfig = { // 修正: コロンの後にイコールを追加
@@ -44,7 +44,7 @@ export const config: NextAuthConfig = { // 修正: コロンの後にイコー�
     },
    async jwt({token,user}){
     if (user) { // User is available during sign-in
-      token.id = user.id
+      token.sub = user.id
     }
     return token
   },

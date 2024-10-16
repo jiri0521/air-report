@@ -19,6 +19,7 @@ export const register = async( values: z.infer<typeof RegisterSchema> ) =>{
         return{error: "Invalid Fields"};
     }
 
+try {
     const { email, password, name } = validatedFields.data;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -35,10 +36,11 @@ export const register = async( values: z.infer<typeof RegisterSchema> ) =>{
             password: hashedPassword,
         },
     });
+} catch (error) {
+    throw error;
+  }
 
-    redirect('/login');
-    //TODO: send varification token Email
-
+  redirect('/login');
     
     
 }
