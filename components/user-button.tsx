@@ -9,7 +9,7 @@ import {
 } from "./ui/dropdown-menu";
 import { SignOut } from "@/components/auth-components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserRound } from "lucide-react"
+import { Settings, UserRound } from "lucide-react"
 import Link from "next/link"
 
 export default async function UserButton() {
@@ -48,7 +48,12 @@ export default async function UserButton() {
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{session.user.name}</p>
               <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
-            </div>
+              <Link href="/settings">
+              
+                <Button className="bg-orange-100 py-2 w-full rounded-md leading-none text-muted-foreground hover:bg-orange-400 hover:text-black" >
+                  設定　<Settings className="text-gray-500" /></Button>
+              </Link>
+              </div>
           </DropdownMenuLabel>
           <DropdownMenuItem>
             <SignOut />

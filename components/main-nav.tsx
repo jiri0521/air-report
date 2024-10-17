@@ -3,7 +3,7 @@
 import CustomLink from "@/components/costum-link";
 import React from "react";
 import { usePathname } from "next/navigation";
-import { HomeIcon, AlertTriangle, FileText, PieChart, Settings } from "lucide-react";
+import { HomeIcon, AlertTriangle, FileText, PieChart } from "lucide-react";
 
 export function MainNav() {
     const pathname = usePathname();
@@ -24,10 +24,7 @@ export function MainNav() {
                 </CustomLink>
                 <CustomLink href="/analytics">
                     <div className={`hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
-                </CustomLink>
-                <CustomLink href="/settings">
-                    <div className={`hover:text-blue-400 ${isActive('/settings') ? 'border-b-2 border-blue-500' : ''}`}>設定</div>
-                </CustomLink>
+                </CustomLink>               
             </div>
 
             <div className="flex items-center md:hidden space-x-4"> {/* スマホ用のメニュー */}
@@ -54,13 +51,7 @@ export function MainNav() {
                         <PieChart className="text-green-500" />
                         <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
                     </div>
-                </CustomLink>
-                <CustomLink href="/settings">
-                    <div className={`md:hidden text-center`}>
-                        <Settings className="text-gray-500" />
-                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/settings') ? 'border-b-2 border-blue-500' : ''}`}>設定</div>
-                    </div>
-                </CustomLink>
+                </CustomLink>                
             </div>
         </div>
     );
