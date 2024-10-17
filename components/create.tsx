@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { useSession } from "next-auth/react";
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
