@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js"
 import IncidentForm from './incident-form'
+import { debounce } from 'lodash'
 
 // Supabaseクライアントの初期化
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
@@ -57,6 +58,7 @@ export default function ReportListPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [sortField, setSortField] = useState<keyof Incident>('occurrenceDateTime')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
   const [filterCategory, setFilterCategory] = useState('all')
@@ -78,8 +80,9 @@ export default function ReportListPage() {
         .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1)
         .order(sortField, { ascending: sortOrder === 'asc' })
 
-      if (searchTerm) {
-        query = query.or(`details.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%,involvedPartyProfession.ilike.%${searchTerm}%`)
+
+      if (debouncedSearchTerm) {
+        query = query.or(`details.ilike.%${debouncedSearchTerm}%,category.ilike.%${debouncedSearchTerm}%,involvedPartyProfession.ilike.%${debouncedSearchTerm}%`)
       }
 
       if (filterCategory !== 'all') {
@@ -101,12 +104,22 @@ export default function ReportListPage() {
 
   useEffect(() => {
     fetchIncidents()
-  }, [currentPage, searchTerm, sortField, sortOrder, filterCategory])
+  }, [currentPage,  debouncedSearchTerm, sortField, sortOrder, filterCategory])
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
+ // Debounce the search term
+ const debouncedSetSearchTerm = useCallback(
+  debounce((value: string) => {
+    setDebouncedSearchTerm(value)
     setCurrentPage(1)
-  }
+  }, 1000),
+  []
+)
+
+const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value
+  setSearchTerm(value)
+  debouncedSetSearchTerm(value)
+}
 
   const handleSort = (field: keyof Incident) => {
     if (field === sortField) {
