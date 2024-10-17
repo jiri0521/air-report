@@ -1,47 +1,34 @@
 "use server";
 
-import * as z from "zod";
+import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import { getUserByEmail } from '@/data/user';
-import { RegisterSchema } from "@/schemas"; 
-import { redirect } from 'next/navigation';
-//import { PrismaClient } from '@prisma/client';
+import { RegisterSchema } from "@/schemas";
 
+export async function register(values: z.infer<typeof RegisterSchema>) {
+  const { email, password, name } = values;
 
+  // メールアドレスの重複チェック
+  const existingUser = await db.user.findUnique({
+    where: { email },
+  });
+  if (existingUser) {
+    return { error: "このメールアドレスは既に登録されています" };
+  }
 
-export const register = async( values: z.infer<typeof RegisterSchema> ) =>{
-    
- 
-    const validatedFields = RegisterSchema.safeParse(values);
+  // パスワードのハッシュ化
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!validatedFields.success) {
-        return{error: "Invalid Fields"};
-    }
+  // ユーザーの作成
+  const newUser = await db.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      name,
+    },
+  });
 
-try {
-    const { email, password, name } = validatedFields.data;
-    const hashedPassword = await bcrypt.hash(password, 10);
+  return { success:"アカウントの作成に成功しました" };
 
-    const exsistingUser = await getUserByEmail(email);  
-
-    if (exsistingUser) {
-        return { error: "そのメールアドレスはすでに使用されています" }
-    }
-
-    await db.user.create({
-        data: {
-            name,
-            email,
-            password: hashedPassword,
-        },
-        
-    })
-    return { success: "Logged in successfully!" };
-    
-} catch (error) {
-    throw error;
-  }  
+  
 }
-
- redirect('/login');
