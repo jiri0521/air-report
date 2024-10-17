@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useSession } from "next-auth/react";
 import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
@@ -208,7 +208,7 @@ const professions = [
   '事務員',
 ]
 export default function Component() {
- 
+  
 
   const [formData, setFormData] = useState<Incident>({
     patientGender: '',

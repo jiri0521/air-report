@@ -54,7 +54,7 @@ const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
         headerLabel="アカウント作成"
         backButtonLabel="ログインはこちら➡︎"
         backButtonHref="/login"
-        showSocial
+        //showSocial
     >
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}
