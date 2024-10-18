@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -8,19 +8,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Calendar, Repeat, TrendingUp } from "lucide-react"
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts'
 
+interface AnalyticsData {
+  totalIncidents: { current: number; previous: number }
+  severeIncidents: { current: number; previous: number }
+  recurrenceRate: { current: number; previous: number }
+  trendData: Array<{ name: string; incidents: number }>
+  categoryData: Array<{ category: string; incidents: number }>
+  severityData: Array<{ name: string; value: number }>
+  crossAnalysisData: Record<string, Record<string, number>>
+  timeOfDayData: Array<{ hour: string; incidents: number }>
+}
+
 export function Analytics() {
   const [dateRange, setDateRange] = useState("last30days")
   const [department, setDepartment] = useState("all")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const [analyticsData, setAnalyticsData] = useState<any>(null)
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
 
-  useEffect(() => {
-    fetchData()
-  }, [dateRange, department])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
 
@@ -29,7 +36,7 @@ export function Analytics() {
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data')
       }
-      const data = await response.json()
+      const data: AnalyticsData = await response.json()
       setAnalyticsData(data)
     } catch (err) {
       setError('データの取得中にエラーが発生しました。')
@@ -37,7 +44,11 @@ export function Analytics() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [dateRange, department])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const calculatePercentageChange = (current: number, previous: number) => {
     if (previous === 0) return current > 0 ? 100 : 0
@@ -51,20 +62,20 @@ export function Analytics() {
 
     const { trendData, categoryData, severityData, crossAnalysisData, timeOfDayData } = analyticsData
 
-    const monthlyData = trendData.map((item: any) => [item.name, item.incidents])
-    const categoryDataCSV = categoryData.map((item: any) => [item.category, item.incidents])
-    const severityDataCSV = severityData.map((item: any) => [item.name, item.value])
+    const monthlyData = trendData.map(item => [item.name, item.incidents])
+    const categoryDataCSV = categoryData.map(item => [item.category, item.incidents])
+    const severityDataCSV = severityData.map(item => [item.name, item.value])
     
     const orderedLevels = ['レベル1', 'レベル2', 'レベル3a', 'レベル3b', 'レベル4', 'レベル5']
     const crossAnalysisCSV = [
       ['カテゴリー', ...orderedLevels],
-      ...Object.entries(crossAnalysisData).map(([category, levels]: [string, any]) => [
+      ...Object.entries(crossAnalysisData).map(([category, levels]) => [
         category,
         ...orderedLevels.map(level => levels[level] || 0)
       ])
     ]
 
-    const timeOfDayCSV = timeOfDayData.map((item: any) => [item.hour, item.incidents])
+    const timeOfDayCSV = timeOfDayData.map(item => [item.hour, item.incidents])
 
     const csvContent = [
       ['月別インシデント件数'],
@@ -105,7 +116,7 @@ export function Analytics() {
   }
 
   if (error) {
-    return <div className="flex justify-center items-center h-screen  text-red-500">{error}</div>
+    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>
   }
 
   if (!analyticsData) {
@@ -118,12 +129,12 @@ export function Analytics() {
 
   const sortedPieChartData = orderedLevels
     .map(level => {
-      const found = severityData.find((entry: any) => entry.name === level)
+      const found = severityData.find(entry => entry.name === level)
       return found ? found : { name: level, value: 0 }
     })
-    .filter((entry: any) => entry.value > 0)
+    .filter(entry => entry.value > 0)
 
-  const crossAnalysisChartData = Object.entries(crossAnalysisData).map(([category, levels]: [string, any]) => ({
+  const crossAnalysisChartData = Object.entries(crossAnalysisData).map(([category, levels]) => ({
     category,
     ...levels,
   }))
@@ -143,6 +154,18 @@ export function Analytics() {
               <SelectItem value="last30days">過去30日間</SelectItem>
               <SelectItem value="last3months">過去3ヶ月間</SelectItem>
               <SelectItem value="lastyear">過去1年間</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={department} onValueChange={setDepartment}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="部門を選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">全部門</SelectItem>
+              <SelectItem value="internal">内科</SelectItem>
+              <SelectItem value="surgery">外科</SelectItem>
+              <SelectItem value="pediatrics">小児科</SelectItem>
+              <SelectItem value="emergency">救急</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -260,7 +283,7 @@ export function Analytics() {
                     dataKey="value"
                     label={({ name, value }) => `${name}: ${value}件`}
                   >
-                    {sortedPieChartData.map((entry: any, index: number) => (
+                    {sortedPieChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -292,14 +315,14 @@ export function Analytics() {
                   stackOffset="expand"
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => `${(value * 100).toFixed(0)}%`} />
+                  <XAxis type="number" tickFormatter={(value) =>   `${(value * 100).toFixed(0)}%`} />
                   <YAxis dataKey="category" type="category" />
                   <Tooltip content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const totalValue = payload.reduce((sum, entry) => sum + (entry.value as number), 0);
                       return (
                         <div className="bg-white p-2 border">
-                          {payload.map((entry: any, index: number) => (
+                          {payload.map((entry, index) => (
                             <p key={index} style={{ color: entry.color }}>
                               {`${entry.name}: ${entry.value} (${((entry.value as number / totalValue) * 100).toFixed(1)}%)`}
                             </p>
