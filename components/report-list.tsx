@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect,useCallback } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,8 +16,7 @@ import party from "party-js"
 import IncidentForm from './incident-form'
 import { debounce } from 'lodash'
 
-// Supabaseクライアントの初期化
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
 
 export type Incident = {
   id: number
@@ -74,27 +72,13 @@ export default function ReportListPage() {
     setIsLoading(true)
     setError(null)
     try {
-      let query = supabase
-        .from('incidents')
-        .select('*', { count: 'exact' })
-        .range((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage - 1)
-        .order(sortField, { ascending: sortOrder === 'asc' })
-
-
-      if (debouncedSearchTerm) {
-        query = query.or(`details.ilike.%${debouncedSearchTerm}%,category.ilike.%${debouncedSearchTerm}%,involvedPartyProfession.ilike.%${debouncedSearchTerm}%`)
+      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch incidents')
       }
-
-      if (filterCategory !== 'all') {
-        query = query.eq('category', filterCategory)
-      }
-
-      const { data, error, count } = await query
-
-      if (error) throw error
-
-      setIncidents(data || [])
-      setTotalPages(Math.ceil((count || 0) / itemsPerPage))
+      const data = await response.json()
+      setIncidents(data.incidents)
+      setTotalPages(data.totalPages)
     } catch (err) {
       setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
     } finally {
@@ -148,12 +132,17 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const handleUpdateIncident = async (updatedIncident: Incident) => {
     try {
-      const { error } = await supabase
-        .from('incidents')
-        .update(updatedIncident)
-        .eq('id', updatedIncident.id)
+      const response = await fetch(`/api/incidents/${updatedIncident.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedIncident),
+      })
 
-      if (error) throw error
+      if (!response.ok) {
+        throw new Error('Failed to update incident')
+      }
 
       setIncidents(incidents.map(inc => inc.id === updatedIncident.id ? updatedIncident : inc))
       party.confetti(document.body, {
@@ -180,7 +169,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>
   if (error) return <div>エラーが発生しました: {error}</div>
 
   return (
