@@ -1,9 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Incident } from '@prisma/client';
 import { auth } from "@/auth";
 
-
 const prisma = new PrismaClient();
+
+interface IncidentWithDateTime {
+  occurrenceDateTime: Date;
+}
+
+interface IncidentWithCategory {
+  category: string;
+}
+
+interface IncidentWithImpactLevel {
+  impactLevel: string;
+}
+
+interface IncidentWithCategoryAndImpactLevel {
+  category: string;
+  impactLevel: string;
+}
+
+interface RecurringIncident {
+  id: number;
+  category: string;
+  location: string;
+  occurrenceDateTime: Date;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,7 +37,6 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const dateRange = searchParams.get('dateRange') || 'last30days';
-   
 
     const dateRangeStart = getDateRangeStart(dateRange);
     const previousPeriodStart = getPreviousPeriodStart(dateRangeStart);
@@ -54,6 +76,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
 
 function getDateRangeStart(dateRange: string): Date {
   const now = new Date();
@@ -118,22 +141,23 @@ async function fetchSevereIncidents(dateRangeStart: Date, previousPeriodStart: D
 }
 
 async function fetchTrendData(dateRangeStart: Date) {
-  const incidents = await prisma.incident.findMany({
-    where: { occurrenceDateTime: { gte: dateRangeStart } },
-    select: { occurrenceDateTime: true }
-  });
-
-  const trendData = incidents.reduce((acc: { [key: string]: number }, incident) => {
-    const date = new Date(incident.occurrenceDateTime);
-    const key = date.toLocaleString('default', { month: 'long', year: 'numeric' });
-    acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {});
-
-  return Object.entries(trendData)
-    .map(([name, incidents]) => ({ name, incidents }))
-    .sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime());
-}
+    const incidents = await prisma.incident.findMany({
+      where: { occurrenceDateTime: { gte: dateRangeStart } },
+      select: { occurrenceDateTime: true }
+    });
+  
+    const trendData = incidents.reduce((acc: Record<string, number>, incident: IncidentWithDateTime) => {
+      const date = new Date(incident.occurrenceDateTime);
+      const key = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+  
+    return Object.entries(trendData)
+      .map(([name, incidents]) => ({ name, incidents }))
+      .sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime());
+  }
+  
 
 async function fetchCategoryData(dateRangeStart: Date) {
   const incidents = await prisma.incident.findMany({
@@ -201,25 +225,26 @@ async function fetchRecurrenceRate(dateRangeStart: Date, previousPeriodStart: Da
   return { current: currentRate, previous: previousRate };
 }
 
-function calculateRecurrenceRate(incidents: any[]): number {
-  const totalIncidents = incidents.length;
-  if (totalIncidents === 0) return 0;
-
-  const recurringIncidents = incidents.filter(incident => 
-    isRecurring(incident, incidents)
-  ).length;
-
-  return (recurringIncidents / totalIncidents) * 100;
-}
-
-function isRecurring(incident: any, allIncidents: any[]): boolean {
-  return allIncidents.some(otherIncident => 
-    otherIncident.id !== incident.id &&
-    otherIncident.category === incident.category &&
-    otherIncident.location === incident.location &&
-    new Date(otherIncident.occurrenceDateTime) < new Date(incident.occurrenceDateTime)
-  );
-}
+function calculateRecurrenceRate(incidents: RecurringIncident[]): number {
+    const totalIncidents = incidents.length;
+    if (totalIncidents === 0) return 0;
+  
+    const recurringIncidents = incidents.filter(incident => 
+      isRecurring(incident, incidents)
+    ).length;
+  
+    return (recurringIncidents / totalIncidents) * 100;
+  }
+  
+  function isRecurring(incident: RecurringIncident, allIncidents: RecurringIncident[]): boolean {
+    return allIncidents.some(otherIncident => 
+      otherIncident.id !== incident.id &&
+      otherIncident.category === incident.category &&
+      otherIncident.location === incident.location &&
+      new Date(otherIncident.occurrenceDateTime) < new Date(incident.occurrenceDateTime)
+    );
+  }
+  
 
 async function fetchTimeOfDayData(dateRangeStart: Date) {
   const incidents = await prisma.incident.findMany({

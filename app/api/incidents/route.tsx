@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { auth } from "@/auth";
 
-
 const prisma = new PrismaClient()
+
+interface WhereClause {
+  OR?: Array<{
+    details?: { contains: string; mode: 'insensitive' };
+    category?: { contains: string; mode: 'insensitive' };
+    involvedPartyProfession?: { contains: string; mode: 'insensitive' };
+  }>;
+  category?: string;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -22,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * perPage
 
-    const whereClause: any = {}
+    const whereClause: WhereClause = {}
 
     if (search) {
       whereClause.OR = [
@@ -41,7 +49,7 @@ export async function GET(req: NextRequest) {
         where: whereClause,
         skip,
         take: perPage,
-        orderBy: { [sortField]: sortOrder },
+        orderBy: { [sortField]: sortOrder as 'asc' | 'desc' },
       }),
       prisma.incident.count({ where: whereClause }),
     ])
