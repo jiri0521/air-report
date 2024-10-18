@@ -145,18 +145,6 @@ export function Analytics() {
               <SelectItem value="lastyear">過去1年間</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={department} onValueChange={setDepartment}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="部門を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">全部門</SelectItem>
-              <SelectItem value="internal">内科</SelectItem>
-              <SelectItem value="surgery">外科</SelectItem>
-              <SelectItem value="pediatrics">小児科</SelectItem>
-              <SelectItem value="emergency">救急</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
         <Button onClick={handleExportCSV}>
           <Calendar className="mr-2 h-4 w-4" />

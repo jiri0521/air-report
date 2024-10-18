@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * perPage
 
-    let whereClause: any = {}
+    const whereClause: any = {}
 
     if (search) {
       whereClause.OR = [

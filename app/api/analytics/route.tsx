@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const dateRange = searchParams.get('dateRange') || 'last30days';
-    const department = searchParams.get('department') || 'all';
+   
 
     const dateRangeStart = getDateRangeStart(dateRange);
     const previousPeriodStart = getPreviousPeriodStart(dateRangeStart);
