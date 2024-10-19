@@ -9,14 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen } from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js"
 import IncidentForm from './incident-form'
 import { debounce } from 'lodash'
-
-
+import { useSession } from 'next-auth/react'
+import { toast } from "@/hooks/use-toast"
 
 export type Incident = {
   id: number
@@ -49,6 +49,7 @@ export type Incident = {
   cooperation: string[] | null
   explanation: string[] | null
   countermeasures: string | null
+  isDeleted: Boolean
 }
 
 export default function ReportListPage() {
@@ -68,11 +69,14 @@ export default function ReportListPage() {
  
   const itemsPerPage = 10
 
+  const [showDeleted, setShowDeleted] = useState(false)
+  const { data: session } = useSession()
+
   const fetchIncidents = async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}`)
+      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}`)
       if (!response.ok) {
         throw new Error('Failed to fetch incidents')
       }
@@ -88,7 +92,7 @@ export default function ReportListPage() {
 
   useEffect(() => {
     fetchIncidents()
-  }, [currentPage,  debouncedSearchTerm, sortField, sortOrder, filterCategory])
+  }, [currentPage, debouncedSearchTerm, sortField, sortOrder, filterCategory, showDeleted])
 
  // Debounce the search term
  const debouncedSetSearchTerm = useCallback(
@@ -167,7 +171,52 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     return highImpactLevels.includes(impactLevel) ? 'bg-pink-100 dark:bg-gray-600 text-pink-400' : ''
   }
 
-  
+  const handleDelete = async (incident: Incident) => {
+    if (confirm('このインシデントを削除しますか？')) {
+      try {
+        const response = await fetch(`/api/incidents?id=${incident.id}`, {
+          method: 'DELETE',
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to delete incident')
+        }
+
+        fetchIncidents()
+      } catch (err) {
+        console.error('Error deleting incident:', err)
+      }
+    }
+  }
+
+  const handleRestore = async (incident: Incident) => {
+    if (confirm('このインシデントを復元しますか？')) {
+      try {
+        const response = await fetch(`/api/restore-incidents?id=${incident.id}`, {
+          method: 'PUT',
+        })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to restore incident')
+      }
+
+      await fetchIncidents()
+      toast({
+        title: "インシデントが復元されました",
+        description: "インシデントが正常に復元されました。",
+        variant: "default",
+      })
+    } catch (err) {
+      console.error('Error restoring incident:', err)
+      toast({
+        title: "エラー",
+        description: err instanceof Error ? err.message : "インシデントの復元中にエラーが発生しました。",
+        variant: "destructive",
+      })
+    }
+  }}
+
 
   if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>
   if (error) return <div>エラーが発生しました: {error}</div>
@@ -209,6 +258,17 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               </SelectContent>
             </Select>
           </div>
+          {session?.user.role === 'ADMIN' && (
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="show-deleted">削除済みを表示</Label>
+              <input
+                type="checkbox"
+                id="show-deleted"
+                checked={showDeleted}
+                onChange={(e) => setShowDeleted(e.target.checked)}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -240,6 +300,9 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('involvedPartyProfession')}>当事者職種</Button>
               </TableHead>
               <TableHead className="w-[80px] text-sm">編集</TableHead>
+              {session?.user.role === 'ADMIN' && (
+              <TableHead className="w-[80px] text-sm">操作</TableHead>
+            )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -279,6 +342,29 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <Pen className='text-green-500'/>
                   </Button>
                 </TableCell>
+                {session?.user.role === 'ADMIN' && (
+                  <TableCell>
+                    {incident.isDeleted ? (
+                      <Button variant="outline" size="sm" onClick={() => handleRestore(incident)}>
+                        <div className="relative inline-block w-7 h-7"> {/* アイコンのコンテナ */}
+                          <CloudUpload className="w-full h-full text-blue-200" /> {/* アイコン */}
+                          <span className="absolute inset-0 flex items-center justify-center text-blue-700 font-bold pointer-events-none">
+                            {"復元"}
+                          </span> {/* 中央に配置されたテキスト */}
+                        </div>
+                      </Button>
+                    ) : (
+                      <Button variant="outline" size="sm" onClick={() => handleDelete(incident)}>
+                        <div className="relative inline-block w-7 h-7"> {/* アイコンのコンテナ */}
+                          <Trash2 className="w-full h-full text-red-200" /> {/* アイコン */}
+                          <span className="absolute inset-0 flex items-center justify-center text-red-500 font-bold pointer-events-none">
+                            {"削除"}
+                          </span> {/* 中央に配置されたテキスト */}
+                        </div>
+                      </Button>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
@@ -452,6 +538,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               system: selectedIncident.system || [], // ここを修正
               cooperation: selectedIncident.cooperation || [], // ここを修正
               explanation: selectedIncident.explanation || [], // ここを修正
+              
             }}
               onSubmit={handleUpdateIncident}
               onCancel={() => setIsEditDialogOpen(false)}

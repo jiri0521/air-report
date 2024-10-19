@@ -41,6 +41,7 @@ type Incident = {
   cooperation: string[]
   explanation: string[]
   countermeasures: string | null
+  isDeleted: Boolean
 }
 
 type FactorsCheckboxesProps = {

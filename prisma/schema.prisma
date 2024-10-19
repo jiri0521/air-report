@@ -42,7 +42,7 @@ model Incident {
   countermeasures            String? // New field for countermeasures (optional)
   userId                  String?
   user                    User?    @relation(fields: [userId], references: [id])
-
+  isDeleted               Boolean  @default(false)
 
   @@map("incidents") // これにより、このモデルがデータベースの "incidents" テーブルにマッピングされる
 }
