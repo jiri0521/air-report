@@ -49,7 +49,7 @@ export type Incident = {
   cooperation: string[] | null
   explanation: string[] | null
   countermeasures: string | null
-  isDeleted: Boolean
+  isDeleted: boolean
 }
 
 export default function ReportListPage() {
