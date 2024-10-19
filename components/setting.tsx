@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Download, Upload } from 'lucide-react'
+import { Download } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
 
