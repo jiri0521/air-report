@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, Incident } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
@@ -8,18 +8,6 @@ interface IncidentWithDateTime {
   occurrenceDateTime: Date;
 }
 
-interface IncidentWithCategory {
-  category: string;
-}
-
-interface IncidentWithImpactLevel {
-  impactLevel: string;
-}
-
-interface IncidentWithCategoryAndImpactLevel {
-  category: string;
-  impactLevel: string;
-}
 
 interface RecurringIncident {
   id: number;

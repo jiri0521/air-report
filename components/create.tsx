@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import { useSession } from "next-auth/react";
-import { createClient } from '@supabase/supabase-js'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,9 +20,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import party from "party-js";
 import SessionData from "@/components/session-data";
 
-
-// Supabaseクライアントの初期化
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
 
 type Incident = {
@@ -291,26 +287,36 @@ export default function Component() {
     e.preventDefault()
     const formattedData = {
       ...formData,
-      cause: formData.cause.length > 0 ? formData.cause : null,
-      involvedPartyFactors: formData.involvedPartyFactors.length > 0 ? formData.involvedPartyFactors : null,
-      workBehavior: formData.workBehavior.length > 0 ? formData.workBehavior : null,
-      physicalCondition: formData.physicalCondition.length > 0 ? formData.physicalCondition : null,
-      psychologicalState: formData.psychologicalState.length > 0 ? formData.psychologicalState : null,
-      medicalEquipment: formData.medicalEquipment.length > 0 ? formData.medicalEquipment : null,
-      medication: formData.medication.length > 0 ? formData.medication : null,
-      system: formData.system.length > 0 ? formData.system : null,
-      cooperation: formData.cooperation.length > 0 ? formData.cooperation : null,
-      explanation: formData.explanation.length > 0 ? formData.explanation : null,
-      userId:session?.user.id
+      occurrenceDateTime: formData.occurrenceDateTime ? new Date(formData.occurrenceDateTime).toISOString() : null,
+      reportToDoctor: formData.reportToDoctor ? new Date(formData.reportToDoctor).toISOString() : null,
+      reportToSupervisor: formData.reportToSupervisor ? new Date(formData.reportToSupervisor).toISOString() : null,
+      cause: formData.cause.length > 0 ? formData.cause.join(', ') : '',
+      involvedPartyFactors: formData.involvedPartyFactors.length > 0 ? formData.involvedPartyFactors : [],
+      workBehavior: formData.workBehavior.length > 0 ? formData.workBehavior : [],
+      physicalCondition: formData.physicalCondition.length > 0 ? formData.physicalCondition : [],
+      psychologicalState: formData.psychologicalState.length > 0 ? formData.psychologicalState : [],
+      medicalEquipment: formData.medicalEquipment.length > 0 ? formData.medicalEquipment : [],
+      medication: formData.medication.length > 0 ? formData.medication : [],
+      system: formData.system.length > 0 ? formData.system : [],
+      cooperation: formData.cooperation.length > 0 ? formData.cooperation : [],
+      explanation: formData.explanation.length > 0 ? formData.explanation : [],
+      userId: session?.user.id || ''
     }
 
-    const { error } = await supabase
-      .from('incidents')
-      .insert([formattedData])
+    try {
+      const response = await fetch('/api/incidents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
+      })
 
-    if (error) {
-      console.error('Error inserting incident:', error)
-    } else {
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`Failed to submit incident: ${errorData.error}`)
+      }
+
       setFormData({
         patientGender: '',
         patientAge: '',
@@ -340,13 +346,15 @@ export default function Component() {
         system: [],
         cooperation: [],
         explanation: [],
-        userId:''
+        userId: ''
       })
       setIsSuccessModalOpen(true)
       // Trigger confetti effect
       party.confetti(document.body, {
         count: party.variation.range(50, 200)
       })
+    } catch (error) {
+      console.error('Error inserting incident:', error)
     }
   }
 

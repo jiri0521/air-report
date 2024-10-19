@@ -26,9 +26,9 @@ model Incident {
   lifeThreat                 String
   trustImpact                String
   impactLevel                String
-  cause                      String
+  cause                      String?
   details                    String
-  summary                    String
+  summary                    String?
   workStatus                 String
   involvedPartyFactors       String[]
   workBehavior               String[]

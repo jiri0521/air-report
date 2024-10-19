@@ -84,3 +84,23 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function POST(req: NextRequest) {
+    try {
+      const session = await auth()
+      if (!session) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      }
+  
+      const incidentData = await req.json()
+      
+      const newIncident = await prisma.incident.create({
+        data: incidentData,
+      })
+  
+      return NextResponse.json(newIncident)
+    } catch (error) {
+      console.error('Error creating incident:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
