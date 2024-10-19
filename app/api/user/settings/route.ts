@@ -36,11 +36,12 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = session.user.id;
-    const { emailNotifications, pushNotifications, fontSize, language, theme } = await req.json();
+    const { name, emailNotifications, pushNotifications, fontSize, language, theme } = await req.json();
 
     const updatedSettings = await db.userSettings.upsert({
       where: { userId },
       update: {
+        name,
         emailNotifications,
         pushNotifications,
         fontSize,
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
       },
       create: {
         userId,
+        name,
         emailNotifications,
         pushNotifications,
         fontSize,

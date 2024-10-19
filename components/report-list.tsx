@@ -266,7 +266,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                       </Tooltip>
                     </TooltipProvider>
                   ) : (
-                    <Badge variant="destructive" className="items-center bg-orange-400 text-sm" onClick={() => handleViewDetails(incident)}>
+                    <Badge variant="destructive" className="items-center bg-orange-400 text-sm" onClick={() => handleEdit(incident)}>
                       <AlertTriangle className="w-4 h-4 mr-1" />
                       未対策
                     </Badge>

@@ -10,19 +10,18 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Download } from 'lucide-react'
+import { Download, Upload } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(false)
   const [fontSize, setFontSize] = useState('medium')
   const [language, setLanguage] = useState('日本語')
   const { theme, setTheme } = useTheme()
-  const { data: session, status } =   useSession()
+  const { data: session, status } = useSession()
   const [role, setRole] = useState('ADMIN')
 
   const [mounted, setMounted] = useState(false)
@@ -39,7 +38,6 @@ export default function SettingsPage() {
       if (response.ok) {
         const settings = await response.json()
         setName(settings.name || '')
-        setEmail(settings.email || '')
         setEmailNotifications(settings.emailNotifications)
         setPushNotifications(settings.pushNotifications)
         setFontSize(settings.fontSize)
@@ -60,7 +58,6 @@ export default function SettingsPage() {
         },
         body: JSON.stringify({
           name,
-          email,
           emailNotifications,
           pushNotifications,
           fontSize,
@@ -73,15 +70,17 @@ export default function SettingsPage() {
         toast({
           title: "設定が保存されました",
           description: "変更が正常に適用されました。",
+          variant: "default",
         })
       } else {
-        throw new Error('Failed to save settings')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save settings')
       }
     } catch (error) {
       console.error('Error saving settings:', error)
       toast({
         title: "エラー",
-        description: "設定の保存中にエラーが発生しました。",
+        description: error instanceof Error ? error.message : "設定の保存中にエラーが発生しました。",
         variant: "destructive",
       })
     }
@@ -93,7 +92,6 @@ export default function SettingsPage() {
   }
 
   if (!mounted) return null
-
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
@@ -118,10 +116,6 @@ export default function SettingsPage() {
               <div className="space-y-1">
                 <Label htmlFor="name">名前</Label>
                 <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="email">メールアドレス</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
             </CardContent>
             <CardFooter>
