@@ -75,36 +75,36 @@ export default function ReportListPage() {
 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
-  const fetchIncidents = async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
-      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch incidents')
-      }
-      const data = await response.json()
-      setIncidents(data.incidents)
-      setTotalPages(data.totalPages)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+ const fetchIncidents = useCallback(async () => {
+setIsLoading(true)
+setError(null)
+try {
+const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}`)
+if (!response.ok) {
+throw new Error('Failed to fetch incidents')
+}
+const data = await response.json()
+setIncidents(data.incidents)
+setTotalPages(data.totalPages)
+} catch (err) {
+setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
+} finally {
+setIsLoading(false)
+}
+}, [currentPage, itemsPerPage, sortField, sortOrder, debouncedSearchTerm, filterCategory, showDeleted])
 
   useEffect(() => {
     fetchIncidents()
-  }, [currentPage, debouncedSearchTerm, sortField, sortOrder, filterCategory, showDeleted])
+    }, [currentPage, debouncedSearchTerm, sortField, sortOrder, filterCategory, showDeleted, fetchIncidents])
 
  // Debounce the search term
  const debouncedSetSearchTerm = useCallback(
   debounce((value: string) => {
-    setDebouncedSearchTerm(value)
-    setCurrentPage(1)
+  setDebouncedSearchTerm(value)
+  setCurrentPage(1)
   }, 1000),
-  []
-)
+  [setDebouncedSearchTerm, setCurrentPage]
+  )
 
 const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
   const value = e.target.value
@@ -139,12 +139,20 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const handleUpdateIncident = async (updatedIncident: Incident) => {
     try {
-      const response = await fetch(`/api/incidents/${updatedIncident.id}`, {
+      // Format date-time fields
+      const formattedIncident = {
+        ...updatedIncident,
+        occurrenceDateTime: new Date(updatedIncident.occurrenceDateTime).toISOString(),
+        reportToDoctor: new Date(updatedIncident.reportToDoctor).toISOString(),
+        reportToSupervisor: new Date(updatedIncident.reportToSupervisor).toISOString(),
+      };
+  
+      const response = await fetch(`/api/incidents/${formattedIncident.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedIncident),
+        body: JSON.stringify(formattedIncident),
       })
   
       if (!response.ok) {
@@ -158,9 +166,14 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         count: party.variation.range(20, 200)
       })
       setIsSuccessModalOpen(true)
-      
+      setIsEditDialogOpen(false) // Close the edit dialog after successful update
     } catch (err) {
       console.error('Error updating incident:', err)
+      toast({
+        title: "エラー",
+        description: err instanceof Error ? err.message : "インシデントの更新中にエラーが発生しました。",
+        variant: "destructive",
+      })
     }
   }
 
@@ -557,7 +570,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         <DialogContent >
           <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">
             <DialogHeader className="text-center mb-4">
-              <DialogTitle className="text-xl font-bold text-blue-600">修正成功</DialogTitle>
+              <DialogTitle className="text-xl font-bold text-blue-600">成功</DialogTitle>
               <DialogDescription className="text-gray-600">
                 インシデントレポートが修正されました。
               </DialogDescription>

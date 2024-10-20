@@ -13,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Download } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
+import SessionData from "@/components/session-data";
+import UserList from '@/components/userList';
 
 export default function SettingsPage() {
   const [name, setName] = useState('')
@@ -25,12 +27,19 @@ export default function SettingsPage() {
   const [role, setRole] = useState('ADMIN')
 
   const [mounted, setMounted] = useState(false)
+
+
   useEffect(() => {
-    setMounted(true)
+    setMounted(true);
+  
     if (status === 'authenticated' && session?.user) {
-      fetchUserSettings()
+      fetchUserSettings();  // ユーザー設定を取得
+      if (role !== session.user.role) {  // roleが異なる場合のみセット
+        setRole(session.user.role);      // roleの設定
+      }
     }
-  }, [status, session])
+  
+  }, [status, session]);  // roleは依存配列から削除
 
   const fetchUserSettings = async () => {
     try {
@@ -91,6 +100,8 @@ export default function SettingsPage() {
     console.log('Exporting data...')
   }
 
+  
+
   if (!mounted) return null
 
   return (
@@ -103,7 +114,7 @@ export default function SettingsPage() {
           <TabsTrigger value="notifications">通知</TabsTrigger>
           <TabsTrigger value="display">表示</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
-          {role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
+          {session?.user.role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="profile">
@@ -211,21 +222,23 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        {role === 'ADMIN' && (
+        {session?.user.role === 'ADMIN' && (
           <TabsContent value="permissions">
-            <Card className='dark:border-white'>
-              <CardHeader>
-                <CardTitle>権限管理</CardTitle>
-                <CardDescription>ユーザーの権限を管理します。</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {/* Implement user permission management UI here */}
-                <p>この機能は管理者のみが利用できます。ユーザー権限の管理UIをここに実装してください。</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <Card className='dark:border-white'>
+            <CardHeader>
+              <CardTitle>権限管理</CardTitle>
+              <CardDescription>ユーザーの権限を管理します。</CardDescription>
+              <UserList />
+            </CardHeader>
+            <CardContent>
+              <UserList/>
+            </CardContent>
+          </Card>
+        </TabsContent>
         )}
       </Tabs>
+      <br></br><br></br>
+      <SessionData session={session} />
     </div>
   )
 }

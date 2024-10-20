@@ -9,6 +9,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { format, parseISO } from 'date-fns'
+import { ja } from 'date-fns/locale'
+
 
 type Incident = {
   id: number
@@ -371,16 +374,7 @@ type IncidentFormProps = {
           type="datetime-local"
           id="occurrenceDateTime"
           name="occurrenceDateTime"
-          value={formData.occurrenceDateTime}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div>
-        <Label htmlFor="location">発生場所</Label>
-        <Input
-          id="location"
-          name="location"
-          value={formData.location}
+          value={formData.occurrenceDateTime ? format(parseISO(formData.occurrenceDateTime), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
         />
       </div>
@@ -390,7 +384,7 @@ type IncidentFormProps = {
           type="datetime-local"
           id="reportToDoctor"
           name="reportToDoctor"
-          value={formData.reportToDoctor}
+          value={formData.reportToDoctor ? format(parseISO(formData.reportToDoctor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
         />
       </div>
@@ -400,7 +394,7 @@ type IncidentFormProps = {
           type="datetime-local"
           id="reportToSupervisor"
           name="reportToSupervisor"
-          value={formData.reportToSupervisor}
+          value={formData.reportToSupervisor ? format(parseISO(formData.reportToSupervisor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
         />
       </div>

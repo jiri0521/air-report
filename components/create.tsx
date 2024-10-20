@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import party from "party-js";
-import SessionData from "@/components/session-data";
+
 
 
 
@@ -684,11 +684,6 @@ export default function Component() {
           )}
         </div>
         <Button type="submit">レポート提出</Button>
-        {status === "loading" ? (
-        <div>Loading...</div>
-      ) : (
-        <SessionData session={session} />
-      )}
       </form>
 
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
