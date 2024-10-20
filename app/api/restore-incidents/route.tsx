@@ -7,6 +7,7 @@ import { auth } from "@/auth";
 const prisma = new PrismaClient()
 export const dynamic = 'force-dynamic'
 
+
 interface WhereClause {
   OR?: Array<{
     details?: { contains: string; mode: 'insensitive' };
