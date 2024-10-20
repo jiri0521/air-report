@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +17,7 @@ import IncidentForm from './incident-form'
 import { debounce } from 'lodash'
 import { useSession } from 'next-auth/react'
 import { toast } from "@/hooks/use-toast"
+
 
 export type Incident = {
   id: number
@@ -71,6 +72,8 @@ export default function ReportListPage() {
 
   const [showDeleted, setShowDeleted] = useState(false)
   const { data: session } = useSession()
+
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   const fetchIncidents = async () => {
     setIsLoading(true)
@@ -143,16 +146,19 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         },
         body: JSON.stringify(updatedIncident),
       })
-
+  
       if (!response.ok) {
-        throw new Error('Failed to update incident')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update incident')
       }
-
-      setIncidents(incidents.map(inc => inc.id === updatedIncident.id ? updatedIncident : inc))
+  
+      const updatedData = await response.json()
+      setIncidents(incidents.map(inc => inc.id === updatedData.id ? updatedData : inc))
       party.confetti(document.body, {
         count: party.variation.range(20, 200)
       })
-      setIsEditDialogOpen(false)
+      setIsSuccessModalOpen(true)
+      
     } catch (err) {
       console.error('Error updating incident:', err)
     }
@@ -544,6 +550,30 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               onCancel={() => setIsEditDialogOpen(false)}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+        <DialogContent >
+          <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">
+            <DialogHeader className="text-center mb-4">
+              <DialogTitle className="text-xl font-bold text-blue-600">修正成功</DialogTitle>
+              <DialogDescription className="text-gray-600">
+                インシデントレポートが修正されました。
+              </DialogDescription>
+            </DialogHeader>
+            <div className="">
+              {/* アイコンや画像をここに追加する場合は、ここに記述 */}
+            </div>
+            <Button 
+              onClick={() => setIsSuccessModalOpen(false)} 
+              className="w-full mt-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
+            >
+              閉じる
+            </Button>
+           
+          </div>
+
         </DialogContent>
       </Dialog>
     </div>
