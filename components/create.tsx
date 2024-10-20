@@ -389,7 +389,7 @@ export default function Component() {
   }
 
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
 
 

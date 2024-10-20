@@ -4,7 +4,7 @@ import { auth } from '@/auth'; // 認証用モジュール
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // 認証チェック (必要に応じて認証が必要な場合)
     const session = await auth();
