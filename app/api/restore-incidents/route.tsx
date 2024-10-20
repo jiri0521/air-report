@@ -5,7 +5,6 @@ import { PrismaClient } from '@prisma/client'
 import { auth } from "@/auth";
 
 const prisma = new PrismaClient()
-export const dynamic = 'force-dynamic'
 
 
 interface WhereClause {
