@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast"
 import SessionData from "@/components/session-data";
 import UserList from '@/components/userList';
 
+
 export default function SettingsPage() {
   const [name, setName] = useState('')
   const [emailNotifications, setEmailNotifications] = useState(true)
@@ -27,13 +28,14 @@ export default function SettingsPage() {
   const [role, setRole] = useState('ADMIN')
 
   const [mounted, setMounted] = useState(false)
-
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
     if (status === 'authenticated' && session?.user) {
       fetchUserSettings()
       setRole(session.user.role)
+      console.log(role)
     }
   }, [status, session])
 
@@ -72,11 +74,7 @@ export default function SettingsPage() {
       })
 
       if (response.ok) {
-        toast({
-          title: "設定が保存されました",
-          description: "変更が正常に適用されました。",
-          variant: "default",
-        })
+        setIsSuccessModalOpen(true)
       } else {
         const errorData = await response.json()
         throw new Error(errorData.error || 'Failed to save settings')
@@ -234,6 +232,7 @@ export default function SettingsPage() {
       </Tabs>
       <br></br><br></br>
       <SessionData session={session} />
+      
     </div>
   )
 }

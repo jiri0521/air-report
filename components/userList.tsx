@@ -1,60 +1,87 @@
-import React from 'react';
+'use client'
+
+import React, { useState } from 'react';
 import useFetchUsers from '@/components/useFetchUsers';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "@/hooks/use-toast"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from './ui/button';
 
-  
-  const handleRoleChange = async (userId: string, newRole: string) => { // 型を明示的に指定
+export default function UserList() {
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const { users }: { users: { id: string; name: string; email: string; role: string }[] } = useFetchUsers();
+
+  const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-    const response = await fetch(`/api/user/${userId}/role`, {
-    method: 'PUT',
-    headers: {
-    'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ role: newRole }),
-    })
-    if (response.ok) {
-    //setUsers(users.map(user => user.id === userId ? { ...user, role: newRole } : user))
-    console.log('ロールの更新に成功しました。')
-    } else {
-    throw new Error('Failed to update user role')
-    }
+      const response = await fetch(`/api/user/${userId}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: newRole }),
+      });
+      if (response.ok) {
+        setIsSuccessModalOpen(true);
+        console.log('ロールの更新に成功しました。');
+      } else {
+        throw new Error('Failed to update user role');
+      }
     } catch (error) {
-    console.error('Error updating user role:', error)
-   
+      console.error('Error updating user role:', error);
     }
-    }
+  };
 
-const UserList = () => { // UserList コンポーネントを定義
-    const { users, }: { users: { id: string; name: string; email: string; role: string }[]; } = useFetchUsers();// フックでユーザー情報を取得
+  // 重複するユーザーIDをフィルタリング
+  const uniqueUsers = users.filter((user, index, self) =>
+    index === self.findIndex((u) => u.id === user.id)
+  );
 
-    // 重複するユーザーIDをフィルタリング
-    const uniqueUsers = users.filter((user, index, self) =>
-      index === self.findIndex((u) => u.id === user.id)
-    );
-  
-    return (
-        <div className="space-y-4">
-          {uniqueUsers.map((user) => (
-            <div key={user.id} className="flex items-center justify-between">
-              <span>{user.name} ({user.email})</span>
-              <Select
-                value={user.role}
-                onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="ロールを選択" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USER">ユーザー</SelectItem>
-                  <SelectItem value="ADMIN">管理者</SelectItem>
-                  <SelectItem value="MANAGER">マネージャー</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          ))}
+  return (
+    <div className="space-y-4">
+      {uniqueUsers.map((user) => (
+        <div key={user.id} className="flex items-center justify-between">
+          <p>{user.name} ({user.email})</p>
+          <Select
+            value={user.role}
+            onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="ロールを選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USER">ユーザー</SelectItem>
+              <SelectItem value="ADMIN">管理者</SelectItem>
+              <SelectItem value="MANAGER">マネージャー</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      );
-    };
-    
-    export default UserList;
+      ))}
+      <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+        <DialogContent>
+          <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">
+            <DialogHeader className="text-center mb-4">
+              <DialogTitle className="text-xl font-bold text-blue-600">成功</DialogTitle>
+              <DialogDescription className="text-gray-600">
+                ユーザーの権限が変更されました。
+              </DialogDescription>
+            </DialogHeader>
+            <div className="">
+              {/* アイコンや画像をここに追加する場合は、ここに記述 */}
+            </div>
+            <Button
+              onClick={() => setIsSuccessModalOpen(false)} 
+              className="w-full mt-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
+            >
+              閉じる
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
