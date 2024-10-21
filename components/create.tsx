@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import party from "party-js";
+import { Card } from './ui/card';
 
 
 
@@ -394,10 +395,10 @@ export default function Component() {
 
 
   return (
-    <div className="container mx-auto p-10">
-      <h1 className="text-2xl font-bold mb-4">医療安全インシデントレポート</h1>
-      
-      <form onSubmit={handleSubmit} className="space-y-4 mb-8">
+    <div className="container mx-auto max-w-[768px] p-10">
+      <h1 className="text-2xl font-bold mb-4">レポート作成</h1>
+      <Card className='shadow-xl'>
+      <form onSubmit={handleSubmit} className="px-5 py-8 space-y-4 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="patientGender">患者の性別</Label>
@@ -685,7 +686,7 @@ export default function Component() {
         </div>
         <Button type="submit">レポート提出</Button>
       </form>
-
+</Card>
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
         <DialogContent >
           <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">
