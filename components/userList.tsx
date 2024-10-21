@@ -15,21 +15,13 @@ import { toast } from "@/hooks/use-toast"
     })
     if (response.ok) {
     //setUsers(users.map(user => user.id === userId ? { ...user, role: newRole } : user))
-    toast({
-    title: "ロールが更新されました",
-    description: "ユーザーのロールが正常に更新されました。",
-    variant: "default",
-    })
+    console.log('ロールの更新に成功しました。')
     } else {
     throw new Error('Failed to update user role')
     }
     } catch (error) {
     console.error('Error updating user role:', error)
-    toast({
-    title: "エラー",
-    description: "ユーザーのロール更新中にエラーが発生しました。",
-    variant: "destructive",
-    })
+   
     }
     }
 

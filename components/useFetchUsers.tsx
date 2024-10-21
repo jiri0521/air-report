@@ -4,6 +4,7 @@ const useFetchUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ error ] = useState(null);
+  
 
   // ユーザー情報を取得する非同期関数
   const fetchUsers = async () => {

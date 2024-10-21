@@ -30,16 +30,12 @@ export default function SettingsPage() {
 
 
   useEffect(() => {
-    setMounted(true);
-  
+    setMounted(true)
     if (status === 'authenticated' && session?.user) {
-      fetchUserSettings();  // ユーザー設定を取得
-      if (role !== session.user.role) {  // roleが異なる場合のみセット
-        setRole(session.user.role);      // roleの設定
-      }
+      fetchUserSettings()
+      setRole(session.user.role)
     }
-  
-  }, [status, session]);  // roleは依存配列から削除
+  }, [status, session])
 
   const fetchUserSettings = async () => {
     try {
@@ -225,17 +221,16 @@ export default function SettingsPage() {
         {session?.user.role === 'ADMIN' && (
           <TabsContent value="permissions">
           <Card className='dark:border-white'>
-            <CardHeader>
-              <CardTitle>権限管理</CardTitle>
-              <CardDescription>ユーザーの権限を管理します。</CardDescription>
-              <UserList />
-            </CardHeader>
-            <CardContent>
-              <UserList/>
-            </CardContent>
+          <CardHeader>
+          <CardTitle>権限管理</CardTitle>
+          <CardDescription>ユーザーの権限を管理します。</CardDescription>
+          </CardHeader>
+          <CardContent>
+          <UserList />
+          </CardContent>
           </Card>
-        </TabsContent>
-        )}
+          </TabsContent>
+          )}
       </Tabs>
       <br></br><br></br>
       <SessionData session={session} />
