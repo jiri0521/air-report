@@ -15,6 +15,13 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
 import SessionData from "@/components/session-data";
 import UserList from '@/components/userList';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 
 export default function SettingsPage() {
@@ -232,7 +239,27 @@ export default function SettingsPage() {
       </Tabs>
       <br></br><br></br>
       <SessionData session={session} />
-      
+      <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+        <DialogContent>
+          <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">
+            <DialogHeader className="text-center mb-4">
+              <DialogTitle className="text-xl font-bold text-blue-600">成功</DialogTitle>
+              <DialogDescription className="text-gray-600">
+                ユーザーの権限が変更されました。
+              </DialogDescription>
+            </DialogHeader>
+            <div className="">
+              {/* アイコンや画像をここに追加する場合は、ここに記述 */}
+            </div>
+            <Button
+              onClick={() => setIsSuccessModalOpen(false)} 
+              className="w-full mt-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
+            >
+              閉じる
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
