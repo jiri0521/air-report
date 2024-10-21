@@ -42,7 +42,7 @@ export default function SettingsPage() {
     if (status === 'authenticated' && session?.user) {
       fetchUserSettings()
       setRole(session.user.role)
-      console.log(role)
+      console.log(" ログイン中の権限:", role)
     }
   }, [status, session])
 
