@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload } from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js"
@@ -50,6 +50,7 @@ export type Incident = {
   cooperation: string[] | null
   explanation: string[] | null
   countermeasures: string | null
+  comment: string
   isDeleted: boolean
 }
 
@@ -318,6 +319,9 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               <TableHead className="w-[120px]">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('involvedPartyProfession')}>当事者職種</Button>
               </TableHead>
+              <TableHead className="w-[80px]">
+                <Button className='text-sm' variant="ghost" onClick={() => handleSort('comment')}>コメント</Button>
+              </TableHead>
               <TableHead className="w-[80px] text-sm">編集</TableHead>
               {session?.user.role === 'ADMIN' && (
               <TableHead className="w-[80px] text-sm">操作</TableHead>
@@ -353,9 +357,28 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                       未対策
                     </Badge>
                   )}
-                </TableCell>
+                </TableCell>            
                 <TableCell className='text-sm'>{incident.location}</TableCell>
                 <TableCell className='text-sm'>{incident.involvedPartyProfession}</TableCell>
+                <TableCell>
+                  {incident.comment ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="block truncate w-[100px] text-sm">{incident.comment}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{incident.comment}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <Badge variant="destructive" className="items-center bg-green-500 text-sm" onClick={() => handleEdit(incident)}>
+                      <Stamp className="w-4 h-4 mr-1" />
+                      未承認
+                    </Badge>
+                  )}
+                </TableCell>
                 <TableCell>
                   <Button variant="outline" size="sm" onClick={() => handleEdit(incident)}>
                     <Pen className='text-green-500'/>

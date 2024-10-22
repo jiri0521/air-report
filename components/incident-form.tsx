@@ -44,6 +44,7 @@ type Incident = {
   cooperation: string[]
   explanation: string[]
   countermeasures: string | null
+  comment:string
   isDeleted: boolean
 }
 
@@ -529,6 +530,15 @@ type IncidentFormProps = {
           id="countermeasures"
           name="countermeasures"
           value={formData.countermeasures || ''}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div>
+        <Label htmlFor="comment">所属長のコメント</Label>
+        <Textarea
+          id="comment"
+          name="comment"
+          value={formData.comment || ''}
           onChange={handleInputChange}
         />
       </div>
