@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { format, parseISO } from 'date-fns'
 import { ja } from 'date-fns/locale'
-
+import { useSession } from "next-auth/react"
 
 type Incident = {
   id: number
@@ -207,6 +207,10 @@ type IncidentFormProps = {
 
   export default function IncidentForm({ initialData, onSubmit, onCancel }: IncidentFormProps) {
     const [formData, setFormData] = useState<Incident>(initialData)
+    const { data: session } = useSession()
+    const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
+
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string, fieldName?: string) => {
     if (typeof e === 'string' && fieldName) {
@@ -254,6 +258,7 @@ type IncidentFormProps = {
     await onSubmit(formData)
   }
 
+    
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -533,15 +538,33 @@ type IncidentFormProps = {
           onChange={handleInputChange}
         />
       </div>
-      <div>
-        <Label htmlFor="comment">所属長のコメント</Label>
-        <Textarea
-          id="comment"
-          name="comment"
-          value={formData.comment || ''}
-          onChange={handleInputChange}
-        />
-      </div>
+
+      {!isAdminOrManager && (
+        <div>
+          <Label htmlFor="comment">所属長のコメント</Label>
+          <Textarea
+            id="comment"
+            name="comment"
+            value={formData.comment || ''}
+            onChange={handleInputChange}
+            disabled={true} // ここで無効化
+          />
+        </div>
+      )}
+
+
+      {isAdminOrManager && (
+        <div>
+          <Label htmlFor="comment">所属長のコメント</Label>
+          <Textarea
+            id="comment"
+            name="comment"
+            value={formData.comment || ''}
+            onChange={handleInputChange}
+          />
+        </div>
+      )}
+
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>キャンセル</Button>
         <Button type="submit" className='bg-blue-500'>保存</Button>

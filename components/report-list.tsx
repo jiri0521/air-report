@@ -556,6 +556,10 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <div className="font-semibold">対策:</div>
                     <div className="col-span-2">{selectedIncident.countermeasures || '未対策'}</div>
                   </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">所属長のコメント:</div>
+                    <div className="col-span-2">{selectedIncident.comment || '未承認'}</div>
+                  </div>
                 </>
               )}
             </div>
