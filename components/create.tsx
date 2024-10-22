@@ -23,6 +23,7 @@ import { Card } from './ui/card';
 
 
 
+
 type Incident = {
   patientGender: string
   patientAge: string
@@ -52,6 +53,7 @@ type Incident = {
   system: string[]
   cooperation: string[]
   explanation: string[]
+  comment: string // ここに追加
   userId:string
 }
 
@@ -236,6 +238,7 @@ export default function Component() {
     system: [],
     cooperation: [],
     explanation: [],
+    comment: "",
     userId:""
   })
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
@@ -347,6 +350,7 @@ export default function Component() {
         system: [],
         cooperation: [],
         explanation: [],
+        comment:'',
         userId: ''
       })
       setIsSuccessModalOpen(true)
@@ -714,3 +718,4 @@ export default function Component() {
     </div>
   )
 }
+

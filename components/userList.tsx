@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useFetchUsers from '@/components/useFetchUsers';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
@@ -12,9 +12,21 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from './ui/button';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 export default function UserList() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const { users }: { users: { id: string; name: string; email: string; role: string }[] } = useFetchUsers();
+  const { users: fetchedUsers, refreshUsers, loading, error } = useFetchUsers();
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    setUsers(fetchedUsers);
+  }, [fetchedUsers]);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -26,8 +38,14 @@ export default function UserList() {
         body: JSON.stringify({ role: newRole }),
       });
       if (response.ok) {
+        setUsers(prevUsers => 
+          prevUsers.map(user => 
+            user.id === userId ? { ...user, role: newRole } : user
+          )
+        );
         setIsSuccessModalOpen(true);
         console.log('ロールの更新に成功しました。');
+        await refreshUsers(); // Refresh the users list from the server
       } else {
         throw new Error('Failed to update user role');
       }
@@ -40,6 +58,9 @@ export default function UserList() {
   const uniqueUsers = users.filter((user, index, self) =>
     index === self.findIndex((u) => u.id === user.id)
   );
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="space-y-4">
