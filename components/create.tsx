@@ -19,6 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import party from "party-js";
 import { Card } from './ui/card';
+import { Loader2 } from "lucide-react"
 
 
 
@@ -242,7 +243,7 @@ export default function Component() {
     userId:""
   })
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(false)
  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string, fieldName?: string) => {
@@ -308,6 +309,7 @@ export default function Component() {
     }
 
     try {
+      setIsLoading(true)
       const response = await fetch('/api/incidents', {
         method: 'POST',
         headers: {
@@ -354,6 +356,7 @@ export default function Component() {
         userId: ''
       })
       setIsSuccessModalOpen(true)
+      setIsLoading(false)
       // Trigger confetti effect
       party.confetti(document.body, {
         count: party.variation.range(50, 200)
@@ -688,7 +691,16 @@ export default function Component() {
             </div>
           )}
         </div>
-        <Button type="submit">レポート提出</Button>
+        <Button type="submit" className='bg-blue-500' disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              送信中...
+            </>
+          ) : (
+            'レポート提出'
+          )}
+        </Button>
       </form>
 </Card>
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>

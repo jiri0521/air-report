@@ -234,7 +234,9 @@ export function Analytics() {
               <ResponsiveContainer width="100%" height={350}>
                 <LineChart data={trendData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name"/>
+                  <XAxis 
+                    dataKey="name" 
+                  />
                   <YAxis />
                   <Tooltip />
                   <Legend />

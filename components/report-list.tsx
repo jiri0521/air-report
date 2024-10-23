@@ -567,7 +567,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>インシデント編集 (ID: {selectedIncident?.id})</DialogTitle>

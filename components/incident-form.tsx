@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { format, parseISO } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { useSession } from "next-auth/react"
+import { Loader2 } from "lucide-react"
+
 
 type Incident = {
   id: number
@@ -47,6 +49,8 @@ type Incident = {
   comment:string
   isDeleted: boolean
 }
+
+
 
 type FactorsCheckboxesProps = {
   formData: Incident
@@ -203,13 +207,15 @@ type IncidentFormProps = {
     initialData: Incident
     onSubmit: (data: Incident) => Promise<void>
     onCancel: () => void
+    
   }
 
   export default function IncidentForm({ initialData, onSubmit, onCancel }: IncidentFormProps) {
     const [formData, setFormData] = useState<Incident>(initialData)
     const { data: session } = useSession()
     const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
-
+    const [isLoading, setIsLoading] = useState(false)
+    
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string, fieldName?: string) => {
@@ -255,7 +261,14 @@ type IncidentFormProps = {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await onSubmit(formData)
+    setIsLoading(true)
+    try {
+      await onSubmit(formData)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
     
@@ -566,9 +579,23 @@ type IncidentFormProps = {
       )}
 
       <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" onClick={onCancel}>キャンセル</Button>
-        <Button type="submit" className='bg-blue-500'>保存</Button>
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+          キャンセル
+        </Button>
+        <Button type="submit" className='bg-blue-500' disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              送信中...
+            </>
+          ) : (
+            '保存'
+          )}
+        </Button>
       </div>
-    </form>
+       </div>
+     </form>
+    
   )
 }
