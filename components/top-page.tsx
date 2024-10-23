@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertTriangle, FileText, PieChart, Settings, Clock, AlertOctagon, ClipboardCheck, Stamp, AlertTriangleIcon, Pen } from "lucide-react"
+import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangleIcon, Pen } from "lucide-react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
