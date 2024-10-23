@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangleIcon, Pen } from "lucide-react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 type Incident = {
   id: number
@@ -142,6 +143,9 @@ export function TopPage() {
                 <CardTitle className="flex items-center">
                   <AlertTriangleIcon className="mr-2 text-red-500" />
                   未対策のレポート
+                  <Badge variant="destructive" className="ml-2">
+                    {noCountermeasuresReports.length}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -171,6 +175,9 @@ export function TopPage() {
                 <CardTitle className="flex items-center">
                   <Stamp className="mr-2 text-green-500" />
                   未承認のレポート
+                  <Badge variant="destructive" className="ml-2">
+                    {unapprovedReports.length}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
