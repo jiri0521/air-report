@@ -48,6 +48,7 @@ export default async function UserButton() {
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{session.user.name}</p>
               <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
+              <br></br>
               <Link href="/settings">
               
                 <Button className="bg-orange-100 py-2 w-full rounded-md leading-none text-muted-foreground hover:bg-orange-400 hover:text-black" >
