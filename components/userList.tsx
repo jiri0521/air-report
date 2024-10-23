@@ -71,7 +71,7 @@ export default function UserList() {
             value={user.role}
             onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] dark:border-gray-700">
               <SelectValue placeholder="ロールを選択" />
             </SelectTrigger>
             <SelectContent>

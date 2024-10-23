@@ -119,15 +119,15 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile">
-          <Card className='dark:border-white'>
+          <Card className='dark:border-gray-700'>
             <CardHeader>
               <CardTitle>プロフィール設定</CardTitle>
               <CardDescription>あなたの個人情報を更新します。</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 dark:border-gray-700">
               <div className="space-y-1">
                 <Label htmlFor="name">名前</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className='dark:border-gray-700'/>
               </div>
             </CardContent>
             <CardFooter>
@@ -144,11 +144,12 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="email-notifications">メール通知</Label>
+                <Label htmlFor="email-notifications"className='dark:border-gray-700'>メール通知</Label>
                 <Switch
                   id="email-notifications"
                   checked={emailNotifications}
                   onCheckedChange={setEmailNotifications}
+                  className='dark:border-gray-700'
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -157,6 +158,7 @@ export default function SettingsPage() {
                   id="push-notifications"
                   checked={pushNotifications}
                   onCheckedChange={setPushNotifications}
+                  className='dark:border-gray-700'
                 />
               </div>
             </CardContent>
@@ -177,10 +179,10 @@ export default function SettingsPage() {
                 <Label htmlFor="theme">テーマ</Label>
                 <div className="flex items-center space-x-2">
                   <Select value={theme} onValueChange={setTheme}>
-                    <SelectTrigger id="theme">
+                    <SelectTrigger id="theme" className='dark:border-gray-700'>
                       <SelectValue placeholder="テーマを選択" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className='dark:border-gray-700'>
                       <SelectItem value="light">ライト</SelectItem>
                       <SelectItem value="dark">ダーク</SelectItem>
                       <SelectItem value="system">システム設定に従う</SelectItem>
@@ -192,10 +194,10 @@ export default function SettingsPage() {
               <div className="space-y-1">
                 <Label htmlFor="font-size">文字サイズ</Label>
                 <Select value={fontSize} onValueChange={setFontSize}>
-                  <SelectTrigger id="font-size">
+                  <SelectTrigger id="font-size" className='dark:border-gray-700'>
                     <SelectValue placeholder="文字サイズを選択" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className='dark:border-gray-700'>
                     <SelectItem value="small">小</SelectItem>
                     <SelectItem value="medium">中</SelectItem>
                     <SelectItem value="large">大</SelectItem>

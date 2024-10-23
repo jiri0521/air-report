@@ -245,7 +245,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">インシデントレポート一覧</h1>
 
-      <Card className="mb-4">
+      <Card className="mb-4 dark:border-gray-700">
         <CardHeader>
           <CardTitle>検索とフィルター</CardTitle>
         </CardHeader>
@@ -258,12 +258,13 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               placeholder="キーワードを入力..."
               value={searchTerm}
               onChange={handleSearch}
+              className="dark:border-gray-700"
             />
           </div>
           <div>
             <Label htmlFor="category-filter">カテゴリーフィルター</Label>
             <Select value={filterCategory} onValueChange={handleFilterCategory}>
-              <SelectTrigger id="category-filter">
+              <SelectTrigger id="category-filter" className="dark:border-gray-700">
                 <SelectValue placeholder="カテゴリーを選択" />
               </SelectTrigger>
               <SelectContent>
@@ -299,47 +300,47 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
          <br></br>
          <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[80px] text-sm">詳細</TableHead>
-              <TableHead className="w-[120px] text-sm">
+            <TableRow className="dark:border-gray-700">
+              <TableHead className="w-[80px] text-sm dark:border-gray-700">詳細</TableHead>
+              <TableHead className="w-[120px] text-sm dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('occurrenceDateTime')}>発生日時</Button>
               </TableHead>
-              <TableHead className="w-[80px] text-sm">
+              <TableHead className="w-[80px] text-sm dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('category')}>カテゴリー</Button>
               </TableHead>
-              <TableHead className="w-[80px]">
+              <TableHead className="w-[80px] dark:border-gray-700">
                 <Button className='text-sm'  variant="ghost" onClick={() => handleSort('impactLevel')}>影響度</Button>
               </TableHead>           
-              <TableHead className="w-[120px]">
+              <TableHead className="w-[120px] dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('countermeasures')}>対策</Button>
               </TableHead>
-              <TableHead className="w-[120px]">
+              <TableHead className="w-[120px] dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('location')}>発生場所</Button>
               </TableHead>
-              <TableHead className="w-[120px]">
+              <TableHead className="w-[120px] dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('involvedPartyProfession')}>当事者職種</Button>
               </TableHead>
-              <TableHead className="w-[80px]">
+              <TableHead className="w-[80px] dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('comment')}>コメント</Button>
               </TableHead>
-              <TableHead className="w-[80px] text-sm">編集</TableHead>
+              <TableHead className="w-[80px] text-sm dark:border-gray-700">編集</TableHead>
               {session?.user.role === 'ADMIN' && (
-              <TableHead className="w-[80px] text-sm">操作</TableHead>
+              <TableHead className="w-[80px] text-sm dark:border-gray-700">操作</TableHead>
             )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {incidents.map((incident) => (
-              <TableRow key={incident.id} className={getRowBackgroundColor(incident.impactLevel)}>
-                <TableCell>
+               <TableRow key={incident.id} className={`${getRowBackgroundColor(incident.impactLevel)} dark:border-gray-700`}>
+                <TableCell className="dark:border-gray-700">
                   <Button variant="outline" size="sm" onClick={() => handleViewDetails(incident)}>
                     <FileText className='text-blue-500'/>
                   </Button>
                 </TableCell>              
-                <TableCell className='text-sm'>{formatDate(incident.occurrenceDateTime)}</TableCell>
-                <TableCell className='text-sm'>{incident.category}</TableCell>
-                <TableCell className='text-sm'>{incident.impactLevel}</TableCell>
-                <TableCell>
+                <TableCell className='text-sm dark:border-gray-700'>{formatDate(incident.occurrenceDateTime)}</TableCell>
+                <TableCell className='text-sm dark:border-gray-700'>{incident.category}</TableCell>
+                <TableCell className='text-sm dark:border-gray-700'>{incident.impactLevel}</TableCell>
+                <TableCell className="dark:border-gray-700">
                   {incident.countermeasures ? (
                     <TooltipProvider>
                       <Tooltip>
@@ -358,9 +359,9 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     </Badge>
                   )}
                 </TableCell>            
-                <TableCell className='text-sm'>{incident.location}</TableCell>
-                <TableCell className='text-sm'>{incident.involvedPartyProfession}</TableCell>
-                <TableCell>
+                <TableCell className='text-sm dark:border-gray-700'>{incident.location}</TableCell>
+                <TableCell className='text-sm dark:border-gray-700'>{incident.involvedPartyProfession}</TableCell>
+                <TableCell >
                   {incident.comment ? (
                     <TooltipProvider>
                       <Tooltip>
@@ -373,13 +374,13 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                       </Tooltip>
                     </TooltipProvider>
                   ) : (
-                    <Badge variant="destructive" className="items-center bg-green-500 text-sm" onClick={() => handleEdit(incident)}>
+                    <Badge variant="destructive" className="items-center bg-green-500 text-sm dark:border-gray-700" onClick={() => handleEdit(incident)}>
                       <Stamp className="w-4 h-4 mr-1" />
                       未承認
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="dark:border-gray-700">
                   <Button variant="outline" size="sm" onClick={() => handleEdit(incident)}>
                     <Pen className='text-green-500'/>
                   </Button>
@@ -415,7 +416,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 
       <div className="flex justify-between items-center mt-4">
         <Button
-          className='bg-blue-500'
+          className='bg-blue-500 dark:bg-white'
           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
@@ -423,7 +424,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         </Button>
         <span>ページ {currentPage} / {totalPages}</span>
         <Button
-          className='bg-blue-500'
+          className='bg-blue-500 dark:bg-white'
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
         >

@@ -282,7 +282,7 @@ type IncidentFormProps = {
             value={formData.patientGender}
             onValueChange={(value) => handleInputChange(value, 'patientGender')}
           >
-            <SelectTrigger id="patientGender">
+            <SelectTrigger id="patientGender" className="dark:border-gray-700">
               <SelectValue placeholder="性別を選択" />
             </SelectTrigger>
             <SelectContent>
@@ -300,6 +300,7 @@ type IncidentFormProps = {
             type="number"
             value={formData.patientAge}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
       </div>
@@ -311,7 +312,7 @@ type IncidentFormProps = {
             value={formData.patientRespirator}
             onValueChange={(value) => handleInputChange(value, 'patientRespirator')}
           >
-            <SelectTrigger id="patientRespirator">
+            <SelectTrigger id="patientRespirator" className="dark:border-gray-700">
               <SelectValue placeholder="人工呼吸器の有無を選択" />
             </SelectTrigger>
             <SelectContent>
@@ -327,7 +328,7 @@ type IncidentFormProps = {
             value={formData.patientDialysis}
             onValueChange={(value) => handleInputChange(value, 'patientDialysis')}
           >
-            <SelectTrigger id="patientDialysis">
+            <SelectTrigger id="patientDialysis" className="dark:border-gray-700">
               <SelectValue placeholder="透析の有無を選択" />
             </SelectTrigger>
             <SelectContent>
@@ -345,7 +346,7 @@ type IncidentFormProps = {
             value={formData.involvedPartyProfession}
             onValueChange={(value) => handleInputChange(value, 'involvedPartyProfession')}
           >
-            <SelectTrigger id="involvedPartyProfession">
+            <SelectTrigger id="involvedPartyProfession" className="dark:border-gray-700">
               <SelectValue placeholder="職種を選択" />
             </SelectTrigger>
             <SelectContent>
@@ -365,6 +366,7 @@ type IncidentFormProps = {
             type="number"
             value={formData.involvedPartyExperience}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
       </div>
@@ -375,10 +377,10 @@ type IncidentFormProps = {
           value={formData.discovererProfession}
           onValueChange={(value) => handleInputChange(value, 'discovererProfession')}
         >
-          <SelectTrigger id="discovererProfession">
+          <SelectTrigger id="discovererProfession" className="dark:border-gray-700">
             <SelectValue placeholder="職種を選択" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="dark:border-gray-700">
             {professions.map((profession) => (
               <SelectItem key={profession} value={profession}>
                 {profession}
@@ -395,6 +397,7 @@ type IncidentFormProps = {
           name="occurrenceDateTime"
           value={formData.occurrenceDateTime ? format(parseISO(formData.occurrenceDateTime), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
+          className="dark:border-gray-700"
         />
       </div>
       <div>
@@ -405,6 +408,7 @@ type IncidentFormProps = {
           name="reportToDoctor"
           value={formData.reportToDoctor ? format(parseISO(formData.reportToDoctor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
+          className="dark:border-gray-700"
         />
       </div>
       <div>
@@ -415,6 +419,7 @@ type IncidentFormProps = {
           name="reportToSupervisor"
           value={formData.reportToSupervisor ? format(parseISO(formData.reportToSupervisor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
+          className="dark:border-gray-700"
         />
       </div>
       <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
@@ -540,6 +545,7 @@ type IncidentFormProps = {
           name="details"
           value={formData.details}
           onChange={handleInputChange}
+          className="dark:border-gray-700"
         />
       </div>
       <div>
@@ -549,6 +555,7 @@ type IncidentFormProps = {
           name="countermeasures"
           value={formData.countermeasures || ''}
           onChange={handleInputChange}
+          className="dark:border-gray-700"
         />
       </div>
 
@@ -561,6 +568,7 @@ type IncidentFormProps = {
             value={formData.comment || ''}
             onChange={handleInputChange}
             disabled={true} // ここで無効化
+            className="dark:border-gray-700"
           />
         </div>
       )}
@@ -574,6 +582,7 @@ type IncidentFormProps = {
             name="comment"
             value={formData.comment || ''}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
       )}
@@ -583,7 +592,7 @@ type IncidentFormProps = {
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
           キャンセル
         </Button>
-        <Button type="submit" className='bg-blue-500' disabled={isLoading}>
+        <Button type="submit" className='bg-blue-500 dark:bg-white' disabled={isLoading}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

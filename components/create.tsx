@@ -406,15 +406,15 @@ export default function Component() {
       <h1 className="text-2xl font-bold mb-4">レポート作成</h1>
       <Card className='shadow-xl'>
       <form onSubmit={handleSubmit} className="px-5 py-8 space-y-4 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4" >
+          <div >
             <Label htmlFor="patientGender">患者の性別</Label>
             <Select
               name="patientGender"
               value={formData.patientGender}
               onValueChange={(value) => handleInputChange(value, 'patientGender')}
             >
-              <SelectTrigger id="patientGender">
+              <SelectTrigger id="patientGender" className="dark:border-gray-700">
                 <SelectValue placeholder="性別を選択" />
               </SelectTrigger>
               <SelectContent>
@@ -432,6 +432,7 @@ export default function Component() {
               type="number"
               value={formData.patientAge}
               onChange={handleInputChange}
+              className="dark:border-gray-700"
             />
           </div>
         </div>
@@ -443,7 +444,7 @@ export default function Component() {
               value={formData.patientRespirator}
               onValueChange={(value) => handleInputChange(value, 'patientRespirator')}
             >
-              <SelectTrigger id="patientRespirator">
+              <SelectTrigger id="patientRespirator" className="dark:border-gray-700">
                 <SelectValue placeholder="人工呼吸器の有無を選択" />
               </SelectTrigger>
               <SelectContent>
@@ -459,7 +460,7 @@ export default function Component() {
               value={formData.patientDialysis}
               onValueChange={(value) => handleInputChange(value, 'patientDialysis')}
             >
-              <SelectTrigger id="patientDialysis">
+              <SelectTrigger id="patientDialysis" className="dark:border-gray-700">
                 <SelectValue placeholder="透析の有無を選択" />
               </SelectTrigger>
               <SelectContent>
@@ -477,10 +478,10 @@ export default function Component() {
               value={formData.involvedPartyProfession}
               onValueChange={(value) => handleInputChange(value, 'involvedPartyProfession')}
             >
-              <SelectTrigger id="involvedPartyProfession">
+              <SelectTrigger id="involvedPartyProfession" className="dark:border-gray-700">
                 <SelectValue placeholder="職種を選択" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="dark:border-gray-700">
                 {professions.map((profession) => (
                   <SelectItem key={profession} value={profession}>
                     {profession}
@@ -497,6 +498,7 @@ export default function Component() {
               type="number"
               value={formData.involvedPartyExperience}
               onChange={handleInputChange}
+              className="dark:border-gray-700"
             />
           </div>
         </div>
@@ -507,10 +509,10 @@ export default function Component() {
             value={formData.discovererProfession}
             onValueChange={(value) => handleInputChange(value, 'discovererProfession')}
           >
-            <SelectTrigger id="discovererProfession">
+            <SelectTrigger id="discovererProfession" className="dark:border-gray-700">
               <SelectValue placeholder="職種を選択" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="dark:border-gray-700">
               {professions.map((profession) => (
                 <SelectItem key={profession} value={profession}>
                   {profession}
@@ -527,6 +529,7 @@ export default function Component() {
             name="occurrenceDateTime"
             value={formData.occurrenceDateTime}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
         <div>
@@ -536,6 +539,7 @@ export default function Component() {
             name="location"
             value={formData.location}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
         <div>
@@ -546,6 +550,7 @@ export default function Component() {
             name="reportToDoctor"
             value={formData.reportToDoctor}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
         <div>
@@ -556,6 +561,7 @@ export default function Component() {
             name="reportToSupervisor"
             value={formData.reportToSupervisor}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
         <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
@@ -681,6 +687,7 @@ export default function Component() {
             name="details"
             value={formData.details}
             onChange={handleInputChange}
+            className="dark:border-gray-700"
           />
         </div>
         <div className="hidden flex items-center space-x-2">
@@ -691,7 +698,7 @@ export default function Component() {
             </div>
           )}
         </div>
-        <Button type="submit" className='bg-blue-500' disabled={isLoading}>
+        <Button type="submit" className='bg-blue-500 dark:bg-white' disabled={isLoading} >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
