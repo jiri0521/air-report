@@ -3,11 +3,17 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangleIcon, Pen, Bell } from "lucide-react"
+import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus } from "lucide-react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { useSession } from "next-auth/react"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+
 
 type Incident = {
   id: number
@@ -30,7 +36,11 @@ export function TopPage() {
   const [noCountermeasuresReports, setNoCountermeasuresReports] = useState<Incident[]>([])
   const [unapprovedReports, setUnapprovedReports] = useState<Incident[]>([])
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
-
+  const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('')
+  const [newAnnouncementContent, setNewAnnouncementContent] = useState('')
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { data: session } = useSession()
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,10 +69,35 @@ export function TopPage() {
     fetchData()
   }, [])
 
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`
+  }
+
+  const handleAddAnnouncement = async () => {
+    try {
+      const response = await fetch('/api/announcements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: newAnnouncementTitle, content: newAnnouncementContent }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to add announcement')
+      }
+
+      const newAnnouncement = await response.json()
+      setAnnouncements([newAnnouncement, ...announcements])
+      setNewAnnouncementTitle('')
+      setNewAnnouncementContent('')
+      setIsDialogOpen(false)
+     
+    } catch (error) {
+      console.error('Error adding announcement:', error)
+     
+    }
   }
 
   return (
@@ -137,31 +172,33 @@ export function TopPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>日付</TableHead>
-                      <TableHead>カテゴリー</TableHead>
-                      <TableHead>影響度</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {latestReports.map((report) => (
-                      <TableRow key={report.id}>
-                        <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
-                        <TableCell>{report.category}</TableCell>
-                        <TableCell>{report.impactLevel}</TableCell>
+                <ScrollArea className="h-[250px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>日付</TableHead>
+                        <TableHead>カテゴリー</TableHead>
+                        <TableHead>影響度</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {latestReports.map((report) => (
+                        <TableRow key={report.id}>
+                          <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
+                          <TableCell>{report.category}</TableCell>
+                          <TableCell>{report.impactLevel}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
               </CardContent>
             </Card>
 
             <Card className="dark:border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <AlertTriangleIcon className="mr-2 text-red-500" />
+                  <AlertTriangle className="mr-2 text-red-500" />
                   未対策のレポート
                   <Badge variant="destructive" className="ml-2 rounded-full">
                     {noCountermeasuresReports.length}
@@ -169,24 +206,26 @@ export function TopPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>日付</TableHead>
-                      <TableHead>カテゴリー</TableHead>
-                      <TableHead>影響度</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {noCountermeasuresReports.map((report) => (
-                      <TableRow key={report.id}>
-                        <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
-                        <TableCell>{report.category}</TableCell>
-                        <TableCell>{report.impactLevel}</TableCell>
+                <ScrollArea className="h-[250px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>日付</TableHead>
+                        <TableHead>カテゴリー</TableHead>
+                        <TableHead>影響度</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {noCountermeasuresReports.map((report) => (
+                        <TableRow key={report.id}>
+                          <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
+                          <TableCell>{report.category}</TableCell>
+                          <TableCell>{report.impactLevel}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
               </CardContent>
             </Card>
 
@@ -201,24 +240,26 @@ export function TopPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>日付</TableHead>
-                      <TableHead>カテゴリー</TableHead>
-                      <TableHead>影響度</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {unapprovedReports.map((report) => (
-                      <TableRow key={report.id}>
-                        <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
-                        <TableCell>{report.category}</TableCell>
-                        <TableCell>{report.impactLevel}</TableCell>
+                <ScrollArea className="h-[250px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>日付</TableHead>
+                        <TableHead>カテゴリー</TableHead>
+                        <TableHead>影響度</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {unapprovedReports.map((report) => (
+                        <TableRow key={report.id}>
+                          <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
+                          <TableCell>{report.category}</TableCell>
+                          <TableCell>{report.impactLevel}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
               </CardContent>
             </Card>
           </div>
@@ -226,18 +267,54 @@ export function TopPage() {
           <div className="mt-12">
             <Card className="dark:border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Bell className="mr-2 text-yellow-500" />
-                  お知らせ
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Bell className="mr-2 text-yellow-500" />
+                    お知らせ
+                  </div>
+                  {session?.user.role === 'ADMIN' && (
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Plus className="mr-2 h-4 w-4" /> 追加
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>新しいお知らせを追加</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="title">タイトル</Label>
+                            <Input
+                              id="title"
+                              value={newAnnouncementTitle}
+                              onChange={(e) => setNewAnnouncementTitle(e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="content">内容</Label>
+                            <Textarea
+                              id="content"
+                              value={newAnnouncementContent}
+                              onChange={(e) => setNewAnnouncementContent(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <Button onClick={handleAddAnnouncement}>追加</Button>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ScrollArea className="h-[300px]">
+                <ScrollArea className="h-[250px]">
                   {announcements.map((announcement) => (
                     <div key={announcement.id} className="mb-4 p-4 border-b dark:border-gray-700">
-                      <h3 className="text-lg font-semibold mb-2">{announcement.title}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{announcement.content}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-500">{formatDate(announcement.createdAt)}</p>
+                      <Link href={`/announcements/${announcement.id}`} className="text-lg font-semibold hover:underline">
+                        {announcement.title}
+                      </Link>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{formatDate(announcement.createdAt)}</p>
                     </div>
                   ))}
                 </ScrollArea>

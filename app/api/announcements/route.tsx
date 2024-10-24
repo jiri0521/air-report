@@ -25,3 +25,27 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function POST(req: NextRequest) {
+    try {
+      const session = await auth()
+      if (!session || session.user.role !== 'ADMIN') {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      }
+  
+      const { title, content } = await req.json()
+  
+      const announcement = await prisma.announcement.create({
+        data: {
+          title,
+          content,
+          userId: session.user.id,
+        },
+      })
+  
+      return NextResponse.json(announcement)
+    } catch (error) {
+      console.error('Error creating announcement:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
