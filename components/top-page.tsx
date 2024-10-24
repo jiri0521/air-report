@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangleIcon, Pen } from "lucide-react"
+import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangleIcon, Pen, Bell } from "lucide-react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type Incident = {
   id: number
@@ -17,28 +18,47 @@ type Incident = {
   comment: string | null
 }
 
+type Announcement = {
+  id: number
+  title: string
+  content: string
+  createdAt: string
+}
+
 export function TopPage() {
   const [latestReports, setLatestReports] = useState<Incident[]>([])
   const [noCountermeasuresReports, setNoCountermeasuresReports] = useState<Incident[]>([])
   const [unapprovedReports, setUnapprovedReports] = useState<Incident[]>([])
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+
 
   useEffect(() => {
-    const fetchIncidents = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/incidents?page=1&perPage=5&sortField=occurrenceDateTime&sortOrder=desc')
-        if (!response.ok) throw new Error('Failed to fetch incidents')
-        const data = await response.json()
-        
-        setLatestReports(data.incidents)
-        setNoCountermeasuresReports(data.incidents.filter((incident: Incident) => !incident.countermeasures))
-        setUnapprovedReports(data.incidents.filter((incident: Incident) => !incident.comment))
+        const [incidentsResponse, announcementsResponse] = await Promise.all([
+          fetch('/api/incidents?page=1&perPage=5&sortField=occurrenceDateTime&sortOrder=desc'),
+          fetch('/api/announcements?limit=5')
+        ])
+
+        if (!incidentsResponse.ok || !announcementsResponse.ok) {
+          throw new Error('Failed to fetch data')
+        }
+
+        const incidentsData = await incidentsResponse.json()
+        const announcementsData = await announcementsResponse.json()
+
+        setLatestReports(incidentsData.incidents)
+        setNoCountermeasuresReports(incidentsData.incidents.filter((incident: Incident) => !incident.countermeasures))
+        setUnapprovedReports(incidentsData.incidents.filter((incident: Incident) => !incident.comment))
+        setAnnouncements(announcementsData.announcements)
       } catch (error) {
-        console.error('Error fetching incidents:', error)
+        console.error('Error fetching data:', error)
       }
     }
 
-    fetchIncidents()
+    fetchData()
   }, [])
+
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -143,7 +163,7 @@ export function TopPage() {
                 <CardTitle className="flex items-center">
                   <AlertTriangleIcon className="mr-2 text-red-500" />
                   未対策のレポート
-                  <Badge variant="destructive" className="ml-2">
+                  <Badge variant="destructive" className="ml-2 rounded-full">
                     {noCountermeasuresReports.length}
                   </Badge>
                 </CardTitle>
@@ -175,7 +195,7 @@ export function TopPage() {
                 <CardTitle className="flex items-center">
                   <Stamp className="mr-2 text-green-500" />
                   未承認のレポート
-                  <Badge variant="destructive" className="ml-2">
+                  <Badge variant="destructive" className="ml-2 rounded-full">
                     {unapprovedReports.length}
                   </Badge>
                 </CardTitle>
@@ -199,6 +219,28 @@ export function TopPage() {
                     ))}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-12">
+            <Card className="dark:border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Bell className="mr-2 text-yellow-500" />
+                  お知らせ
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[300px]">
+                  {announcements.map((announcement) => (
+                    <div key={announcement.id} className="mb-4 p-4 border-b dark:border-gray-700">
+                      <h3 className="text-lg font-semibold mb-2">{announcement.title}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{announcement.content}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500">{formatDate(announcement.createdAt)}</p>
+                    </div>
+                  ))}
+                </ScrollArea>
               </CardContent>
             </Card>
           </div>
