@@ -457,6 +457,10 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               {selectedIncident && (
                 <>
                   <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">患者ID:</div>
+                    <div className="col-span-2">{selectedIncident.patientId}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">患者の性別:</div>
                     <div className="col-span-2">{selectedIncident.patientGender}</div>
                   </div>
