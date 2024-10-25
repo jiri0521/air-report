@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,19 +8,40 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter } from 'next/navigation'
 
-export function AnnouncementForm() {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+
+interface AnnouncementFormProps {
+  announcement?: {
+    id: number
+    title: string
+    content: string
+  }
+  onClose?: () => void
+}
+
+export function AnnouncementForm({ announcement, onClose }: AnnouncementFormProps) {
+  const [title, setTitle] = useState(announcement?.title || '')
+  const [content, setContent] = useState(announcement?.content || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+  
+
+  useEffect(() => {
+    if (announcement) {
+      setTitle(announcement.title)
+      setContent(announcement.content)
+    }
+  }, [announcement])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
+    const url = announcement ? `/api/announcements/${announcement.id}` : '/api/announcements'
+    const method = announcement ? 'PUT' : 'POST'
+
     try {
-      const response = await fetch('/api/announcements', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -28,16 +49,16 @@ export function AnnouncementForm() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create announcement')
+        throw new Error('Failed to save announcement')
       }
-
 
       setTitle('')
       setContent('')
       router.refresh()
+      if (onClose) onClose()
     } catch (error) {
-      console.error('Error creating announcement:', error)
-     
+      console.error('Error saving announcement:', error)
+      
     } finally {
       setIsSubmitting(false)
     }
@@ -46,7 +67,7 @@ export function AnnouncementForm() {
   return (
     <Card className="dark:border-gray-700">
       <CardHeader>
-        <CardTitle>新しいお知らせを作成</CardTitle>
+        <CardTitle>{announcement ? 'お知らせを編集' : '新しいお知らせを作成'}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,9 +91,16 @@ export function AnnouncementForm() {
               className="dark:border-gray-700"
             />
           </div>
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? '送信中...' : 'お知らせを作成'}
-          </Button>
+          <div className="flex justify-end space-x-2">
+            {onClose && (
+              <Button type="button" variant="outline" onClick={onClose}>
+                キャンセル
+              </Button>
+            )}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? '保存中...' : (announcement ? '更新' : '作成')}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus } from "lucide-react"
+import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus, List } from "lucide-react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -272,14 +272,20 @@ export function TopPage() {
                     <Bell className="mr-2 text-yellow-500" />
                     お知らせ
                   </div>
-                  {session?.user.role === 'ADMIN' && (
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Plus className="mr-2 h-4 w-4" /> 追加
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/announcements">
+                        <List className="mr-2 h-4 w-4" /> 一覧を見る
+                      </Link>
+                    </Button>
+                    {session?.user.role === 'ADMIN' && (
+                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Plus className="mr-2 h-4 w-4" /> 追加
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
                         <DialogHeader>
                           <DialogTitle>新しいお知らせを追加</DialogTitle>
                         </DialogHeader>
@@ -303,8 +309,9 @@ export function TopPage() {
                         </div>
                         <Button onClick={handleAddAnnouncement}>追加</Button>
                       </DialogContent>
-                    </Dialog>
+                    </Dialog>                   
                   )}
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
