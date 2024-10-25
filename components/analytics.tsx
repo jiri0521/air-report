@@ -126,7 +126,7 @@ export function Analytics() {
   const adjustTimeOfDayData = (data: Array<{ hour: string; incidents: number }>) => {
     return data.map(item => ({
       ...item,
-      hour: `${(parseInt(item.hour)) % 24}:00` // Adjust for Japan Standard Time (UTC+9)
+      hour: `${(parseInt(item.hour) + 9) % 24}:00` // Adjust for Japan Standard Time (UTC+9)
     })).sort((a, b) => parseInt(a.hour) - parseInt(b.hour))
   }
 
