@@ -123,7 +123,16 @@ export function Analytics() {
     return <div className="flex justify-center items-center h-screen">No data available</div>
   }
 
+  const adjustTimeOfDayData = (data: Array<{ hour: string; incidents: number }>) => {
+    return data.map(item => ({
+      ...item,
+      hour: `${(parseInt(item.hour)) % 24}:00` // Adjust for Japan Standard Time (UTC+9)
+    })).sort((a, b) => parseInt(a.hour) - parseInt(b.hour))
+  }
+
   const { totalIncidents, severeIncidents, recurrenceRate, trendData, categoryData, severityData, crossAnalysisData, timeOfDayData } = analyticsData
+
+  const adjustedTimeOfDayData = adjustTimeOfDayData(timeOfDayData)
 
   const orderedLevels = ['レベル1', 'レベル2', 'レベル3a', 'レベル3b', 'レベル4', 'レベル5']
 
@@ -138,6 +147,10 @@ export function Analytics() {
     category,
     ...levels,
   }))
+
+  
+
+  
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -351,10 +364,15 @@ export function Analytics() {
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
-                <RechartsBarChart data={timeOfDayData}>
+                <RechartsBarChart data={adjustedTimeOfDayData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
+                  <XAxis 
+                    dataKey="hour" 
+                    label={{ value: '時間', position: 'insideBottomRight', offset: -5 }}
+                  />
+                  <YAxis 
+                    label={{ value: 'インシデント数', angle: -90, position: 'insideLeft' }}
+                  />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="incidents" name="インシデント数" fill="#8884d8" />
