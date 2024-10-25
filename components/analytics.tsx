@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, CalendarDays, Repeat, TrendingUp } from "lucide-react"
+import { BarChart, Download, Repeat, TrendingUp } from "lucide-react"
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts'
 import DatePicker, { registerLocale } from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
@@ -230,7 +230,7 @@ export function Analytics() {
           </Select>
         </div>
         <Button onClick={handleExportCSV}>
-          <CalendarDays className="mr-2 h-4 w-4" />
+          <Download className="mr-2 h-4 w-4" />
           データ出力
         </Button>
       </div>
