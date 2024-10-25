@@ -234,7 +234,8 @@ export function TopPage() {
                 <CardTitle className="flex items-center">
                   <Stamp className="mr-2 text-green-500" />
                   未承認のレポート
-                  <Badge variant="destructive" className="ml-2 rounded-full bg-green-500">
+                  <Badge variant="destructive" className="ml-2 rounded-full bg-green-500 hover:bg-green-400 transition-colors duration-200">
+
                     {unapprovedReports.length}
                   </Badge>
                 </CardTitle>
