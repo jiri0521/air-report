@@ -31,6 +31,8 @@ type Announcement = {
   createdAt: string
 }
 
+  
+
 export function TopPage() {
   const [latestReports, setLatestReports] = useState<Incident[]>([])
   const [noCountermeasuresReports, setNoCountermeasuresReports] = useState<Incident[]>([])
@@ -40,10 +42,14 @@ export function TopPage() {
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { data: session } = useSession()
-  
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
+      setError(null)
+
       try {
         const [incidentsResponse, announcementsResponse] = await Promise.all([
           fetch('/api/incidents?page=1&perPage=5&sortField=occurrenceDateTime&sortOrder=desc'),
@@ -61,14 +67,24 @@ export function TopPage() {
         setNoCountermeasuresReports(incidentsData.incidents.filter((incident: Incident) => !incident.countermeasures))
         setUnapprovedReports(incidentsData.incidents.filter((incident: Incident) => !incident.comment))
         setAnnouncements(announcementsData.announcements)
+        setLoading(false)
       } catch (error) {
         console.error('Error fetching data:', error)
+        setError('データの取得中にエラーが発生しました。')
       }
     }
 
     fetchData()
   }, [])
 
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>
+  }
+  
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`

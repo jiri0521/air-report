@@ -9,6 +9,7 @@ interface WhereClause {
     details?: { contains: string; mode: 'insensitive' };
     category?: { contains: string; mode: 'insensitive' };
     involvedPartyProfession?: { contains: string; mode: 'insensitive' };
+    patientId?: { contains: string; mode: 'insensitive' }; // Add this line
   }>;
   category?: string;
   isDeleted?: boolean;
@@ -29,6 +30,8 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || ''
     const category = searchParams.get('category')
     const showDeleted = searchParams.get('showDeleted') === 'true'
+    const patientId = searchParams.get('patientId') || '' // Add this line
+
 
     const skip = (page - 1) * perPage
 
@@ -40,7 +43,9 @@ export async function GET(req: NextRequest) {
       whereClause.OR = [
         { details: { contains: search, mode: 'insensitive' } },
         { category: { contains: search, mode: 'insensitive' } },
-        { involvedPartyProfession: { contains: search, mode: 'insensitive' } }
+        { involvedPartyProfession: { contains: search, mode: 'insensitive' } },
+        { patientId: { contains: patientId, mode: 'insensitive' } } // Add this line
+        
       ]
     }
 

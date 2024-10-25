@@ -11,6 +11,7 @@ datasource db {
 
 model Incident {
   id                         Int      @id @default(autoincrement())
+  patientId                  String?  
   patientGender              String
   patientAge                 String
   patientRespirator          String

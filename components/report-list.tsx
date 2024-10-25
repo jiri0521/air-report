@@ -21,6 +21,7 @@ import { toast } from "@/hooks/use-toast"
 
 export type Incident = {
   id: number
+  patientId: string
   patientGender: string
   patientAge: string
   patientRespirator: string
@@ -238,6 +239,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
   }}
 
 
+
   if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>
   if (error) return <div>エラーが発生しました: {error}</div>
 
@@ -250,6 +252,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
           <CardTitle>検索とフィルター</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="search">検索</Label>
             <Input
@@ -260,6 +263,18 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               onChange={handleSearch}
               className="dark:border-gray-700"
             />
+          </div>
+          <div>
+            <Label htmlFor="patientIdSearch">患者ID検索</Label>
+            <Input
+              id="patientIdSearch"
+              type="text"
+              placeholder="患者IDを入力..."
+              //value={patientIdSearch}
+              //onChange={handlePatientIdSearch}
+              className="dark:border-gray-700"
+            />
+          </div>
           </div>
           <div>
             <Label htmlFor="category-filter">カテゴリーフィルター</Label>
@@ -585,6 +600,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               system: selectedIncident.system || [], // ここを修正
               cooperation: selectedIncident.cooperation || [], // ここを修正
               explanation: selectedIncident.explanation || [], // ここを修正
+              patientId: selectedIncident.patientId || '', // 追加: patientIdを初期データに含める
               
             }}
               onSubmit={handleUpdateIncident}

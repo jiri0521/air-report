@@ -24,13 +24,16 @@ export default function AnnouncementListPage() {
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('')
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('')
   const { data: session } = useSession()
-  
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchAnnouncements()
   }, [])
 
   const fetchAnnouncements = async () => {
+    setLoading(true)
+    setError(null)
     try {
       const response = await fetch('/api/announcements')
       if (!response.ok) {
@@ -38,11 +41,21 @@ export default function AnnouncementListPage() {
       }
       const data = await response.json()
       setAnnouncements(data.announcements)
+      setLoading(false)
     } catch (error) {
       console.error('Error fetching announcements:', error)
-     
+      setError('データの取得中にエラーが発生しました。')
     }
   }
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>
+  }
+  
 
   const handleAddAnnouncement = async () => {
     try {

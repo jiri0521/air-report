@@ -26,6 +26,7 @@ import { Loader2 } from "lucide-react"
 
 
 type Incident = {
+  patientId: string
   patientGender: string
   patientAge: string
   patientRespirator: string
@@ -211,6 +212,7 @@ export default function Component() {
   
 
   const [formData, setFormData] = useState<Incident>({
+    patientId: '',
     patientGender: '',
     patientAge: '',
     patientRespirator: '',
@@ -324,6 +326,7 @@ export default function Component() {
       }
 
       setFormData({
+        patientId:'',
         patientGender: '',
         patientAge: '',
         patientRespirator: '',
@@ -407,6 +410,16 @@ export default function Component() {
       <Card className='shadow-xl'>
       <form onSubmit={handleSubmit} className="px-5 py-8 space-y-4 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4" >
+        <div>
+              <Label htmlFor="patientId">患者ID (任意)</Label>
+              <Input
+                id="patientId"
+                name="patientId"
+                value={formData.patientId}
+                onChange={handleInputChange}
+                className="dark:border-gray-700"
+              />
+            </div>
           <div >
             <Label htmlFor="patientGender">患者の性別</Label>
             <Select
