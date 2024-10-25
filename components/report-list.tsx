@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect,useCallback } from 'react'
+import React, { useState, useEffect,useCallback,useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp } from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp, Printer } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js"
@@ -69,6 +69,14 @@ export default function ReportListPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const formRef = useRef<HTMLFormElement>(null);
+ // 印刷機能を実装する関数
+ const handlePrint = () => {
+  if (formRef.current) {
+    window.print();
+  }
+};
+
  
   const itemsPerPage = 10
 
@@ -446,11 +454,18 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
           次ページ <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
-
+    <form ref={formRef}>
       <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
-            <DialogTitle>インシデント詳細 (ID: {selectedIncident?.id})</DialogTitle>
+            
+                  
+            <DialogTitle>
+              インシデント詳細 (ID: {selectedIncident?.id}) <Button type="button" onClick={handlePrint} className="ml-auto bg-gray-500 space-x-4 dark:bg-green-300 ">        
+             <Printer/>
+            </Button>       
+            </DialogTitle> 
+        
           </DialogHeader>
           <ScrollArea className="max-h-[80vh] overflow-y-auto">
             <div className="space-y-2">
@@ -580,13 +595,14 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <div className="font-semibold">所属長のコメント:</div>
                     <div className="col-span-2">{selectedIncident.comment || '未承認'}</div>
                   </div>
+                 
                 </>
               )}
             </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
-
+    </form>
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
