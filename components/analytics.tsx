@@ -35,13 +35,7 @@ export function Analytics() {
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
 
-let url = `/api/analytics?department=${department}`
-
-  if (dateRange === "custom" && startDate && endDate) {
-    url += `&startDate=${format(startDate, 'yyyy-MM-dd')}&endDate=${format(endDate, 'yyyy-MM-dd')}`
-  } else {
-    //url += `&dateRange=${dateRange}`
-  }
+  
 
   const fetchData = useCallback(async () => {
     setLoading(true)
