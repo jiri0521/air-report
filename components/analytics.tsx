@@ -5,8 +5,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Calendar, Repeat, TrendingUp } from "lucide-react"
+import { BarChart, CalendarDays, Repeat, TrendingUp } from "lucide-react"
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts'
+import DatePicker, { registerLocale } from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+import { format } from "date-fns"
+import ja from 'date-fns/locale/ja'
+
+
+registerLocale('ja', ja)
 
 interface AnalyticsData {
   totalIncidents: { current: number; previous: number }
@@ -24,15 +31,32 @@ export function Analytics() {
   const [department, setDepartment] = useState("all")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
+
+let url = `/api/analytics?department=${department}`
+
+  if (dateRange === "custom" && startDate && endDate) {
+    url += `&startDate=${format(startDate, 'yyyy-MM-dd')}&endDate=${format(endDate, 'yyyy-MM-dd')}`
+  } else {
+    url += `&dateRange=${dateRange}`
+  }
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
 
+    let url = `/api/analytics?department=${department}`
+
+    if (dateRange === "custom" && startDate && endDate) {
+      url += `&startDate=${format(startDate, 'yyyy-MM-dd')}&endDate=${format(endDate, 'yyyy-MM-dd')}`
+    } else {
+      url += `&dateRange=${dateRange}`
+    }
+
     try {
-      const response = await fetch(`/api/analytics?dateRange=${dateRange}&department=${department}`)
+      const response = await fetch(url)
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data')
       }
@@ -44,7 +68,8 @@ export function Analytics() {
     } finally {
       setLoading(false)
     }
-  }, [dateRange, department])
+  }, [dateRange, department, startDate, endDate])
+
 
   useEffect(() => {
     fetchData()
@@ -167,8 +192,36 @@ export function Analytics() {
               <SelectItem value="last30days">過去30日間</SelectItem>
               <SelectItem value="last3months">過去3ヶ月間</SelectItem>
               <SelectItem value="lastyear">過去1年間</SelectItem>
+              <SelectItem value="custom">カスタム期間</SelectItem>
             </SelectContent>
           </Select>
+          {dateRange === "custom" && (
+            <>
+              <DatePicker
+                selected={startDate}
+                onChange={(date: Date | null) => setStartDate(date)} // 修正
+                selectsStart
+                startDate={startDate ?? undefined} // 修正
+                endDate={endDate ?? undefined} // 修正
+                placeholderText="開始日"
+                locale="ja"
+                dateFormat="yyyy/MM/dd"
+                className="border border-gray-300 rounded-md px-3 py-2"
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={(date: Date | null) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate ?? undefined} // 修正
+                endDate={endDate ?? undefined} // 修正
+                minDate={startDate?? undefined} //修正
+                placeholderText="終了日"
+                locale="ja"
+                dateFormat="yyyy/MM/dd"
+                className="border border-gray-300 rounded-md px-3 py-2"
+              />
+            </>
+          )}
           <Select value={department} onValueChange={setDepartment}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="部門を選択" />
@@ -183,7 +236,7 @@ export function Analytics() {
           </Select>
         </div>
         <Button onClick={handleExportCSV}>
-          <Calendar className="mr-2 h-4 w-4" />
+          <CalendarDays className="mr-2 h-4 w-4" />
           データ出力
         </Button>
       </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { auth } from "@/auth";
+import { parseISO, subDays, subMonths, subYears } from 'date-fns';
 
 const prisma = new PrismaClient();
 export const dynamic = 'force-dynamic';
@@ -25,10 +26,22 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const dateRange = searchParams.get('dateRange') || 'last30days';
+    const dateRange = searchParams.get('dateRange');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    const department = searchParams.get('department') || 'all';
 
-    const dateRangeStart = getDateRangeStart(dateRange);
-    const previousPeriodStart = getPreviousPeriodStart(dateRangeStart);
+    let dateRangeStart: Date;
+    let dateRangeEnd: Date = new Date();
+
+    if (startDate && endDate) {
+      dateRangeStart = parseISO(startDate);
+      dateRangeEnd = parseISO(endDate);
+    } else {
+      dateRangeStart = getDateRangeStart(dateRange || 'last30days');
+    }
+
+    const previousPeriodStart = getPreviousPeriodStart(dateRangeStart, dateRangeEnd);
 
     const [
       totalIncidents,
@@ -40,14 +53,14 @@ export async function GET(req: NextRequest) {
       crossAnalysisData,
       timeOfDayData
     ] = await Promise.all([
-      fetchTotalIncidents(dateRangeStart, previousPeriodStart),
-      fetchSevereIncidents(dateRangeStart, previousPeriodStart),
-      fetchRecurrenceRate(dateRangeStart, previousPeriodStart),
-      fetchTrendData(dateRangeStart),
-      fetchCategoryData(dateRangeStart),
-      fetchSeverityData(dateRangeStart),
-      fetchCrossAnalysisData(dateRangeStart),
-      fetchTimeOfDayData(dateRangeStart)
+      fetchTotalIncidents(dateRangeStart, dateRangeEnd, previousPeriodStart, department),
+      fetchSevereIncidents(dateRangeStart, dateRangeEnd, previousPeriodStart, department),
+      fetchRecurrenceRate(dateRangeStart, dateRangeEnd, previousPeriodStart, department),
+      fetchTrendData(dateRangeStart, dateRangeEnd, department),
+      fetchCategoryData(dateRangeStart, dateRangeEnd, department),
+      fetchSeverityData(dateRangeStart, dateRangeEnd, department),
+      fetchCrossAnalysisData(dateRangeStart, dateRangeEnd, department),
+      fetchTimeOfDayData(dateRangeStart, dateRangeEnd, department)
     ]);
 
     return NextResponse.json({
@@ -66,36 +79,39 @@ export async function GET(req: NextRequest) {
   }
 }
 
-
 function getDateRangeStart(dateRange: string): Date {
   const now = new Date();
   switch (dateRange) {
     case 'last7days':
-      return new Date(now.setDate(now.getDate() - 7));
+      return subDays(now, 7);
     case 'last30days':
-      return new Date(now.setDate(now.getDate() - 30));
+      return subDays(now, 30);
     case 'last3months':
-      return new Date(now.setMonth(now.getMonth() - 3));
+      return subMonths(now, 3);
     case 'lastyear':
-      return new Date(now.setFullYear(now.getFullYear() - 1));
+      return subYears(now, 1);
     default:
-      return new Date(now.setDate(now.getDate() - 30));
+      return subDays(now, 30);
   }
 }
 
-function getPreviousPeriodStart(start: Date): Date {
-  const now = new Date();
-  const diff = now.getTime() - start.getTime();
+function getPreviousPeriodStart(start: Date, end: Date): Date {
+  const diff = end.getTime() - start.getTime();
   return new Date(start.getTime() - diff);
 }
 
-async function fetchTotalIncidents(dateRangeStart: Date, previousPeriodStart: Date) {
+async function fetchTotalIncidents(dateRangeStart: Date, dateRangeEnd: Date, previousPeriodStart: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
   const [currentCount, previousCount] = await Promise.all([
     prisma.incident.count({
-      where: { occurrenceDateTime: { gte: dateRangeStart } }
+      where: {
+        ...whereClause,
+        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd }
+      }
     }),
     prisma.incident.count({
       where: {
+        ...whereClause,
         occurrenceDateTime: {
           gte: previousPeriodStart,
           lt: dateRangeStart
@@ -107,11 +123,13 @@ async function fetchTotalIncidents(dateRangeStart: Date, previousPeriodStart: Da
   return { current: currentCount, previous: previousCount };
 }
 
-async function fetchSevereIncidents(dateRangeStart: Date, previousPeriodStart: Date) {
+async function fetchSevereIncidents(dateRangeStart: Date, dateRangeEnd: Date, previousPeriodStart: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
   const [currentCount, previousCount] = await Promise.all([
     prisma.incident.count({
       where: {
-        occurrenceDateTime: { gte: dateRangeStart },
+        ...whereClause,
+        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd },
         impactLevel: { in: ['レベル3b', 'レベル4', 'レベル5'] }
       }
     }),
@@ -129,11 +147,15 @@ async function fetchSevereIncidents(dateRangeStart: Date, previousPeriodStart: D
   return { current: currentCount, previous: previousCount };
 }
 
-async function fetchTrendData(dateRangeStart: Date) {
-    const incidents = await prisma.incident.findMany({
-      where: { occurrenceDateTime: { gte: dateRangeStart } },
-      select: { occurrenceDateTime: true }
-    });
+async function fetchTrendData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
+  const incidents = await prisma.incident.findMany({
+    where: { 
+      ...whereClause,
+      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+    },
+    select: { occurrenceDateTime: true }
+  });
   
     const trendData = incidents.reduce((acc: Record<string, number>, incident: IncidentWithDateTime) => {
       const date = new Date(incident.occurrenceDateTime);
@@ -148,9 +170,13 @@ async function fetchTrendData(dateRangeStart: Date) {
   }
   
 
-async function fetchCategoryData(dateRangeStart: Date) {
+async function fetchCategoryData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
   const incidents = await prisma.incident.findMany({
-    where: { occurrenceDateTime: { gte: dateRangeStart } },
+    where: { 
+      ...whereClause,
+      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+    },
     select: { category: true }
   });
 
@@ -162,9 +188,13 @@ async function fetchCategoryData(dateRangeStart: Date) {
   return Object.entries(categoryData).map(([category, incidents]) => ({ category, incidents }));
 }
 
-async function fetchSeverityData(dateRangeStart: Date) {
+async function fetchSeverityData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
   const incidents = await prisma.incident.findMany({
-    where: { occurrenceDateTime: { gte: dateRangeStart } },
+    where: { 
+      ...whereClause,
+      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+    },
     select: { impactLevel: true }
   });
 
@@ -176,9 +206,13 @@ async function fetchSeverityData(dateRangeStart: Date) {
   return Object.entries(severityData).map(([name, value]) => ({ name, value }));
 }
 
-async function fetchCrossAnalysisData(dateRangeStart: Date) {
+async function fetchCrossAnalysisData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
   const incidents = await prisma.incident.findMany({
-    where: { occurrenceDateTime: { gte: dateRangeStart } },
+    where: { 
+      ...whereClause,
+      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+    },
     select: { category: true, impactLevel: true }
   });
 
@@ -191,10 +225,13 @@ async function fetchCrossAnalysisData(dateRangeStart: Date) {
   }, {});
 }
 
-async function fetchRecurrenceRate(dateRangeStart: Date, previousPeriodStart: Date) {
+async function fetchRecurrenceRate(dateRangeStart: Date, previousPeriodStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
   const [currentIncidents, previousIncidents] = await Promise.all([
     prisma.incident.findMany({
-      where: { occurrenceDateTime: { gte: dateRangeStart } },
+      where: { 
+        ...whereClause,
+        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } },
       select: { id: true, category: true, location: true, occurrenceDateTime: true }
     }),
     prisma.incident.findMany({
@@ -235,9 +272,13 @@ function calculateRecurrenceRate(incidents: RecurringIncident[]): number {
   }
   
 
-async function fetchTimeOfDayData(dateRangeStart: Date) {
+async function fetchTimeOfDayData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = department !== 'all' ? { department } : {};
   const incidents = await prisma.incident.findMany({
-    where: { occurrenceDateTime: { gte: dateRangeStart } },
+    where: { 
+      ...whereClause,
+      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+    },
     select: { occurrenceDateTime: true }
   });
 
