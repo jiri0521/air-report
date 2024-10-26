@@ -222,10 +222,7 @@ export function Analytics() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">全部門</SelectItem>
-              <SelectItem value="all">内科</SelectItem>
-              <SelectItem value="all">外科</SelectItem>
-              <SelectItem value="all">小児科</SelectItem>
-              <SelectItem value="all">救急</SelectItem>
+             
             </SelectContent>
           </Select>
         </div>

@@ -4,8 +4,8 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "医療安全インシデントレポート管理",
-    "short_name": "医療安全レポート",
+    "name": "医療安全インシデントレポート管理 レポッチ",
+    "short_name": "レポッチ",
     "description": "インシデントレポートを管理・分析を行うウェブアプリです",
     "icons": [
         {
