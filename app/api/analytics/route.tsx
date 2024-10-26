@@ -101,7 +101,10 @@ function getPreviousPeriodStart(start: Date, end: Date): Date {
 }
 
 async function fetchTotalIncidents(dateRangeStart: Date, dateRangeEnd: Date, previousPeriodStart: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== 'all' ? { department } : {})
+  };
   const [currentCount, previousCount] = await Promise.all([
     prisma.incident.count({
       where: {
@@ -123,23 +126,27 @@ async function fetchTotalIncidents(dateRangeStart: Date, dateRangeEnd: Date, pre
   return { current: currentCount, previous: previousCount };
 }
 
+
 async function fetchSevereIncidents(dateRangeStart: Date, dateRangeEnd: Date, previousPeriodStart: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== 'all' ? { department } : {}),
+    impactLevel: { in: ['レベル3b', 'レベル4', 'レベル5'] }
+  };
   const [currentCount, previousCount] = await Promise.all([
     prisma.incident.count({
       where: {
         ...whereClause,
-        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd },
-        impactLevel: { in: ['レベル3b', 'レベル4', 'レベル5'] }
+        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd }
       }
     }),
     prisma.incident.count({
       where: {
+        ...whereClause,
         occurrenceDateTime: {
           gte: previousPeriodStart,
           lt: dateRangeStart
-        },
-        impactLevel: { in: ['レベル3b', 'レベル4', 'レベル5'] }
+        }
       }
     })
   ]);
@@ -148,7 +155,10 @@ async function fetchSevereIncidents(dateRangeStart: Date, dateRangeEnd: Date, pr
 }
 
 async function fetchTrendData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== 'all' ? { department } : {})
+  };
   const incidents = await prisma.incident.findMany({
     where: { 
       ...whereClause,
@@ -170,15 +180,18 @@ async function fetchTrendData(dateRangeStart: Date, dateRangeEnd: Date, departme
   }
   
 
-async function fetchCategoryData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
-  const incidents = await prisma.incident.findMany({
-    where: { 
-      ...whereClause,
-      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
-    },
-    select: { category: true }
-  });
+  async function fetchCategoryData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+    const whereClause = {
+      isDeleted: false,
+      ...(department !== 'all' ? { department } : {})
+    };
+    const incidents = await prisma.incident.findMany({
+      where: { 
+        ...whereClause,
+        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+      },
+      select: { category: true }
+    });
 
   const categoryData = incidents.reduce((acc: { [key: string]: number }, incident) => {
     acc[incident.category] = (acc[incident.category] || 0) + 1;
@@ -189,7 +202,10 @@ async function fetchCategoryData(dateRangeStart: Date, dateRangeEnd: Date, depar
 }
 
 async function fetchSeverityData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== 'all' ? { department } : {})
+  };
   const incidents = await prisma.incident.findMany({
     where: { 
       ...whereClause,
@@ -197,7 +213,6 @@ async function fetchSeverityData(dateRangeStart: Date, dateRangeEnd: Date, depar
     },
     select: { impactLevel: true }
   });
-
   const severityData = incidents.reduce((acc: { [key: string]: number }, incident) => {
     acc[incident.impactLevel] = (acc[incident.impactLevel] || 0) + 1;
     return acc;
@@ -207,7 +222,10 @@ async function fetchSeverityData(dateRangeStart: Date, dateRangeEnd: Date, depar
 }
 
 async function fetchCrossAnalysisData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== 'all' ? { department } : {})
+  };
   const incidents = await prisma.incident.findMany({
     where: { 
       ...whereClause,
@@ -226,16 +244,21 @@ async function fetchCrossAnalysisData(dateRangeStart: Date, dateRangeEnd: Date, 
 }
 
 async function fetchRecurrenceRate(dateRangeStart: Date, previousPeriodStart: Date, dateRangeEnd: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== 'all' ? { department } : {})
+  };
   const [currentIncidents, previousIncidents] = await Promise.all([
     prisma.incident.findMany({
       where: { 
         ...whereClause,
-        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } },
+        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+      },
       select: { id: true, category: true, location: true, occurrenceDateTime: true }
     }),
     prisma.incident.findMany({
       where: { 
+        ...whereClause,
         occurrenceDateTime: { 
           gte: previousPeriodStart,
           lt: dateRangeStart
@@ -272,15 +295,19 @@ function calculateRecurrenceRate(incidents: RecurringIncident[]): number {
   }
   
 
-async function fetchTimeOfDayData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
-  const whereClause = department !== 'all' ? { department } : {};
-  const incidents = await prisma.incident.findMany({
-    where: { 
-      ...whereClause,
-      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
-    },
-    select: { occurrenceDateTime: true }
-  });
+  async function fetchTimeOfDayData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+    const whereClause = {
+      isDeleted: false,
+      ...(department !== 'all' ? { department } : {})
+    };
+    const incidents = await prisma.incident.findMany({
+      where: { 
+        ...whereClause,
+        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
+      },
+      select: { occurrenceDateTime: true }
+    });
+  
 
   const hourCounts: { [key: string]: number } = {};
   for (let i = 0; i < 24; i++) {
