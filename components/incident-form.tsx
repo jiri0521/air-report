@@ -415,6 +415,7 @@ type IncidentFormProps = {
           value={formData.occurrenceDateTime ? format(parseISO(formData.occurrenceDateTime), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
           className="dark:border-gray-700"
+          required
         />
       </div>
       <div>
@@ -426,6 +427,7 @@ type IncidentFormProps = {
           value={formData.reportToDoctor ? format(parseISO(formData.reportToDoctor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
           className="dark:border-gray-700"
+          required
         />
       </div>
       <div>
@@ -437,6 +439,7 @@ type IncidentFormProps = {
           value={formData.reportToSupervisor ? format(parseISO(formData.reportToSupervisor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
           onChange={handleInputChange}
           className="dark:border-gray-700"
+          required
         />
       </div>
       <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
@@ -448,7 +451,7 @@ type IncidentFormProps = {
           className="flex flex-wrap gap-4"
           required
         >
-          {['薬物', '検査', 'チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
+          {['薬物', '検査', '処置' ,'チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
             <div key={category} className="flex items-center space-x-2">
               <RadioGroupItem value={category} id={`category-${category}`} />
               <Label htmlFor={`category-${category}`}>{category}</Label>

@@ -549,6 +549,7 @@ export default function Component() {
             value={formData.occurrenceDateTime}
             onChange={handleInputChange}
             className="dark:border-gray-700"
+            required
           />
         </div>
         <div>
@@ -570,6 +571,7 @@ export default function Component() {
             value={formData.reportToDoctor}
             onChange={handleInputChange}
             className="dark:border-gray-700"
+            required
           />
         </div>
         <div>
@@ -581,6 +583,7 @@ export default function Component() {
             value={formData.reportToSupervisor}
             onChange={handleInputChange}
             className="dark:border-gray-700"
+            required
           />
         </div>
         <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
@@ -592,7 +595,7 @@ export default function Component() {
             className="flex flex-wrap gap-4"
             required
           >
-            {['薬物', '検査', 'チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
+            {['薬物', '検査', '処置','チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
               <div key={category} className="flex items-center space-x-2">
                 <RadioGroupItem value={category} id={`category-${category}`} />
                 <Label htmlFor={`category-${category}`}>{category}</Label>
