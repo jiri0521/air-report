@@ -52,7 +52,7 @@ export function TopPage() {
 
       try {
         const [incidentsResponse, announcementsResponse] = await Promise.all([
-          fetch('/api/incidents?page=1&perPage=5&sortField=occurrenceDateTime&sortOrder=desc'),
+          fetch('/api/incidents?page=1&perPage=100&sortField=occurrenceDateTime&sortOrder=desc'),
           fetch('/api/announcements?limit=5')
         ])
 
@@ -63,9 +63,11 @@ export function TopPage() {
         const incidentsData = await incidentsResponse.json()
         const announcementsData = await announcementsResponse.json()
 
-        setLatestReports(incidentsData.incidents)
-        setNoCountermeasuresReports(incidentsData.incidents.filter((incident: Incident) => !incident.countermeasures))
-        setUnapprovedReports(incidentsData.incidents.filter((incident: Incident) => !incident.comment))
+        const allIncidents = incidentsData.incidents
+
+        setLatestReports(allIncidents.slice(0, 5))
+        setNoCountermeasuresReports(allIncidents.filter((incident: Incident) => !incident.countermeasures))
+        setUnapprovedReports(allIncidents.filter((incident: Incident) => !incident.comment))
         setAnnouncements(announcementsData.announcements)
         setLoading(false)
       } catch (error) {
@@ -211,74 +213,73 @@ export function TopPage() {
               </CardContent>
             </Card>
 
-            <Card className="dark:border-gray-700">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <AlertTriangle className="mr-2 text-red-500" />
-                  未対策のレポート
-                  <Badge variant="destructive" className="ml-2 rounded-full">
-                    {noCountermeasuresReports.length}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[250px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>日付</TableHead>
-                        <TableHead>カテゴリー</TableHead>
-                        <TableHead>影響度</TableHead>
+                  <Card className="dark:border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <AlertTriangle className="mr-2 text-red-500" />
+                未対策のレポート
+                <Badge variant="destructive" className="ml-2 rounded-full">
+                  {noCountermeasuresReports.length}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[250px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>日付</TableHead>
+                      <TableHead>カテゴリー</TableHead>
+                      <TableHead>影響度</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {noCountermeasuresReports.slice(0, 5).map((report) => (
+                      <TableRow key={report.id}>
+                        <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
+                        <TableCell>{report.category}</TableCell>
+                        <TableCell>{report.impactLevel}</TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {noCountermeasuresReports.map((report) => (
-                        <TableRow key={report.id}>
-                          <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
-                          <TableCell>{report.category}</TableCell>
-                          <TableCell>{report.impactLevel}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </CardContent>
+          </Card>
 
-            <Card className="dark:border-gray-700">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Stamp className="mr-2 text-green-500" />
-                  未承認のレポート
-                  <Badge variant="destructive" className="ml-2 rounded-full bg-green-500 hover:bg-green-400 transition-colors duration-200">
-
-                    {unapprovedReports.length}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[250px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>日付</TableHead>
-                        <TableHead>カテゴリー</TableHead>
-                        <TableHead>影響度</TableHead>
+          <Card className="dark:border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Stamp className="mr-2 text-green-500" />
+                未承認のレポート
+                <Badge variant="destructive" className="ml-2 rounded-full bg-green-500 hover:bg-green-400 transition-colors duration-200">
+                  {unapprovedReports.length}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[250px]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>日付</TableHead>
+                      <TableHead>カテゴリー</TableHead>
+                      <TableHead>影響度</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {unapprovedReports.slice(0, 5).map((report) => (
+                      <TableRow key={report.id}>
+                        <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
+                        <TableCell>{report.category}</TableCell>
+                        <TableCell>{report.impactLevel}</TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {unapprovedReports.map((report) => (
-                        <TableRow key={report.id}>
-                          <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
-                          <TableCell>{report.category}</TableCell>
-                          <TableCell>{report.impactLevel}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </CardContent>
+          </Card>
           </div>
 
           <div className="mt-12">
