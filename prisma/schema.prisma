@@ -94,6 +94,7 @@ model User {
   role          Role          @default(USER)
   incidents     Incident[]
   announcements Announcement[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 enum Role {
@@ -114,3 +115,13 @@ enum Role {
   user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}

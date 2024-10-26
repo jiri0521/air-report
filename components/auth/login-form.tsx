@@ -21,6 +21,7 @@ import {
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { login } from "@/actions/login";
+import Link from 'next/link'
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -110,6 +111,10 @@ export const LoginForm = () => {
           >
             ログイン
           </Button>
+          <br></br><br></br>
+          <Link href="/password-reset/request" className="text-sm text-blue-600 hover:underline">
+              パスワードを忘れた場合
+            </Link>
         </form>
       </Form>
     </CardWrapper>
