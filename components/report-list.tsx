@@ -312,7 +312,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                 <SelectItem value="all">すべて</SelectItem>
                 <SelectItem value="薬物">薬物</SelectItem>
                 <SelectItem value="検査">検査</SelectItem>
-                <SelectItem value="チューブ類抜去">チューブ類抜去</SelectItem>
+                <SelectItem value="チューブ類">チューブ類</SelectItem>
                 <SelectItem value="転倒転落">転倒転落</SelectItem>
                 <SelectItem value="栄養">栄養</SelectItem>
                 <SelectItem value="接遇">接遇</SelectItem>

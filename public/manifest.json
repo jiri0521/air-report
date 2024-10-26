@@ -9,22 +9,22 @@
     "description": "インシデントレポートを管理・分析を行うウェブアプリです",
     "icons": [
         {
-            "src": "/report-bg-remove-icon2.png",
+            "src": "/report-bg-remove-icon3.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/report-bg-remove-icon2.pn",
+            "src": "/report-bg-remove-icon3.pn",
             "sizes": "256x256",
             "type": "image/png"
         },
         {
-            "src": "/report-bg-remove-icon2.pn",
+            "src": "/report-bg-remove-icon3.pn",
             "sizes": "384x384",
             "type": "image/png"
         },
         {
-            "src": "/report-bg-remove-icon2.png",
+            "src": "/report-bg-remove-icon3.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
