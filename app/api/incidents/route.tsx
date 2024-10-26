@@ -9,7 +9,7 @@ interface WhereClause {
     details?: { contains: string; mode: 'insensitive' };
     category?: { contains: string; mode: 'insensitive' };
     involvedPartyProfession?: { contains: string; mode: 'insensitive' };
-    patientId?: { contains: string; mode: 'insensitive' }; // Add this line
+    patientId?: { contains: string; mode: 'insensitive' };
   }>;
   category?: string;
   isDeleted?: boolean;
@@ -30,8 +30,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || ''
     const category = searchParams.get('category')
     const showDeleted = searchParams.get('showDeleted') === 'true'
-    const patientId = searchParams.get('patientId') || '' // Add this line
-
+    const patientId = searchParams.get('patientId') || ''
 
     const skip = (page - 1) * perPage
 
@@ -39,14 +38,18 @@ export async function GET(req: NextRequest) {
       isDeleted: showDeleted
     }
 
-    if (search) {
-      whereClause.OR = [
-        { details: { contains: search, mode: 'insensitive' } },
-        { category: { contains: search, mode: 'insensitive' } },
-        { involvedPartyProfession: { contains: search, mode: 'insensitive' } },
-        { patientId: { contains: patientId, mode: 'insensitive' } } // Add this line
-        
-      ]
+    if (search || patientId) {
+      whereClause.OR = []
+      if (search) {
+        whereClause.OR.push(
+          { details: { contains: search, mode: 'insensitive' } },
+          { category: { contains: search, mode: 'insensitive' } },
+          { involvedPartyProfession: { contains: search, mode: 'insensitive' } }
+        )
+      }
+      if (patientId) {
+        whereClause.OR.push({ patientId: { contains: patientId, mode: 'insensitive' } })
+      }
     }
 
     if (category && category !== 'all') {
@@ -71,6 +74,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
 
 
 export async function PUT(req: NextRequest) {

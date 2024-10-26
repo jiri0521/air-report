@@ -70,6 +70,8 @@ export default function ReportListPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null);
+  const [patientIdSearch, setPatientIdSearch] = useState('')
+  const [debouncedPatientIdSearch, setDebouncedPatientIdSearch] = useState('')
  // 印刷機能を実装する関数
  const handlePrint = () => {
   if (formRef.current) {
@@ -85,28 +87,44 @@ export default function ReportListPage() {
 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
- const fetchIncidents = useCallback(async () => {
-setIsLoading(true)
-setError(null)
-try {
-const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}`)
-if (!response.ok) {
-throw new Error('Failed to fetch incidents')
-}
-const data = await response.json()
-setIncidents(data.incidents)
-setTotalPages(data.totalPages)
-} catch (err) {
-setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
-} finally {
-setIsLoading(false)
-}
-}, [currentPage, itemsPerPage, sortField, sortOrder, debouncedSearchTerm, filterCategory, showDeleted])
+ 
+  const fetchIncidents = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}&patientId=${debouncedPatientIdSearch}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch incidents')
+      }
+      const data = await response.json()
+      setIncidents(data.incidents)
+      setTotalPages(data.totalPages)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '不明なエラーが発生しました')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [currentPage, itemsPerPage, sortField, sortOrder, debouncedSearchTerm, filterCategory, showDeleted, debouncedPatientIdSearch])
 
   useEffect(() => {
     fetchIncidents()
     }, [currentPage, debouncedSearchTerm, sortField, sortOrder, filterCategory, showDeleted, fetchIncidents])
 
+
+    // Debounce the patient ID search term
+  const debouncedSetPatientIdSearch = useCallback(
+    debounce((value: string) => {
+      setDebouncedPatientIdSearch(value)
+      setCurrentPage(1)
+    }, 1000),
+    [setDebouncedPatientIdSearch, setCurrentPage]
+  )
+
+  const handlePatientIdSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setPatientIdSearch(value)
+    debouncedSetPatientIdSearch(value)
+  }
  // Debounce the search term
  const debouncedSetSearchTerm = useCallback(
   debounce((value: string) => {
@@ -262,7 +280,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="search">検索</Label>
+            <Label htmlFor="search">キーワード検索</Label>
             <Input
               id="search"
               type="text"
@@ -278,8 +296,8 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               id="patientIdSearch"
               type="text"
               placeholder="患者IDを入力..."
-              //value={patientIdSearch}
-              //onChange={handlePatientIdSearch}
+              value={patientIdSearch}
+              onChange={handlePatientIdSearch}
               className="dark:border-gray-700"
             />
           </div>
@@ -461,7 +479,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
             
                   
             <DialogTitle>
-              インシデント詳細 (ID: {selectedIncident?.id}) <Button type="button" onClick={handlePrint} className="ml-auto bg-gray-500 space-x-4 dark:bg-green-300 ">        
+              インシデント詳細 (ID: {selectedIncident?.id}) <Button type="button" onClick={handlePrint} className="ml-auto bg-gray-500 dark:bg-green-300 ">        
              <Printer/>
             </Button>       
             </DialogTitle> 
