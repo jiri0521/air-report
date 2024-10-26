@@ -107,7 +107,12 @@ export async function POST(req: NextRequest) {
     }
 
     const incidentData = await req.json()
-    
+    if (incidentData.reportToDoctor === '') {
+      incidentData.reportToDoctor = null
+    }
+    if (incidentData.reportToSupervisor === '') {
+      incidentData.reportToSupervisor = null
+    }
     const newIncident = await prisma.incident.create({
       data: incidentData,
     })

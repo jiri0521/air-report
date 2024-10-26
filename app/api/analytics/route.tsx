@@ -103,14 +103,12 @@ function getPreviousPeriodStart(start: Date, end: Date): Date {
 async function fetchTotalIncidents(dateRangeStart: Date, dateRangeEnd: Date, previousPeriodStart: Date, department: string) {
   const whereClause = {
     isDeleted: false,
-    ...(department !== 'all' ? { department } : {})
+    ...(department !== 'all' ? { department } : {}),
+    occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd }
   };
   const [currentCount, previousCount] = await Promise.all([
     prisma.incident.count({
-      where: {
-        ...whereClause,
-        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd }
-      }
+      where: whereClause
     }),
     prisma.incident.count({
       where: {
@@ -298,16 +296,15 @@ function calculateRecurrenceRate(incidents: RecurringIncident[]): number {
   async function fetchTimeOfDayData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
     const whereClause = {
       isDeleted: false,
-      ...(department !== 'all' ? { department } : {})
+      ...(department !== 'all' ? { department } : {}),
+      occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd }
     };
     const incidents = await prisma.incident.findMany({
-      where: { 
-        ...whereClause,
-        occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
-      },
+      where: whereClause,
       select: { occurrenceDateTime: true }
     });
   
+
 
   const hourCounts: { [key: string]: number } = {};
   for (let i = 0; i < 24; i++) {
