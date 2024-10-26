@@ -247,7 +247,7 @@ export default function SettingsPage() {
             <DialogHeader className="text-center mb-4">
               <DialogTitle className="text-xl font-bold text-blue-600">成功</DialogTitle>
               <DialogDescription className="text-gray-600">
-                ユーザーの権限が変更されました。
+                ユーザーの設定が変更されました。
               </DialogDescription>
             </DialogHeader>
             <div className="">
