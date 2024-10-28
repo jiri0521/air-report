@@ -7,13 +7,13 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Medical Incident Report System <onboarding@resend.dev>', // Use Resend's default domain
+      from: 'レポッチ <onboarding@resend.dev>', // Use Resend's default domain
       to: email,
       subject: 'パスワードリセットのリクエスト',
       html: `
         <html>
           <body>
-            <h1>パスワードリセットのリクエスト</h1>
+            <h2>パスワードリセットのリクエスト</h2>
             <p>以下のリンクをクリックしてパスワードをリセットしてください：</p>
             <a href="${resetUrl}">${resetUrl}</a>
             <p>このリンクは1時間後に無効になります。</p>
