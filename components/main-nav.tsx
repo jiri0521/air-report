@@ -14,6 +14,9 @@ export function MainNav() {
         <div className="flex gap-6 items-center relative">
             <div className="hidden md:flex gap-6 items-center"> {/* md以上で横並び */}
                
+                <CustomLink href="/">
+                    <div className={`hover:text-blue-400 ${isActive('/') ? 'border-b-2 border-blue-500' : ''}`}>ホーム</div>
+                </CustomLink>
                 <CustomLink href="/create">
                     <div className={`hover:text-blue-400 ${isActive('/create') ? 'border-b-2 border-blue-500' : ''}`}>作成</div>
                 </CustomLink>
