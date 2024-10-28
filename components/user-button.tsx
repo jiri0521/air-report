@@ -9,7 +9,7 @@ import {
 } from "./ui/dropdown-menu";
 import { SignOut } from "@/components/auth-components";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Settings, UserRound } from "lucide-react"
+import { Settings } from "lucide-react"
 import Link from "next/link"
 
 export default async function UserButton() {
@@ -39,7 +39,7 @@ export default async function UserButton() {
                alt={session.user.name ?? ""}
               />
               )}
-              <AvatarFallback><UserRound/></AvatarFallback>
+              <AvatarFallback>{session.user.name}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -47,6 +47,7 @@ export default async function UserButton() {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{session.user.name}</p>
+              <p className="text-xs leading-none text-muted-foreground">権限:{session.user.role}</p>
               <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
               <br></br>
               <Link href="/settings">

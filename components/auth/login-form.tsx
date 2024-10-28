@@ -112,9 +112,11 @@ export const LoginForm = () => {
             ログイン
           </Button>
           <br></br><br></br>
+          <div className="flex items-center justify-center">
           <Link href="/password-reset/request" className="text-sm text-blue-600 hover:underline">
               パスワードを忘れた場合
             </Link>
+          </div>
         </form>
       </Form>
     </CardWrapper>
