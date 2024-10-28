@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import party from "party-js";
 import { Card } from './ui/card';
 import { Loader2 } from "lucide-react"
-
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 
@@ -252,7 +252,17 @@ export default function Component() {
   })
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
- 
+  const [isCardLoading, setIsCardLoading] = useState(true)
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setIsCardLoading(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string, fieldName?: string) => {
     if (typeof e === 'string' && fieldName) {
@@ -406,15 +416,35 @@ export default function Component() {
   }
 
 
-  const { data: session } = useSession();
 
-
+  const CardSkeleton = () => (
+    <Card className="shadow-xl">
+      <div className="px-5 py-8 space-y-4">
+        <Skeleton className="h-8 w-3/4" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-10 w-1/4" />
+      </div>
+    </Card>
+  )
 
   return (
     <div className="container mx-auto max-w-[768px] p-10">
       <h1 className="text-2xl font-bold mb-4">レポート作成</h1>
-      <Card className='shadow-xl'>
-      <form onSubmit={handleSubmit} className="px-5 py-8 space-y-4 mb-8">
+      {isCardLoading ? (
+        <CardSkeleton />
+      ) : (
+        <Card className='shadow-xl'>
+          <form onSubmit={handleSubmit} className="px-5 py-8 space-y-4 mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4" >
         <div>
               <Label htmlFor="patientId">患者ID (任意)</Label>
@@ -730,8 +760,9 @@ export default function Component() {
             'レポート提出'
           )}
         </Button>
-      </form>
-</Card>
+        </form>
+        </Card>
+      )}
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
         <DialogContent >
           <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">

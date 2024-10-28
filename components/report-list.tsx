@@ -17,7 +17,7 @@ import IncidentForm from './incident-form'
 import { debounce } from 'lodash'
 import { useSession } from 'next-auth/react'
 import { toast } from "@/hooks/use-toast"
-
+import { Skeleton } from "@/components/ui/skeleton"
 
 export type Incident = {
   id: number
@@ -264,10 +264,41 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     }
   }}
 
+  const CardSkeleton = () => (
+    <Card className="mb-4 dark:border-gray-700">
+      <CardHeader>
+        <Skeleton className="h-6 w-[200px]" />
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-6 w-[100px]" />
+      </CardContent>
+    </Card>
+  )
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">インシデントレポート一覧</h1>
+        <CardSkeleton />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-[200px]" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-[400px] w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
-  if (isLoading) return <div className="flex justify-center items-center h-screen">Loading...</div>
   if (error) return <div>エラーが発生しました: {error}</div>
+
 
   return (
     <div className="container mx-auto p-4">

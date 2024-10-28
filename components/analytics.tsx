@@ -11,6 +11,7 @@ import DatePicker, { registerLocale } from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { format } from "date-fns"
 import ja from 'date-fns/locale/ja'
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 registerLocale('ja', ja)
@@ -130,8 +131,38 @@ export function Analytics() {
     }
   }
 
+  const CardSkeleton = () => (
+    <Card className="dark:border-white">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Skeleton className="h-4 w-[100px]" />
+        <Skeleton className="h-4 w-4" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-8 w-[100px] mb-2" />
+        <Skeleton className="h-4 w-[150px]" />
+      </CardContent>
+    </Card>
+  )
+
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">インシデント分析</h1>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-[200px]" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-[350px] w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   if (error) {
@@ -272,6 +303,7 @@ export function Analytics() {
           </CardContent>
         </Card>
       </div>
+
 
       <Tabs defaultValue="trends" className="space-y-4 className='dark:border-white'">
         <TabsList className='dark:border-white'>
