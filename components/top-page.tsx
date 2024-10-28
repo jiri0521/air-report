@@ -78,7 +78,7 @@ export function TopPage() {
     }
 
     fetchData()
-  }, [])
+  }, [error])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
