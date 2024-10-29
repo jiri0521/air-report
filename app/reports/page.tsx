@@ -1,7 +1,7 @@
 'use client'
 
 import ReportListPage from '@/components/report-list'
-import React, { Suspense } from 'react'
+import React from 'react'
 
 
 function ReportsPage() {

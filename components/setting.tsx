@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Download } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
-import SessionData from "@/components/session-data";
 import UserList from '@/components/userList';
 import {
   Dialog,
@@ -239,8 +238,7 @@ export default function SettingsPage() {
           </TabsContent>
           )}
       </Tabs>
-      <br></br><br></br>
-      <SessionData session={session} />
+  
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
         <DialogContent>
           <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">

@@ -1,5 +1,5 @@
 import CreatePage from '@/components/create'
-import React, { Suspense } from 'react'
+import React from 'react'
 
 const create = () => {
   return (
