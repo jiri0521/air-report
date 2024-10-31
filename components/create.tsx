@@ -513,8 +513,8 @@ export default function Component() {
                 <SelectValue placeholder="透析の有無を選択" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="呼吸器あり">有</SelectItem>
-                <SelectItem value="呼吸器なし">無</SelectItem>
+                <SelectItem value="透析あり">有</SelectItem>
+                <SelectItem value="透析なし">無</SelectItem>
               </SelectContent>
             </Select>
           </div>
