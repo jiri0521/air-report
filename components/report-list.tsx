@@ -85,7 +85,7 @@ export default function ReportListPage() {
  
   const itemsPerPage = 10
 
-  const [showDeleted, setShowDeleted] = useState(false)
+  const [showDeleted] = useState(false)
   const { data: session } = useSession()
   const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
