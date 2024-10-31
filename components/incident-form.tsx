@@ -188,6 +188,7 @@ const EnvironmentalFactorsCheckboxes: React.FC<FactorsCheckboxesProps> = ({ form
 }
 
 const professions = [
+  '　',
   '医師',
   '看護師',
   '看護補助',
@@ -278,6 +279,18 @@ type IncidentFormProps = {
     }
   }
 
+  const copyReportTime = () => {
+    setFormData(prev => ({ ...prev, reportToDoctor: prev.reportToSupervisor }))
+  }
+
+  const getLabelBackgroundColor = (field: string, value: string) => {
+    if (field === 'category') return 'bg-yellow-200'
+    if (field === 'lifeThreat') return 'bg-yellow-200'
+    if (field === 'trustImpact') return 'bg-yellow-200'
+    if (field === 'impactLevel') return 'bg-yellow-200'
+    if (field === 'workStatus') return 'bg-yellow-200'
+    return ''
+  }
     
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-8">
@@ -418,18 +431,7 @@ type IncidentFormProps = {
           required
         />
       </div>
-      <div>
-        <Label htmlFor="reportToDoctor">医師への報告日時</Label>
-        <Input
-          type="datetime-local"
-          id="reportToDoctor"
-          name="reportToDoctor"
-          value={formData.reportToDoctor ? format(parseISO(formData.reportToDoctor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
-          onChange={handleInputChange}
-          className="dark:border-gray-700"
-          required
-        />
-      </div>
+     
       <div>
         <Label htmlFor="reportToSupervisor">所属長への報告日時</Label>
         <Input
@@ -442,6 +444,23 @@ type IncidentFormProps = {
           required
         />
       </div>
+
+      <div>
+        <Label htmlFor="reportToDoctor">医師への報告日時</Label>
+        <Input
+          type="datetime-local"
+          id="reportToDoctor"
+          name="reportToDoctor"
+          value={formData.reportToDoctor ? format(parseISO(formData.reportToDoctor), "yyyy-MM-dd'T'HH:mm", { locale: ja }) : ''}
+          onChange={handleInputChange}
+          className="dark:border-gray-700"
+          required
+        />
+            <Button type="button" onClick={copyReportTime} className="whitespace-nowrap">
+            所属長への報告日時と同じ
+          </Button>
+      </div>
+
       <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
         <Label className="block mb-2 ">インシデトのカテゴリー</Label>
         <RadioGroup
@@ -454,7 +473,12 @@ type IncidentFormProps = {
           {['薬物', '検査', '処置' ,'チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
             <div key={category} className="flex items-center space-x-2">
               <RadioGroupItem value={category} id={`category-${category}`} />
-              <Label htmlFor={`category-${category}`}>{category}</Label>
+              <Label 
+                      htmlFor={`category-${category}`}
+                      className={`${formData.category === category ? getLabelBackgroundColor('category', category) : ''} px-1 py-1 rounded`}
+                    >
+                      {category}
+                </Label>
             </div>
           ))}
         </RadioGroup>
@@ -471,7 +495,12 @@ type IncidentFormProps = {
           {['ない', '低い', '可能性あり', '高い', 'きわめて高い', '死亡'].map((level) => (
             <div key={level} className="flex items-center space-x-2">
               <RadioGroupItem value={level} id={`lifeThreat-${level}`} />
-              <Label htmlFor={`lifeThreat-${level}`}>{level}</Label>
+              <Label 
+                      htmlFor={`lifeThreat-${level}`}
+                      className={`${formData.lifeThreat === level ? getLabelBackgroundColor('lifeThreat', level) : ''} px-1 py-1 rounded`}
+                    >
+                      {level}
+                </Label>
             </div>
           ))}
         </RadioGroup>
@@ -488,7 +517,11 @@ type IncidentFormProps = {
           {['損なわない', 'あまり損なわない', '少し損なう', '大きく損なう'].map((level) => (
             <div key={level} className="flex items-center space-x-2">
               <RadioGroupItem value={level} id={`trustImpact-${level}`} />
-              <Label htmlFor={`trustImpact-${level}`}>{level}</Label>
+              <Label 
+                      htmlFor={`trustImpact-${level}`}
+                      className={`${formData.trustImpact === level ? getLabelBackgroundColor('trustImpact', level) : ''} px-1 py-1 rounded`}
+                    >{level}
+              </Label>
             </div>
           ))}
         </RadioGroup>
@@ -505,7 +538,11 @@ type IncidentFormProps = {
           {['レベル1', 'レベル2', 'レベル3a', 'レベル3b', 'レベル4', 'レベル5'].map((level) => (
             <div key={level} className="flex items-center space-x-2">
               <RadioGroupItem value={level} id={`impactLevel-${level}`} />
-              <Label htmlFor={`impactLevel-${level}`}>{level}</Label>
+              <Label 
+                      htmlFor={`impactLevel-${level}`}
+                      className={`${formData.impactLevel === level ? getLabelBackgroundColor('impactLevel', level) : ''} px-1 py-1 rounded`}
+                    >{level}
+                </Label>
             </div>
           ))}
         </RadioGroup>
@@ -521,7 +558,11 @@ type IncidentFormProps = {
           {['余裕', 'やや余裕', '普通', '多忙', '非常に多忙', '勤務体制に問題', '役割分担に問題', '当直明けだった', '当直だった', 'その他'].map((status) => (
             <div key={status} className="flex items-center space-x-2">
               <RadioGroupItem value={status} id={`workStatus-${status}`} />
-              <Label htmlFor={`workStatus-${status}`}>{status}</Label>
+              <Label 
+                      htmlFor={`workStatus-${status}`}
+                      className={`${formData.workStatus === status ? getLabelBackgroundColor('workStatus', status) : ''} px-1 py-1 rounded`}
+                    >{status}
+              </Label>
             </div>
           ))}
         </RadioGroup>
