@@ -89,13 +89,16 @@ export default function ReportListPage() {
   const { data: session } = useSession()
   const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-
+  const [filterYear, setFilterYear] = useState<string>('')
+  const [filterMonth, setFilterMonth] = useState<string>('')
  
+
+
   const fetchIncidents = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}&patientId=${debouncedPatientIdSearch}`)
+      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}&patientId=${debouncedPatientIdSearch}&year=${filterYear}&month=${filterMonth}`)
       if (!response.ok) {
         throw new Error('Failed to fetch incidents')
       }
@@ -107,13 +110,21 @@ export default function ReportListPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [currentPage, itemsPerPage, sortField, sortOrder, debouncedSearchTerm, filterCategory, showDeleted, debouncedPatientIdSearch])
+  }, [currentPage, itemsPerPage, sortField, sortOrder, debouncedSearchTerm, filterCategory, showDeleted, debouncedPatientIdSearch, filterYear, filterMonth])
 
   useEffect(() => {
     fetchIncidents()
-    }, [currentPage, debouncedSearchTerm, sortField, sortOrder, filterCategory, showDeleted, fetchIncidents])
+  }, [currentPage, debouncedSearchTerm, sortField, sortOrder, filterCategory, showDeleted, fetchIncidents, filterYear, filterMonth])
 
+ const handleYearChange = (value: string) => {
+    setFilterYear(value)
+    setCurrentPage(1)
+  }
 
+  const handleMonthChange = (value: string) => {
+    setFilterMonth(value)
+    setCurrentPage(1)
+  }
     // Debounce the patient ID search term
   const debouncedSetPatientIdSearch = useCallback(
     debounce((value: string) => {
@@ -317,7 +328,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="search">キーワード検索</Label>
+            <Label htmlFor="search">フリー検索</Label>
             <Input
               id="search"
               type="text"
@@ -357,17 +368,38 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               </SelectContent>
             </Select>
           </div>
-          {session?.user.role === 'ADMIN' && (
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="show-deleted">削除済みを表示</Label>
-              <input
-                type="checkbox"
-                id="show-deleted"
-                checked={showDeleted}
-                onChange={(e) => setShowDeleted(e.target.checked)}
-              />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="year-filter">年</Label>
+              <Select value={filterYear} onValueChange={handleYearChange}>
+                <SelectTrigger id="year-filter" className="dark:border-gray-700">
+                  <SelectValue placeholder="年を選択" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全て</SelectItem>
+                  {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                    <SelectItem key={year} value={year.toString()}>{year}年</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          )}
+            <div>
+              <Label htmlFor="month-filter">月</Label>
+              <Select value={filterMonth} onValueChange={handleMonthChange}>
+                <SelectTrigger id="month-filter" className="dark:border-gray-700">
+                  <SelectValue placeholder="月を選択" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">全て</SelectItem>
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                    <SelectItem key={month} value={month.toString().padStart(2, '0')}>{month}月</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
         </CardContent>
       </Card>
 

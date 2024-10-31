@@ -373,7 +373,7 @@ type IncidentFormProps = {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-green-50 p-4 rounded-md dark:bg-gray-800 dark:text-white">       
         <div>
-          <Label htmlFor="discovererName">発見者の氏名 (任意)</Label>
+          <Label htmlFor="discovererName">発見者の氏名</Label>
           <Input
             id="discovererName"
             name="discovererName"

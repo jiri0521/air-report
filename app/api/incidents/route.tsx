@@ -13,6 +13,10 @@ interface WhereClause {
   }>;
   category?: string;
   isDeleted?: boolean;
+  occurrenceDateTime?: {
+    gte?: Date;
+    lt?: Date;
+  };
 }
 
 export async function GET(req: NextRequest) {
@@ -31,6 +35,8 @@ export async function GET(req: NextRequest) {
     const category = searchParams.get('category')
     const showDeleted = searchParams.get('showDeleted') === 'true'
     const patientId = searchParams.get('patientId') || ''
+    const year = searchParams.get('year')
+    const month = searchParams.get('month')
 
     const skip = (page - 1) * perPage
 
@@ -56,6 +62,18 @@ export async function GET(req: NextRequest) {
       whereClause.category = category
     }
 
+    if (year) {
+      const startDate = new Date(parseInt(year), month ? parseInt(month) - 1 : 0, 1)
+      const endDate = month
+        ? new Date(parseInt(year), parseInt(month), 0)
+        : new Date(parseInt(year) + 1, 0, 1)
+
+      whereClause.occurrenceDateTime = {
+        gte: startDate,
+        lt: endDate
+      }
+    }
+
     const [incidents, totalCount] = await Promise.all([
       prisma.incident.findMany({
         where: whereClause,
@@ -74,7 +92,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
 
 
 export async function PUT(req: NextRequest) {
