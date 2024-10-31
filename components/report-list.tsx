@@ -28,6 +28,8 @@ export type Incident = {
   patientDialysis: string
   involvedPartyProfession: string
   involvedPartyExperience: string
+  involvedPartyName: string | null
+  discovererName: string | null
   discovererProfession: string
   occurrenceDateTime: string
   location: string
@@ -53,6 +55,7 @@ export type Incident = {
   countermeasures: string | null
   comment: string
   isDeleted: boolean
+  userId: string
 }
 
 export default function ReportListPage() {
@@ -84,7 +87,7 @@ export default function ReportListPage() {
 
   const [showDeleted, setShowDeleted] = useState(false)
   const { data: session } = useSession()
-
+  const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
  
@@ -173,6 +176,9 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         occurrenceDateTime: new Date(updatedIncident.occurrenceDateTime).toISOString(),
         reportToDoctor: new Date(updatedIncident.reportToDoctor).toISOString(),
         reportToSupervisor: new Date(updatedIncident.reportToSupervisor).toISOString(),
+        involvedPartyName: updatedIncident.involvedPartyName || '', // null の場合は空文字列にする
+        discovererName: updatedIncident.discovererName || '',
+
       };
   
       const response = await fetch(`/api/incidents/${formattedIncident.id}`, {
@@ -540,6 +546,12 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <div className="font-semibold">透析の有無:</div>
                     <div className="col-span-2">{selectedIncident.patientDialysis}</div>
                   </div>
+                  {(isAdminOrManager || session?.user?.id === selectedIncident.userId) && (
+                    <div className="grid grid-cols-3 gap-4 py-2">
+                      <div className="font-semibold">当事者の氏名:</div>
+                      <div className="col-span-2">{selectedIncident.involvedPartyName}</div>
+                    </div>
+                  )}
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">当事者の職種:</div>
                     <div className="col-span-2">{selectedIncident.involvedPartyProfession}</div>
@@ -547,6 +559,10 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">当事者の経験年数:</div>
                     <div className="col-span-2">{selectedIncident.involvedPartyExperience}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">発見者の氏名:</div>
+                    <div className="col-span-2">{selectedIncident.discovererName}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">発見者の職種:</div>
@@ -670,7 +686,8 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               cooperation: selectedIncident.cooperation || [], // ここを修正
               explanation: selectedIncident.explanation || [], // ここを修正
               patientId: selectedIncident.patientId || '', // 追加: patientIdを初期データに含める
-              
+              involvedPartyName: selectedIncident.involvedPartyName || '', // ここを修正
+              discovererName: selectedIncident.discovererName || '' // 追加
             }}
               onSubmit={handleUpdateIncident}
               onCancel={() => setIsEditDialogOpen(false)}

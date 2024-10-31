@@ -25,6 +25,8 @@ type Incident = {
   involvedPartyProfession: string
   involvedPartyExperience: string
   discovererProfession: string
+  involvedPartyName: string | null
+  discovererName: string | null
   occurrenceDateTime: string
   location: string
   reportToDoctor: string
@@ -49,6 +51,7 @@ type Incident = {
   countermeasures: string | null
   comment:string
   isDeleted: boolean
+  userId: string
 }
 
 
@@ -224,7 +227,7 @@ type IncidentFormProps = {
     const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
     const [isLoading, setIsLoading] = useState(false)
     
-
+    const canViewInvolvedPartyName = isAdminOrManager || session?.user?.id === formData.userId
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string, fieldName?: string) => {
     if (typeof e === 'string' && fieldName) {
@@ -368,9 +371,52 @@ type IncidentFormProps = {
           </Select>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-green-50 p-4 rounded-md dark:bg-gray-800 dark:text-white">       
         <div>
-          <Label htmlFor="involvedPartyProfession">当事者の職種</Label>
+          <Label htmlFor="discovererName">発見者の氏名 (任意)</Label>
+          <Input
+            id="discovererName"
+            name="discovererName"
+            value={formData.discovererName || ''}
+            onChange={handleInputChange}
+            className="dark:border-gray-700"
+          />
+        </div>
+        <div>
+        <Label htmlFor="discovererProfession">発見者の職種</Label>
+        <Select
+          name="discovererProfession"
+          value={formData.discovererProfession}
+          onValueChange={(value) => handleInputChange(value, 'discovererProfession')}
+        >
+          <SelectTrigger id="discovererProfession" className="dark:border-gray-700">
+            <SelectValue placeholder="職種を選択" />
+          </SelectTrigger>
+          <SelectContent className="dark:border-gray-700">
+            {professions.map((profession) => (
+              <SelectItem key={profession} value={profession}>
+                {profession}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        </div>             
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-green-50 p-4 rounded-md dark:bg-gray-800 dark:text-white">
+      {canViewInvolvedPartyName && (
+      <div>
+          <Label htmlFor="involvedPartyName">当事者の氏名</Label>
+                <Input
+                  id="involvedPartyName"
+                  name="involvedPartyName"
+                  value={formData.involvedPartyName || ''}
+                  onChange={handleInputChange}
+                  className="dark:border-gray-700"
+                />
+        </div>
+      )}
+        <div>
+          <Label htmlFor="involvedPartyProfession" className="grid grid-cols-1 md:grid-cols-2 gap-4">当事者の職種</Label>
           <Select
             name="involvedPartyProfession"
             value={formData.involvedPartyProfession}
@@ -400,25 +446,7 @@ type IncidentFormProps = {
           />
         </div>
       </div>
-      <div>
-        <Label htmlFor="discovererProfession">発見者の職種</Label>
-        <Select
-          name="discovererProfession"
-          value={formData.discovererProfession}
-          onValueChange={(value) => handleInputChange(value, 'discovererProfession')}
-        >
-          <SelectTrigger id="discovererProfession" className="dark:border-gray-700">
-            <SelectValue placeholder="職種を選択" />
-          </SelectTrigger>
-          <SelectContent className="dark:border-gray-700">
-            {professions.map((profession) => (
-              <SelectItem key={profession} value={profession}>
-                {profession}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      
       <div>
         <Label htmlFor="occurrenceDateTime">発生日時</Label>
         <Input

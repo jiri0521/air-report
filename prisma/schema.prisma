@@ -17,8 +17,10 @@ model Incident {
   patientRespirator          String
   patientDialysis            String
   involvedPartyProfession    String
-  involvedPartyExperience     String
+  involvedPartyExperience    String
+  involvedPartyName          String?  // Changed to allow null
   discovererProfession       String
+  discovererName             String?  // Changed to allow null
   occurrenceDateTime         DateTime
   location                   String
   reportToDoctor             DateTime
@@ -40,14 +42,15 @@ model Incident {
   system                     String[]
   cooperation                String[]
   explanation                String[]
-  countermeasures            String? // New field for countermeasures (optional)
-  comment                 String?
-  userId                  String?
-  user                    User?    @relation(fields: [userId], references: [id])
-  isDeleted               Boolean  @default(false)
+  countermeasures            String?
+  comment                    String?
+  userId                     String?
+  user                       User?    @relation(fields: [userId], references: [id])
+  isDeleted                  Boolean  @default(false)
 
-  @@map("incidents") // これにより、このモデルがデータベースの "incidents" テーブルにマッピングされる
+  @@map("incidents")
 }
+
 
 model Account {
   userId            String

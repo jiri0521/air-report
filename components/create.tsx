@@ -33,7 +33,9 @@ type Incident = {
   patientDialysis: string
   involvedPartyProfession: string
   involvedPartyExperience: string
+  involvedPartyName: string // New field
   discovererProfession: string
+  discovererName: string // New field
   occurrenceDateTime: string
   location: string
   reportToDoctor: string
@@ -226,7 +228,9 @@ export default function Component() {
     patientDialysis: '',
     involvedPartyProfession: '',
     involvedPartyExperience: '',
+    involvedPartyName: '', // New field
     discovererProfession: '',
+    discovererName: '', // New field
     occurrenceDateTime: '',
     location: '',
     reportToDoctor: '',
@@ -350,7 +354,9 @@ export default function Component() {
         patientDialysis: '',
         involvedPartyProfession: '',
         involvedPartyExperience: '',
+        involvedPartyName:'',
         discovererProfession: '',
+        discovererName:'',
         occurrenceDateTime: '',
         location: '',
         reportToDoctor: '',
@@ -532,57 +538,85 @@ export default function Component() {
             </Select>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="involvedPartyProfession">当事者の職種</Label>
-            <Select
-              name="involvedPartyProfession"
-              value={formData.involvedPartyProfession}
-              onValueChange={(value) => handleInputChange(value, 'involvedPartyProfession')}
-            >
-              <SelectTrigger id="involvedPartyProfession" className="dark:border-gray-700">
-                <SelectValue placeholder="職種を選択" />
-              </SelectTrigger>
-              <SelectContent className="dark:border-gray-700">
-                {professions.map((profession) => (
-                  <SelectItem key={profession} value={profession}>
-                    {profession}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="involvedPartyExperience">当事者の経験年数</Label>
-            <Input
-              id="involvedPartyExperience"
-              name="involvedPartyExperience"
-              type="number"
-              value={formData.involvedPartyExperience}
-              onChange={handleInputChange}
-              className="dark:border-gray-700"
-            />
-          </div>
-        </div>
-        <div>
-          <Label htmlFor="discovererProfession">発見者の職種</Label>
-          <Select
-            name="discovererProfession"
-            value={formData.discovererProfession}
-            onValueChange={(value) => handleInputChange(value, 'discovererProfession')}
-          >
-            <SelectTrigger id="discovererProfession" className="dark:border-gray-700">
-              <SelectValue placeholder="職種を選択" />
-            </SelectTrigger>
-            <SelectContent className="dark:border-gray-700">
-              {professions.map((profession) => (
-                <SelectItem key={profession} value={profession}>
-                  {profession}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-green-50 p-4 rounded-md dark:bg-gray-800 dark:text-white">
+              <div>
+                <Label htmlFor="discovererName">発見者の氏名</Label>
+                <Input
+                  id="discovererName"
+                  name="discovererName"
+                  value={formData.discovererName}
+                  onChange={handleInputChange}
+                  className="dark:border-gray-700"
+                />
+              </div>
+              <div>
+                <Label htmlFor="discovererProfession">発見者の職種</Label>
+                <Select
+                  name="discovererProfession"
+                  value={formData.discovererProfession}
+                  onValueChange={(value) => handleInputChange(value, 'discovererProfession')}
+                >
+                  <SelectTrigger id="discovererProfession" className="dark:border-gray-700">
+                    <SelectValue placeholder="職種を選択" />
+                  </SelectTrigger>
+                  <SelectContent className="dark:border-gray-700">
+                    {professions.map((profession) => (
+                      <SelectItem key={profession} value={profession}>
+                        {profession}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-green-50 p-4 rounded-md dark:bg-gray-800 dark:text-white">
+            <div>
+                <Label htmlFor="involvedPartyName">当事者の氏名</Label>
+                <Input
+                  id="involvedPartyName"
+                  name="involvedPartyName"
+                  value={formData.involvedPartyName}
+                  onChange={handleInputChange}
+                  className="dark:border-gray-700"
+                />
+              </div>
+           
+              <div>
+                <Label htmlFor="involvedPartyProfession">当事者の職種</Label>
+                <Select
+                  name="involvedPartyProfession"
+                  value={formData.involvedPartyProfession}
+                  onValueChange={(value) => handleInputChange(value, 'involvedPartyProfession')}
+                >
+                  <SelectTrigger id="involvedPartyProfession" className="dark:border-gray-700">
+                    <SelectValue placeholder="職種を選択" />
+                  </SelectTrigger>
+                  <SelectContent className="dark:border-gray-700">
+                    {professions.map((profession) => (
+                      <SelectItem key={profession} value={profession}>
+                        {profession}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            
+
+            <div>
+              <Label htmlFor="involvedPartyExperience">当事者の経験年数</Label>
+              <Input
+                id="involvedPartyExperience"
+                name="involvedPartyExperience"
+                type="number"
+                value={formData.involvedPartyExperience}
+                onChange={handleInputChange}
+                className="dark:border-gray-700"
+              />
+            </div>
+          </div> 
         <div>
           <Label htmlFor="occurrenceDateTime">発生日時</Label>
           <Input
