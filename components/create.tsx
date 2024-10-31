@@ -441,7 +441,7 @@ export default function Component() {
       </div>
     </Card>
   )
-  const getLabelBackgroundColor = (field: string, value: string) => {
+  const getLabelBackgroundColor = (field: string) => {
     if (field === 'category') return 'bg-yellow-200'
     if (field === 'lifeThreat') return 'bg-yellow-200'
     if (field === 'trustImpact') return 'bg-yellow-200'
@@ -650,7 +650,7 @@ export default function Component() {
                 <RadioGroupItem value={category} id={`category-${category}`} className='text-red-500'/>
                 <Label 
                       htmlFor={`category-${category}`}
-                      className={`${formData.category === category ? getLabelBackgroundColor('category', category) : ''} px-1 py-1 rounded`}
+                      className={`${formData.category === category ? getLabelBackgroundColor('category') : ''} px-1 py-1 rounded`}
                     >
                       {category}
                 </Label>
@@ -672,7 +672,7 @@ export default function Component() {
                 <RadioGroupItem value={level} id={`lifeThreat-${level}`} className='text-red-500'/>
                 <Label 
                       htmlFor={`lifeThreat-${level}`}
-                      className={`${formData.lifeThreat === level ? getLabelBackgroundColor('lifeThreat', level) : ''} px-1 py-1 rounded`}
+                      className={`${formData.lifeThreat === level ? getLabelBackgroundColor('lifeThreat') : ''} px-1 py-1 rounded`}
                     >
                       {level}
                 </Label>
@@ -694,7 +694,7 @@ export default function Component() {
                 <RadioGroupItem value={level} id={`trustImpact-${level}`} className='text-red-500'/>
                 <Label 
                       htmlFor={`trustImpact-${level}`}
-                      className={`${formData.trustImpact === level ? getLabelBackgroundColor('trustImpact', level) : ''} px-1 py-1 rounded`}
+                      className={`${formData.trustImpact === level ? getLabelBackgroundColor('trustImpact') : ''} px-1 py-1 rounded`}
                     >{level}
                 </Label>
               </div>
@@ -715,7 +715,7 @@ export default function Component() {
                 <RadioGroupItem value={level} id={`impactLevel-${level}`} className='text-red-500'/>
                 <Label 
                       htmlFor={`impactLevel-${level}`}
-                      className={`${formData.impactLevel === level ? getLabelBackgroundColor('impactLevel', level) : ''} px-1 py-1 rounded`}
+                      className={`${formData.impactLevel === level ? getLabelBackgroundColor('impactLevel') : ''} px-1 py-1 rounded`}
                     >{level}
                 </Label>
               </div>
@@ -735,7 +735,7 @@ export default function Component() {
                 <RadioGroupItem value={status} id={`workStatus-${status}`} className='text-red-500'/>
                 <Label 
                       htmlFor={`workStatus-${status}`}
-                      className={`${formData.workStatus === status ? getLabelBackgroundColor('workStatus', status) : ''} px-1 py-1 rounded`}
+                      className={`${formData.workStatus === status ? getLabelBackgroundColor('workStatus') : ''} px-1 py-1 rounded`}
                     >{status}
                 </Label>
               </div>
