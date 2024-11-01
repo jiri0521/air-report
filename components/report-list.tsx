@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp, Printer } from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp, Printer, ChevronUp, ChevronDown } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js"
@@ -91,7 +91,7 @@ export default function ReportListPage() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [filterYear, setFilterYear] = useState<string>('')
   const [filterMonth, setFilterMonth] = useState<string>('')
- 
+  const [isFilterCardOpen, setIsFilterCardOpen] = useState(true)
 
 
   const fetchIncidents = useCallback(async () => {
@@ -147,6 +147,10 @@ export default function ReportListPage() {
   }, 1000),
   [setDebouncedSearchTerm, setCurrentPage]
   )
+
+  const toggleFilterCard = () => {
+    setIsFilterCardOpen(!isFilterCardOpen)
+  }
 
 const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
   const value = e.target.value
@@ -321,86 +325,95 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">インシデントレポート一覧</h1>
 
-      <Card className="mb-4 dark:border-gray-700">
-        <CardHeader>
+      <Card className="mb-4 dark:border-gray-700 max-w-[768px]">
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>検索とフィルター</CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleFilterCard}
+            aria-label={isFilterCardOpen ? "Close filter" : "Open filter"}
+          >
+            {isFilterCardOpen ? <ChevronUp /> : <ChevronDown />}
+            
+          </Button>
         </CardHeader>
-        <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="search">フリー検索</Label>
-            <Input
-              id="search"
-              type="text"
-              placeholder="キーワードを入力..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="dark:border-gray-700"
-            />
-          </div>
-          <div>
-            <Label htmlFor="patientIdSearch">患者ID検索</Label>
-            <Input
-              id="patientIdSearch"
-              type="text"
-              placeholder="患者IDを入力..."
-              value={patientIdSearch}
-              onChange={handlePatientIdSearch}
-              className="dark:border-gray-700"
-            />
-          </div>
-          </div>
-          <div>
-            <Label htmlFor="category-filter">カテゴリーフィルター</Label>
-            <Select value={filterCategory} onValueChange={handleFilterCategory}>
-              <SelectTrigger id="category-filter" className="dark:border-gray-700">
-                <SelectValue placeholder="カテゴリーを選択" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">すべて</SelectItem>
-                <SelectItem value="薬物">薬物</SelectItem>
-                <SelectItem value="検査">検査</SelectItem>
-                <SelectItem value="チューブ類">チューブ類</SelectItem>
-                <SelectItem value="転倒転落">転倒転落</SelectItem>
-                <SelectItem value="栄養">栄養</SelectItem>
-                <SelectItem value="接遇">接遇</SelectItem>
-                <SelectItem value="その他">その他</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {isFilterCardOpen && (
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="search">フリー検索</Label>
+                <Input
+                  id="search"
+                  type="text"
+                  placeholder="キーワードを入力..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="dark:border-gray-700"
+                />
+              </div>
+              <div>
+                <Label htmlFor="patientIdSearch">患者ID検索</Label>
+                <Input
+                  id="patientIdSearch"
+                  type="text"
+                  placeholder="患者IDを入力..."
+                  value={patientIdSearch}
+                  onChange={handlePatientIdSearch}
+                  className="dark:border-gray-700"
+                />
+              </div>
+            </div>
             <div>
-              <Label htmlFor="year-filter">年</Label>
-              <Select value={filterYear} onValueChange={handleYearChange}>
-                <SelectTrigger id="year-filter" className="dark:border-gray-700">
-                  <SelectValue placeholder="年を選択" />
+              <Label htmlFor="category-filter">カテゴリーフィルター</Label>
+              <Select value={filterCategory} onValueChange={handleFilterCategory}>
+                <SelectTrigger id="category-filter" className="dark:border-gray-700">
+                  <SelectValue placeholder="カテゴリーを選択" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">全て</SelectItem>
-                  {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}年</SelectItem>
-                  ))}
+                  <SelectItem value="all">すべて</SelectItem>
+                  <SelectItem value="薬物">薬物</SelectItem>
+                  <SelectItem value="検査">検査</SelectItem>
+                  <SelectItem value="チューブ類">チューブ類</SelectItem>
+                  <SelectItem value="転倒転落">転倒転落</SelectItem>
+                  <SelectItem value="栄養">栄養</SelectItem>
+                  <SelectItem value="接遇">接遇</SelectItem>
+                  <SelectItem value="その他">その他</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label htmlFor="month-filter">月</Label>
-              <Select value={filterMonth} onValueChange={handleMonthChange}>
-                <SelectTrigger id="month-filter" className="dark:border-gray-700">
-                  <SelectValue placeholder="月を選択" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">全て</SelectItem>
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                    <SelectItem key={month} value={month.toString().padStart(2, '0')}>{month}月</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="year-filter">年</Label>
+                <Select value={filterYear} onValueChange={handleYearChange}>
+                  <SelectTrigger id="year-filter" className="dark:border-gray-700">
+                    <SelectValue placeholder="年を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全て</SelectItem>
+                    {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                      <SelectItem key={year} value={year.toString()}>{year}年</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="month-filter">月</Label>
+                <Select value={filterMonth} onValueChange={handleMonthChange}>
+                  <SelectTrigger id="month-filter" className="dark:border-gray-700">
+                    <SelectValue placeholder="月を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全て</SelectItem>
+                    {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                      <SelectItem key={month} value={month.toString().padStart(2, '0')}>{month}月</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
 
       <div className="text-sm overflow-x-auto">
