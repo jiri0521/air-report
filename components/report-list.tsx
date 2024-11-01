@@ -19,6 +19,7 @@ import { useSession } from 'next-auth/react'
 import { toast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
 
+
 export type Incident = {
   id: number
   patientId: string
@@ -85,7 +86,7 @@ export default function ReportListPage() {
  
   const itemsPerPage = 10
 
-  const [showDeleted] = useState(false)
+  const [showDeleted,setShowDeleted] = useState(false)
   const { data: session } = useSession()
   const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
@@ -412,6 +413,17 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                 </Select>
               </div>
             </div>
+            {session?.user.role === 'ADMIN' && (
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="show-deleted">削除済みを表示</Label>
+              <input
+                type="checkbox"
+                id="show-deleted"
+                checked={showDeleted}
+                onChange={(e) => setShowDeleted(e.target.checked)}
+              />
+            </div>
+          )}
           </CardContent>
         )}
       </Card>

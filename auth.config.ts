@@ -38,6 +38,11 @@ export default {
       }
     })
   ],
+  session:{
+    // セッションの有効時間を設定
+    maxAge:60*60,//1時間
+    updateAge:60*60,//セッションが更新されるたびに有効時間がリセットされる
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
