@@ -37,6 +37,7 @@ export type Incident = {
   reportToDoctor: string
   reportToSupervisor: string
   category: string
+  medicationDetail: string // New field for detailed medication category
   lifeThreat: string
   trustImpact: string
   impactLevel: string
@@ -194,7 +195,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         reportToSupervisor: new Date(updatedIncident.reportToSupervisor).toISOString(),
         involvedPartyName: updatedIncident.involvedPartyName || '', // null の場合は空文字列にする
         discovererName: updatedIncident.discovererName || '',
-
+        medicationDetail: updatedIncident.medicationDetail || '',
       };
   
       const response = await fetch(`/api/incidents/${formattedIncident.id}`, {
@@ -646,6 +647,10 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <div className="col-span-2">{selectedIncident.category}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">薬物詳細:</div>
+                    <div className="col-span-2">{selectedIncident.medicationDetail}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">生命への危険度:</div>
                     <div className="col-span-2">{selectedIncident.lifeThreat}</div>
                   </div>
@@ -706,10 +711,6 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <div className="col-span-2">{selectedIncident.details}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
-                    <div className="font-semibold">要約:</div>
-                    <div className="col-span-2">{selectedIncident.summary}</div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">対策:</div>
                     <div className="col-span-2">{selectedIncident.countermeasures || '未対策'}</div>
                   </div>
@@ -744,7 +745,8 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               explanation: selectedIncident.explanation || [], // ここを修正
               patientId: selectedIncident.patientId || '', // 追加: patientIdを初期データに含める
               involvedPartyName: selectedIncident.involvedPartyName || '', // ここを修正
-              discovererName: selectedIncident.discovererName || '' // 追加
+              discovererName: selectedIncident.discovererName || '', // 追加
+              medicationDetail: selectedIncident.medicationDetail || '',
             }}
               onSubmit={handleUpdateIncident}
               onCancel={() => setIsEditDialogOpen(false)}
