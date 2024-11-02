@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect,useCallback,useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,15 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp, Printer, ChevronUp, ChevronDown } from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp, Printer, ChevronUp, ChevronDown, Search } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js"
 import IncidentForm from './incident-form'
-import { debounce } from 'lodash'
 import { useSession } from 'next-auth/react'
 import { toast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
+
 
 
 export type Incident = {
@@ -65,19 +65,17 @@ export default function ReportListPage() {
   const [incidents, setIncidents] = useState<Incident[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+  const [debouncedSearchTerm] = useState('')
   const [sortField, setSortField] = useState<keyof Incident>('occurrenceDateTime')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-  const [filterCategory, setFilterCategory] = useState('all')
+  const [filterCategory] = useState('all')
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null)
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null);
-  const [patientIdSearch, setPatientIdSearch] = useState('')
-  const [debouncedPatientIdSearch, setDebouncedPatientIdSearch] = useState('')
+  
  // 印刷機能を実装する関数
  const handlePrint = () => {
   if (formRef.current) {
@@ -92,16 +90,27 @@ export default function ReportListPage() {
   const { data: session } = useSession()
   const isAdminOrManager = session?.user?.role === 'ADMIN' || session?.user?.role === 'MANAGER'
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-  const [filterYear, setFilterYear] = useState<string>('')
-  const [filterMonth, setFilterMonth] = useState<string>('')
+  const [filterYear] = useState<string>('')
+  const [filterMonth] = useState<string>('')
   const [isFilterCardOpen, setIsFilterCardOpen] = useState(true)
-
+  const [searchParams, setSearchParams] = useState({
+    searchTerm: '',
+    patientIdSearch: '',
+    filterCategory: 'all',
+    filterYear: '',
+    filterMonth: '',
+  })
+  const [localSearchTerm, setLocalSearchTerm] = useState('')
+  const [localPatientIdSearch, setLocalPatientIdSearch] = useState('')
+  const [localFilterCategory, setLocalFilterCategory] = useState('all')
+  const [localFilterYear, setLocalFilterYear] = useState('')
+  const [localFilterMonth, setLocalFilterMonth] = useState('')
 
   const fetchIncidents = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${debouncedSearchTerm}&category=${filterCategory}&showDeleted=${showDeleted}&patientId=${debouncedPatientIdSearch}&year=${filterYear}&month=${filterMonth}`)
+      const response = await fetch(`/api/incidents?page=${currentPage}&perPage=${itemsPerPage}&sortField=${sortField}&sortOrder=${sortOrder}&search=${searchParams.searchTerm}&category=${searchParams.filterCategory}&showDeleted=${showDeleted}&patientId=${searchParams.patientIdSearch}&year=${searchParams.filterYear}&month=${searchParams.filterMonth}`)
       if (!response.ok) {
         throw new Error('Failed to fetch incidents')
       }
@@ -113,53 +122,34 @@ export default function ReportListPage() {
     } finally {
       setIsLoading(false)
     }
-  }, [currentPage, itemsPerPage, sortField, sortOrder, debouncedSearchTerm, filterCategory, showDeleted, debouncedPatientIdSearch, filterYear, filterMonth])
+  }, [currentPage, itemsPerPage, sortField, sortOrder, searchParams, showDeleted])
+
+  useEffect(() => {
+    fetchIncidents()
+  }, [currentPage, sortField, sortOrder, showDeleted, fetchIncidents])
+
+  const handleSearch = () => {
+    setCurrentPage(1)
+    setSearchParams({
+      searchTerm: localSearchTerm,
+      patientIdSearch: localPatientIdSearch,
+      filterCategory: localFilterCategory,
+      filterYear: localFilterYear,
+      filterMonth: localFilterMonth,
+    })
+    fetchIncidents()
+  }
+
 
   useEffect(() => {
     fetchIncidents()
   }, [currentPage, debouncedSearchTerm, sortField, sortOrder, filterCategory, showDeleted, fetchIncidents, filterYear, filterMonth])
 
- const handleYearChange = (value: string) => {
-    setFilterYear(value)
-    setCurrentPage(1)
-  }
-
-  const handleMonthChange = (value: string) => {
-    setFilterMonth(value)
-    setCurrentPage(1)
-  }
-    // Debounce the patient ID search term
-  const debouncedSetPatientIdSearch = useCallback(
-    debounce((value: string) => {
-      setDebouncedPatientIdSearch(value)
-      setCurrentPage(1)
-    }, 1000),
-    [setDebouncedPatientIdSearch, setCurrentPage]
-  )
-
-  const handlePatientIdSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setPatientIdSearch(value)
-    debouncedSetPatientIdSearch(value)
-  }
- // Debounce the search term
- const debouncedSetSearchTerm = useCallback(
-  debounce((value: string) => {
-  setDebouncedSearchTerm(value)
-  setCurrentPage(1)
-  }, 1000),
-  [setDebouncedSearchTerm, setCurrentPage]
-  )
-
+ 
   const toggleFilterCard = () => {
     setIsFilterCardOpen(!isFilterCardOpen)
   }
 
-const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value
-  setSearchTerm(value)
-  debouncedSetSearchTerm(value)
-}
 
   const handleSort = (field: keyof Incident) => {
     if (field === sortField) {
@@ -171,10 +161,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPage(1)
   }
 
-  const handleFilterCategory = (category: string) => {
-    setFilterCategory(category)
-    setCurrentPage(1)
-  }
+
 
   const handleViewDetails = (incident: Incident) => {
     setSelectedIncident(incident)
@@ -338,20 +325,20 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
             aria-label={isFilterCardOpen ? "Close filter" : "Open filter"}
           >
             {isFilterCardOpen ? <ChevronUp /> : <ChevronDown />}
-            
           </Button>
         </CardHeader>
         {isFilterCardOpen && (
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="search">フリー検索</Label>
+                <Label htmlFor="searchTerm">フリー検索</Label>
                 <Input
-                  id="search"
+                  id="searchTerm"
+                  name="searchTerm"
                   type="text"
                   placeholder="キーワードを入力..."
-                  value={searchTerm}
-                  onChange={handleSearch}
+                  value={localSearchTerm}
+                  onChange={(e) => setLocalSearchTerm(e.target.value)}
                   className="dark:border-gray-700"
                 />
               </div>
@@ -359,18 +346,19 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                 <Label htmlFor="patientIdSearch">患者ID検索</Label>
                 <Input
                   id="patientIdSearch"
+                  name="patientIdSearch"
                   type="text"
                   placeholder="患者IDを入力..."
-                  value={patientIdSearch}
-                  onChange={handlePatientIdSearch}
+                  value={localPatientIdSearch}
+                  onChange={(e) => setLocalPatientIdSearch(e.target.value)}
                   className="dark:border-gray-700"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="category-filter">カテゴリーフィルター</Label>
-              <Select value={filterCategory} onValueChange={handleFilterCategory}>
-                <SelectTrigger id="category-filter" className="dark:border-gray-700">
+              <Label htmlFor="filterCategory">カテゴリーフィルター</Label>
+              <Select value={localFilterCategory} onValueChange={setLocalFilterCategory}>
+                <SelectTrigger id="filterCategory" className="dark:border-gray-700">
                   <SelectValue placeholder="カテゴリーを選択" />
                 </SelectTrigger>
                 <SelectContent>
@@ -387,9 +375,9 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="year-filter">年</Label>
-                <Select value={filterYear} onValueChange={handleYearChange}>
-                  <SelectTrigger id="year-filter" className="dark:border-gray-700">
+                <Label htmlFor="filterYear">年</Label>
+                <Select value={localFilterYear} onValueChange={setLocalFilterYear}>
+                  <SelectTrigger id="filterYear" className="dark:border-gray-700">
                     <SelectValue placeholder="年を選択" />
                   </SelectTrigger>
                   <SelectContent>
@@ -401,9 +389,9 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="month-filter">月</Label>
-                <Select value={filterMonth} onValueChange={handleMonthChange}>
-                  <SelectTrigger id="month-filter" className="dark:border-gray-700">
+                <Label htmlFor="filterMonth">月</Label>
+                <Select value={localFilterMonth} onValueChange={setLocalFilterMonth}>
+                  <SelectTrigger id="filterMonth" className="dark:border-gray-700">
                     <SelectValue placeholder="月を選択" />
                   </SelectTrigger>
                   <SelectContent>
@@ -416,16 +404,20 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               </div>
             </div>
             {session?.user.role === 'ADMIN' && (
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="show-deleted">削除済みを表示</Label>
-              <input
-                type="checkbox"
-                id="show-deleted"
-                checked={showDeleted}
-                onChange={(e) => setShowDeleted(e.target.checked)}
-              />
-            </div>
-          )}
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="show-deleted">削除済みを表示</Label>
+                <input
+                  type="checkbox"
+                  id="show-deleted"
+                  checked={showDeleted}
+                  onChange={(e) => setShowDeleted(e.target.checked)}
+                />
+              </div>
+            )}
+            <Button onClick={handleSearch} className="w-full">
+              <Search className="w-4 h-4 mr-2" />
+              検索
+            </Button>
           </CardContent>
         )}
       </Card>
