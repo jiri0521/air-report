@@ -42,6 +42,7 @@ type Incident = {
   reportToSupervisor: string
   category: string
   medicationDetail: string // New field for detailed medication category
+  tubeDetail: string // New field for detailed tube category
   lifeThreat: string
   trustImpact: string
   impactLevel: string
@@ -238,6 +239,7 @@ export default function Component() {
     reportToSupervisor: '',
     category: '',
     medicationDetail: '',
+    tubeDetail: '', // New field for detailed tube category
     lifeThreat: '',
     trustImpact: '',
     impactLevel: '',
@@ -365,6 +367,7 @@ export default function Component() {
         reportToSupervisor: '',
         category: '',
         medicationDetail: '',
+        tubeDetail: '',
         lifeThreat: '',
         trustImpact: '',
         impactLevel: '',
@@ -674,53 +677,78 @@ export default function Component() {
         </div>
 
         <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
-              <Label className="block mb-2">インシデントのカテゴリー</Label>
-              <RadioGroup
-                name="category"
-                value={formData.category}
-                onValueChange={(value) => handleInputChange(value, 'category')}
-                className="flex flex-wrap gap-4"
-                required
+        <Label className="block mb-2">インシデントのカテゴリー</Label>
+        <RadioGroup
+          name="category"
+          value={formData.category}
+          onValueChange={(value) => handleInputChange(value, 'category')}
+          className="flex flex-wrap gap-4"
+          required
+        >
+          {['薬物', '検査', '処置', 'チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
+            <div key={category} className="flex items-center space-x-2">
+              <RadioGroupItem value={category} id={`category-${category}`} className='text-red-500'/>
+              <Label 
+                htmlFor={`category-${category}`}
+                className={`${formData.category === category ? getLabelBackgroundColor('category') : ''} px-1 py-1 rounded`}
               >
-                {['薬物', '検査', '処置', 'チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <RadioGroupItem value={category} id={`category-${category}`} className='text-red-500'/>
-                    <Label 
-                      htmlFor={`category-${category}`}
-                      className={`${formData.category === category ? getLabelBackgroundColor('category') : ''} px-1 py-1 rounded`}
-                    >
-                      {category}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+                {category}
+              </Label>
             </div>
+          ))}
+        </RadioGroup>
+      </div>
 
-            {formData.category === '薬物' && (
-              <div className='bg-blue-50 p-4 rounded-md dark:bg-gray-700 dark:text-white'>
-                <Label htmlFor="medicationDetail" className="block mb-2">薬物詳細カテゴリー</Label>
-                <Select
-                  name="medicationDetail"
-                  value={formData.medicationDetail}
-                  onValueChange={(value) => handleInputChange(value, 'medicationDetail')}
-                >
-                  <SelectTrigger id="medicationDetail" className="dark:border-gray-600">
-                    <SelectValue placeholder="詳細カテゴリーを選択" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="点滴">点滴</SelectItem>
-                    <SelectItem value="内服">内服</SelectItem>
-                    <SelectItem value="皮下注">皮下注</SelectItem>
-                    <SelectItem value="皮内注">皮内注</SelectItem>
-                    <SelectItem value="静注">静注</SelectItem>
-                    <SelectItem value="筋注">筋注</SelectItem>
-                    <SelectItem value="外用薬">外用薬</SelectItem>
-                    <SelectItem value="麻薬">麻薬</SelectItem>
-                    <SelectItem value="その他">その他</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+      {formData.category === '薬物' && (
+        <div className='bg-blue-50 p-4 rounded-md dark:bg-gray-700 dark:text-white'>
+          <Label htmlFor="medicationDetail" className="block mb-2">薬物詳細カテゴリー</Label>
+          <Select
+            name="medicationDetail"
+            value={formData.medicationDetail}
+            onValueChange={(value) => handleInputChange(value, 'medicationDetail')}
+          >
+            <SelectTrigger id="medicationDetail" className="dark:border-gray-600">
+              <SelectValue placeholder="詳細カテゴリーを選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="点滴">点滴</SelectItem>
+              <SelectItem value="内服">内服</SelectItem>
+              <SelectItem value="皮下注">皮下注</SelectItem>
+              <SelectItem value="皮内注">皮内注</SelectItem>
+              <SelectItem value="静注">静注</SelectItem>
+              <SelectItem value="筋注">筋注</SelectItem>
+              <SelectItem value="外用薬">外用薬</SelectItem>
+              <SelectItem value="麻薬">麻薬</SelectItem>
+              <SelectItem value="その他">その他</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {formData.category === 'チューブ類' && (
+        <div className='bg-blue-50 p-4 rounded-md dark:bg-gray-700 dark:text-white'>
+          <Label htmlFor="tubeDetail" className="block mb-2">チューブ類詳細カテゴリー</Label>
+          <Select
+            name="tubeDetail"
+            value={formData.tubeDetail}
+            onValueChange={(value) => handleInputChange(value, 'tubeDetail')}
+          >
+            <SelectTrigger id="tubeDetail" className="dark:border-gray-600">
+              <SelectValue placeholder="詳細カテゴリーを選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="胃瘻カテ">胃瘻カテ</SelectItem>
+              <SelectItem value="NGカテ">NGカテ</SelectItem>
+              <SelectItem value="CVカテ">CVカテ</SelectItem>
+              <SelectItem value="尿カテ">尿カテ</SelectItem>
+              <SelectItem value="ドレーン類">ドレーン類</SelectItem>
+              <SelectItem value="カニューレ">カニューレ</SelectItem>
+              <SelectItem value="点滴">点滴</SelectItem>
+              <SelectItem value="その他">その他</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
         <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
           <Label className="block mb-2">生命への危険度</Label>
           <RadioGroup

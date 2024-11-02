@@ -33,6 +33,7 @@ type Incident = {
   reportToSupervisor: string
   category: string
   medicationDetail: string // New field for detailed medication category
+  tubeDetail: string
   lifeThreat: string
   trustImpact: string
   impactLevel: string
@@ -502,13 +503,18 @@ type IncidentFormProps = {
           {['薬物', '検査', '処置', 'チューブ類', '転倒転落', '栄養', '接遇', 'その他'].map((category) => (
             <div key={category} className="flex items-center space-x-2">
               <RadioGroupItem value={category} id={`category-${category}`} className='text-red-500'/>
-              <Label htmlFor={`category-${category}`}>{category}</Label>
+              <Label 
+                htmlFor={`category-${category}`}
+                className={`${formData.category === category ? getLabelBackgroundColor('category') : ''} px-1 py-1 rounded`}
+              >
+                {category}
+              </Label>
             </div>
           ))}
         </RadioGroup>
       </div>
 
-            {formData.category === '薬物' && (
+      {formData.category === '薬物' && (
         <div className='bg-blue-50 p-4 rounded-md dark:bg-gray-700 dark:text-white'>
           <Label htmlFor="medicationDetail" className="block mb-2">薬物詳細カテゴリー</Label>
           <Select
@@ -534,6 +540,30 @@ type IncidentFormProps = {
         </div>
       )}
 
+      {formData.category === 'チューブ類' && (
+        <div className='bg-blue-50 p-4 rounded-md dark:bg-gray-700 dark:text-white'>
+          <Label htmlFor="tubeDetail" className="block mb-2">チューブ類詳細カテゴリー</Label>
+          <Select
+            name="tubeDetail"
+            value={formData.tubeDetail}
+            onValueChange={(value) => handleInputChange(value, 'tubeDetail')}
+          >
+            <SelectTrigger id="tubeDetail" className="dark:border-gray-600">
+              <SelectValue placeholder="詳細カテゴリーを選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="胃瘻カテ">胃瘻カテ</SelectItem>
+              <SelectItem value="NGカテ">NGカテ</SelectItem>
+              <SelectItem value="CVカテ">CVカテ</SelectItem>
+              <SelectItem value="尿カテ">尿カテ</SelectItem>
+              <SelectItem value="ドレーン類">ドレーン類</SelectItem>
+              <SelectItem value="カニューレ">カニューレ</SelectItem>
+              <SelectItem value="点滴">点滴</SelectItem>
+              <SelectItem value="その他">その他</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       <div className='bg-gray-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
         <Label className="block mb-2">生命への危険度</Label>
         <RadioGroup

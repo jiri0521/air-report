@@ -38,6 +38,7 @@ export type Incident = {
   reportToSupervisor: string
   category: string
   medicationDetail: string // New field for detailed medication category
+  tubeDetail: string,
   lifeThreat: string
   trustImpact: string
   impactLevel: string
@@ -651,6 +652,10 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
                     <div className="col-span-2">{selectedIncident.medicationDetail}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">チューブ類詳細:</div>
+                    <div className="col-span-2">{selectedIncident.tubeDetail}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">生命への危険度:</div>
                     <div className="col-span-2">{selectedIncident.lifeThreat}</div>
                   </div>
@@ -747,6 +752,7 @@ const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
               involvedPartyName: selectedIncident.involvedPartyName || '', // ここを修正
               discovererName: selectedIncident.discovererName || '', // 追加
               medicationDetail: selectedIncident.medicationDetail || '',
+              tubeDetail: selectedIncident.tubeDetail || '',
             }}
               onSubmit={handleUpdateIncident}
               onCancel={() => setIsEditDialogOpen(false)}

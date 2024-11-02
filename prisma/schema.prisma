@@ -27,6 +27,7 @@ model Incident {
   reportToSupervisor         DateTime
   category                   String
   medicationDetail           String? // New field for detailed medication category
+  tubeDetail                 String? // New field for detailed tube category
   lifeThreat                 String
   trustImpact                String
   impactLevel                String
