@@ -7,7 +7,7 @@ import { toast } from "@/hooks/use-toast"
 import { CountdownDialog } from './countdown-dialog'
 
 
-const INACTIVITY_TIMEOUT = 174000 // 180 seconds in milliseconds
+const INACTIVITY_TIMEOUT = 160000 // 180 seconds in milliseconds
 const COUNTDOWN_DURATION = 20 // 20 seconds countdown
 
 export function InactivityTracker() {
