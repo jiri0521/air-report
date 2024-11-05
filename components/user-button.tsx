@@ -26,6 +26,9 @@ export default async function UserButton() {
     );
   }
 
+// Get the first two characters of the user's name
+const userInitials = session.user.name ? session.user.name.slice(0, 2) : "";
+
   return (
     <div className="flex gap-2 items-center">
       <span className="hidden text-sm sm:inline-flex"></span>
@@ -39,7 +42,7 @@ export default async function UserButton() {
                alt={session.user.name ?? ""}
               />
               )}
-              <AvatarFallback>{session.user.name}</AvatarFallback>
+              <AvatarFallback>{userInitials}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
