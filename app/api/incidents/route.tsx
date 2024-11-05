@@ -15,7 +15,7 @@ interface WhereClause {
   isDeleted?: boolean;
   occurrenceDateTime?: {
     gte?: Date;
-    lt?: Date;
+    lte?: Date;  // Changed from lt to lte
   };
 }
 
@@ -64,13 +64,19 @@ export async function GET(req: NextRequest) {
 
     if (year) {
       const startDate = new Date(parseInt(year), month ? parseInt(month) - 1 : 0, 1)
-      const endDate = month
-        ? new Date(parseInt(year), parseInt(month), 0)
-        : new Date(parseInt(year) + 1, 0, 1)
+      let endDate: Date
+      
+      if (month) {
+        // Set endDate to the last day of the selected month
+        endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59, 999)
+      } else {
+        // If only year is selected, set endDate to the last day of the year
+        endDate = new Date(parseInt(year), 11, 31, 23, 59, 59, 999)
+      }
 
       whereClause.occurrenceDateTime = {
         gte: startDate,
-        lt: endDate
+        lte: endDate  // Changed from lt to lte
       }
     }
 
