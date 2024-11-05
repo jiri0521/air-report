@@ -5,6 +5,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react"
 import Header from "@/components/header";
 import { Providers } from '@/providers'
+import { InactivityTracker } from "@/components/inactivity-tracker";
 
 
 const geistSans = localFont({
@@ -42,7 +43,7 @@ export default function RootLayout({
       >
         
       <SessionProvider>
-        
+      <InactivityTracker />
           <Header />
          <Providers>{children} </Providers>
       </SessionProvider>
