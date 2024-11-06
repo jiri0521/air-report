@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus, List } from "lucide-react"
+import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus, List, User } from "lucide-react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -14,15 +14,49 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
+import IncidentForm from "@/components/incident-form"
 
 type Incident = {
   id: number
+  patientId: string
+  patientGender: string
+  patientAge: string
+  patientRespirator: string
+  patientDialysis: string
+  involvedPartyProfession: string
+  involvedPartyExperience: string
+  involvedPartyName: string | null
+  discovererName: string | null
+  discovererProfession: string
   occurrenceDateTime: string
+  location: string
+  reportToDoctor: string
+  reportToSupervisor: string
   category: string
+  medicationDetail: string // New field for detailed medication category
+  tubeDetail: string,
+  lifeThreat: string
+  trustImpact: string
   impactLevel: string
+  cause: string[]
+  details: string
+  summary: string
+  workStatus: string
+  involvedPartyFactors: string[] | null
+  workBehavior: string[] | null
+  physicalCondition: string[] | null
+  psychologicalState: string[] | null
+  medicalEquipment: string[] | null
+  medication: string[] | null
+  system: string[] | null
+  cooperation: string[] | null
+  explanation: string[] | null
   countermeasures: string | null
-  comment: string | null
-}
+  comment: string
+  isDeleted: boolean
+  userId: string
+ }
+
 
 type Announcement = {
   id: number
@@ -31,54 +65,58 @@ type Announcement = {
   createdAt: string
 }
 
-  
-
 export function TopPage() {
   const [latestReports, setLatestReports] = useState<Incident[]>([])
   const [noCountermeasuresReports, setNoCountermeasuresReports] = useState<Incident[]>([])
   const [unapprovedReports, setUnapprovedReports] = useState<Incident[]>([])
+  const [userReports, setUserReports] = useState<Incident[]>([])
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('')
   const [newAnnouncementContent, setNewAnnouncementContent] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null)
   const { data: session } = useSession()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      setError(null)
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    setError(null)
 
-      try {
-        const [incidentsResponse, announcementsResponse] = await Promise.all([
-          fetch('/api/incidents?page=1&perPage=100&sortField=occurrenceDateTime&sortOrder=desc'),
-          fetch('/api/announcements?limit=5')
-        ])
+    try {
+      const [incidentsResponse, announcementsResponse, userReportsResponse] = await Promise.all([
+        fetch('/api/incidents?page=1&perPage=100&sortField=occurrenceDateTime&sortOrder=desc'),
+        fetch('/api/announcements?limit=5'),
+        fetch('/api/incidents/')
+      ])
 
-        if (!incidentsResponse.ok || !announcementsResponse.ok) {
-          throw new Error('Failed to fetch data')
-        }
-
-        const incidentsData = await incidentsResponse.json()
-        const announcementsData = await announcementsResponse.json()
-
-        const allIncidents = incidentsData.incidents
-
-        setLatestReports(allIncidents.slice(0, 5))
-        setNoCountermeasuresReports(allIncidents.filter((incident: Incident) => !incident.countermeasures))
-        setUnapprovedReports(allIncidents.filter((incident: Incident) => !incident.comment))
-        setAnnouncements(announcementsData.announcements)
-        setLoading(false)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-        setError('データの取得中にエラーが発生しました。')
-        setLoading(false)
+      if (!incidentsResponse.ok || !announcementsResponse.ok || !userReportsResponse.ok) {
+        console.log(error)
+        throw new Error('Failed to fetch data')
       }
-    }
 
+      const incidentsData = await incidentsResponse.json()
+      const announcementsData = await announcementsResponse.json()
+      const userReportsData = await userReportsResponse.json()
+
+      const allIncidents = incidentsData.incidents
+
+      setLatestReports(allIncidents.slice(0, 5))
+      setNoCountermeasuresReports(allIncidents.filter((incident: Incident) => !incident.countermeasures))
+      setUnapprovedReports(allIncidents.filter((incident: Incident) => !incident.comment))
+      setAnnouncements(announcementsData.announcements)
+      setUserReports(userReportsData.incidents)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      setError('データの取得中にエラーが発生しました。')
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
     fetchData()
-  }, [error])
+  }, [fetchData])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -106,6 +144,31 @@ export function TopPage() {
       setIsDialogOpen(false)
     } catch (error) {
       console.error('Error adding announcement:', error)
+    }
+  }
+
+  const handleIncidentClick = (incident: Incident) => {
+    setSelectedIncident(incident)
+  }
+
+  const handleIncidentSubmit = async (updatedIncident: Incident) => {
+    try {
+      const response = await fetch(`/api/incidents/${updatedIncident.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedIncident),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update incident')
+      }
+
+      setSelectedIncident(null)
+      fetchData() // Refresh the data after update
+    } catch (error) {
+      console.error('Error updating incident:', error)
     }
   }
 
@@ -334,6 +397,56 @@ export function TopPage() {
           <div className="mt-12">
             <Card className="dark:border-gray-700">
               <CardHeader>
+                <CardTitle className="flex items-center">
+                  <User className="mr-2 text-purple-500" />
+                  自分の提出したレポート
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[250px]">
+                  {loading ? <TableSkeleton /> : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>日付</TableHead>
+                          <TableHead>カテゴリー</TableHead>
+                          <TableHead>影響度</TableHead>
+                          <TableHead>状態</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {userReports.map((report) => (
+                          <TableRow 
+                            key={report.id} 
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                            onClick={() => handleIncidentClick(report)}
+                          >
+                            <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
+                            <TableCell>{report.category}</TableCell>
+                            <TableCell>{report.impactLevel}</TableCell>
+                            <TableCell>
+                              {!report.countermeasures ? (
+                                <Badge variant="outline" className="bg-yellow-100 text-yellow-800">未対策</Badge>
+                              ) : !report.comment ? (
+                                <Badge variant="outline" className="bg-blue-100 text-blue-800">未承認</Badge>
+                              ) : (
+                                <Badge variant="outline" className="bg-green-100 text-green-800">完了</Badge>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
+
+
+          <div className="mt-12">
+            <Card className="dark:border-gray-700">
+              <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Bell className="mr-2 text-yellow-500" />
@@ -414,6 +527,41 @@ export function TopPage() {
           </p>
         </div>
       </footer>
+
+   
+      {selectedIncident && (
+        <Dialog open={!!selectedIncident} onOpenChange={() => setSelectedIncident(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh]">
+            <DialogHeader>
+              <DialogTitle>インシデント詳細</DialogTitle>
+            </DialogHeader>
+            <ScrollArea className="h-[calc(90vh-100px)]">
+              {selectedIncident && (
+                <IncidentForm
+                  initialData={{
+                    ...selectedIncident,
+                    workBehavior: selectedIncident.workBehavior || [],
+                    physicalCondition: selectedIncident.physicalCondition || [],
+                    psychologicalState: selectedIncident.psychologicalState || [],
+                    medicalEquipment: selectedIncident.medicalEquipment || [],
+                    medication: selectedIncident.medication || [],
+                    system: selectedIncident.system || [],
+                    cooperation: selectedIncident.cooperation || [],
+                    explanation: selectedIncident.explanation || [],
+                    patientId: selectedIncident.patientId || '',
+                    involvedPartyName: selectedIncident.involvedPartyName || '',
+                    discovererName: selectedIncident.discovererName || '',
+                    medicationDetail: selectedIncident.medicationDetail || '',
+                    tubeDetail: selectedIncident.tubeDetail || '',
+                  }}
+                  onSubmit={handleIncidentSubmit}
+                  onCancel={() => setSelectedIncident(null)}
+                />
+              )}
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }

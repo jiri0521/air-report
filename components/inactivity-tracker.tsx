@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { toast } from "@/hooks/use-toast"
 import { CountdownDialog } from './countdown-dialog'
-
 
 const INACTIVITY_TIMEOUT = 160000 // 180 seconds in milliseconds
 const COUNTDOWN_DURATION = 20 // 20 seconds countdown
@@ -62,13 +60,20 @@ export function InactivityTracker() {
   }, [session, lastActivity, showCountdown])
 
   const handleLogout = async () => {
-    await signOut({ redirect: false })
-    toast({
-      title: "セッション終了",
-      description: "一定時間の無操作によりログアウトしました。",
-      variant: "default",
-    })
-    router.push('/login')
+    try {
+      // Destroy the session on the server
+      await fetch('/api/auth/logout', { method: 'POST' })
+      
+      // Sign out on the client
+      await signOut({ redirect: false })
+      
+     
+      
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      
+    }
   }
 
   return (

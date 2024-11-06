@@ -162,7 +162,10 @@ async function fetchTrendData(dateRangeStart: Date, dateRangeEnd: Date, departme
       ...whereClause,
       occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd } 
     },
-    select: { occurrenceDateTime: true }
+    select: { occurrenceDateTime: true },
+    orderBy: {
+      occurrenceDateTime: 'asc' // 昇順で並べる
+    }
   });
   
     const trendData = incidents.reduce((acc: Record<string, number>, incident: IncidentWithDateTime) => {

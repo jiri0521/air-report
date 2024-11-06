@@ -28,7 +28,7 @@ interface AnalyticsData {
 }
 
 export function Analytics() {
-  const [dateRange, setDateRange] = useState("last30days")
+  const [dateRange, setDateRange] = useState("lastyear")
   const [department, setDepartment] = useState("all")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

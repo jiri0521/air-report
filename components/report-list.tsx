@@ -451,8 +451,8 @@ export default function ReportListPage() {
               </TableHead>
               <TableHead className="w-[80px] dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('comment')}>コメント</Button>
-              </TableHead>
-              <TableHead className="w-[80px] text-sm dark:border-gray-700">編集</TableHead>
+              </TableHead>            
+              <TableHead className="w-[80px] text-sm dark:border-gray-700">編集</TableHead>             
               {session?.user.role === 'ADMIN' && (
               <TableHead className="w-[80px] text-sm dark:border-gray-700">操作</TableHead>
             )}
@@ -723,8 +723,10 @@ export default function ReportListPage() {
         </DialogContent>
       </Dialog>
     </form>
+    
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} >
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <ScrollArea>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>インシデント編集 (ID: {selectedIncident?.id})</DialogTitle>
           </DialogHeader>
@@ -751,6 +753,7 @@ export default function ReportListPage() {
             />
           )}
         </DialogContent>
+        </ScrollArea>
       </Dialog>
 
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
@@ -770,12 +773,12 @@ export default function ReportListPage() {
               className="w-full mt-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
             >
               閉じる
-            </Button>
-           
+            </Button>          
           </div>
-
         </DialogContent>
+        
       </Dialog>
+   
     </div>
   )
 }

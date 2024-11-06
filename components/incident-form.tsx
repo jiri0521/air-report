@@ -734,6 +734,7 @@ type IncidentFormProps = {
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
           キャンセル
         </Button>
+        {canViewInvolvedPartyName && (
         <Button type="submit" className='bg-blue-500 dark:bg-white' disabled={isLoading}>
           {isLoading ? (
             <>
@@ -744,6 +745,7 @@ type IncidentFormProps = {
             '保存'
           )}
         </Button>
+        )}
       </div>
        </div>
      </form>
