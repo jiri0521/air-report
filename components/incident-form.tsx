@@ -13,7 +13,8 @@ import { format, parseISO } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import { useSession } from "next-auth/react"
 import { Loader2 } from "lucide-react"
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Info } from "lucide-react"
 
 type Incident = {
   id: number
@@ -102,6 +103,7 @@ const HumanFactorsCheckboxes: React.FC<FactorsCheckboxesProps> = ({ formData, se
       ))}
     </div>
   )
+
 
   return (
     <div className="space-y-4">
@@ -296,7 +298,19 @@ type IncidentFormProps = {
     if (field === 'workStatus') return 'bg-yellow-200'
     return ''
   }
-    
+
+  const impactLevelExplanations = {
+    'レベル0': '誤った行為が発生したが、患者に実施されなかった場合（仮に実施されたとすれば、何らかの被害が予想された）。',
+    'レベル1': '誤った行為を患者に実施したが、結果として患者に影響を及ぼすに至らなかった場合。',
+    'レベル2': '誤った医療または管理により、患者に影響を与えた、または何らかの影響を与えた可能性がある場合。',
+    'レベル3a': '行なった医療または管理により、本来必要でなかった簡単な治療や処置が必要になった場合。',
+    'レベル3b': '誤った医療または管理により、本来必要でなかった治療や処置が必要になった場合。',
+    'レベル4': '行なった医療または管理により、生活に影響する重大な永続的障害が発生した可能性がある場合。',
+    'レベル5': '行なった医療または管理が死因となった場合。',
+  }
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false)
+
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -477,9 +491,9 @@ type IncidentFormProps = {
 
       <div>
         <Label htmlFor="reportToDoctor">医師への報告日時
-          <Button type="button" onClick={copyReportTime} className="whitespace-nowrap">
-            所属長への報告日時と同じ
-          </Button>
+          <Button type="button" onClick={copyReportTime} className="text-blue-500 text-xs bg-gray-100">
+              所属長への報告日時と同じ
+            </Button>
         </Label>
         <Input
           type="datetime-local"
@@ -610,26 +624,53 @@ type IncidentFormProps = {
         </RadioGroup>
       </div>
       <div className='bg-pink-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
-        <Label className="block mb-2">影響レベル</Label>
-        <RadioGroup
-          name="impactLevel"
-          value={formData.impactLevel}
-          onValueChange={(value) => handleInputChange(value, 'impactLevel')}
-          className="flex flex-wrap gap-4"
-          required
-        >
-          {['レベル1', 'レベル2', 'レベル3a', 'レベル3b', 'レベル4', 'レベル5'].map((level) => (
-            <div key={level} className="flex items-center space-x-2">
-              <RadioGroupItem value={level} id={`impactLevel-${level}`} />
-              <Label 
-                      htmlFor={`impactLevel-${level}`}
-                      className={`${formData.impactLevel === level ? getLabelBackgroundColor('impactLevel') : ''} px-1 py-1 rounded`}
-                    >{level}
+        <Label className="block mb-2 flex items-center">
+          影響レベル
+          <TooltipProvider>
+            <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
+              <TooltipTrigger asChild>
+                <span 
+                  className="ml-2 cursor-pointer" 
+                  onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+                  onMouseEnter={() => setIsTooltipOpen(true)}
+                  onMouseLeave={() => setIsTooltipOpen(false)}
+                >
+                  <Info className="h-4 w-4 text-gray-500" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-md">
+                <ul className="list-disc pl-4 space-y-2">
+                  {Object.entries(impactLevelExplanations).map(([level, explanation]) => (
+                    <li key={level}>
+                      <strong>{level}:</strong> {explanation}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-sm italic">※レベル3b、4、5のアクシデントの場合は事故報告書の提出もお願いします。</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </Label>
+          <RadioGroup
+            name="impactLevel"
+            value={formData.impactLevel}
+            onValueChange={(value) => handleInputChange(value, 'impactLevel')}
+            className="flex flex-wrap gap-4"
+            required
+          >
+            {['レベル1', 'レベル2', 'レベル3a', 'レベル3b', 'レベル4', 'レベル5'].map((level) => (
+              <div key={level} className="flex items-center space-x-2">
+                <RadioGroupItem value={level} id={`impactLevel-${level}`} className='text-red-500'/>
+                <Label 
+                  htmlFor={`impactLevel-${level}`}
+                  className={`${formData.impactLevel === level ? getLabelBackgroundColor('impactLevel') : ''} px-1 py-1 rounded`}
+                >
+                  {level}
                 </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </div>
+              </div>
+            ))}
+          </RadioGroup>
+        </div>
       <div className='p-4 rounded-md'>
         <Label className="block mb-2">勤務状況</Label>
         <RadioGroup

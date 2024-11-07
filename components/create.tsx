@@ -232,9 +232,9 @@ const impactLevelExplanations = {
   'レベル4': '行なった医療または管理により、生活に影響する重大な永続的障害が発生した可能性がある場合。',
   'レベル5': '行なった医療または管理が死因となった場合。',
 }
-export default function Component() {
-  
 
+
+export default function Component() {
   const [formData, setFormData] = useState<Incident>({
     patientId: '',
     patientGender: '',
@@ -276,6 +276,7 @@ export default function Component() {
   const [isLoading, setIsLoading] = useState(false)
   const [isCardLoading, setIsCardLoading] = useState(true)
   const { data: session } = useSession();
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false)
 
   useEffect(() => {
     // Simulate loading delay
@@ -474,6 +475,8 @@ export default function Component() {
     if (field === 'workStatus') return 'bg-yellow-200'
     return ''
   }
+
+
 
   return (
     <div className="container mx-auto max-w-[768px] p-10">
@@ -674,7 +677,7 @@ export default function Component() {
 
         <div>
           <Label htmlFor="reportToDoctor">医師への報告日時 
-            <Button type="button" onClick={copyReportTime} className="gap-4 text-blue-500 text-xs bg-gray-100">
+            <Button type="button" onClick={copyReportTime} className="text-blue-500 text-xs bg-gray-100">
               所属長への報告日時と同じ
             </Button>
           </Label>
@@ -807,46 +810,54 @@ export default function Component() {
           </RadioGroup>
         </div>
         <div className='bg-pink-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
-            <Label className="block mb-2 flex items-center">
-              影響レベル
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="ml-2 h-4 w-4 text-gray-500 cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent className="max-w-md">
-                    <ul className="list-disc pl-4 space-y-2">
-                      {Object.entries(impactLevelExplanations).map(([level, explanation]) => (
-                        <li key={level}>
-                          <strong>{level}:</strong> {explanation}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-2 text-sm italic">※レベル3b、4、5のアクシデントの場合は事故報告書の提出もお願いします。</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </Label>
-            <RadioGroup
-              name="impactLevel"
-              value={formData.impactLevel}
-              onValueChange={(value) => handleInputChange(value, 'impactLevel')}
-              className="flex flex-wrap gap-4"
-              required
-            >
-              {['レベル1', 'レベル2', 'レベル3a', 'レベル3b', 'レベル4', 'レベル5'].map((level) => (
-                <div key={level} className="flex items-center space-x-2">
-                  <RadioGroupItem value={level} id={`impactLevel-${level}`} className='text-red-500'/>
-                  <Label 
-                    htmlFor={`impactLevel-${level}`}
-                    className={`${formData.impactLevel === level ? getLabelBackgroundColor('impactLevel') : ''} px-1 py-1 rounded`}
-                  >
-                    {level}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
+        <Label className="block mb-2 flex items-center">
+          影響レベル
+          <TooltipProvider>
+            <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
+              <TooltipTrigger asChild>
+                <span 
+                  className="ml-2 cursor-pointer" 
+                  onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+                  onMouseEnter={() => setIsTooltipOpen(true)}
+                  onMouseLeave={() => setIsTooltipOpen(false)}
+                >
+                  <Info className="h-4 w-4 text-gray-500" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-md">
+                <ul className="list-disc pl-4 space-y-2">
+                  {Object.entries(impactLevelExplanations).map(([level, explanation]) => (
+                    <li key={level}>
+                      <strong>{level}:</strong> {explanation}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-sm italic">※レベル3b、4、5のアクシデントの場合は事故報告書の提出もお願いします。</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </Label>
+          <RadioGroup
+            name="impactLevel"
+            value={formData.impactLevel}
+            onValueChange={(value) => handleInputChange(value, 'impactLevel')}
+            className="flex flex-wrap gap-4"
+            required
+          >
+            {['レベル1', 'レベル2', 'レベル3a', 'レベル3b', 'レベル4', 'レベル5'].map((level) => (
+              <div key={level} className="flex items-center space-x-2">
+                <RadioGroupItem value={level} id={`impactLevel-${level}`} className='text-red-500'/>
+                <Label 
+                  htmlFor={`impactLevel-${level}`}
+                  className={`${formData.impactLevel === level ? getLabelBackgroundColor('impactLevel') : ''} px-1 py-1 rounded`}
+                >
+                  {level}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </div>
+
         <div className='p-4 rounded-md'>
           <Label className="block mb-2">勤務状況</Label>
           <RadioGroup
