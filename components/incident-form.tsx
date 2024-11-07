@@ -476,7 +476,11 @@ type IncidentFormProps = {
       </div>
 
       <div>
-        <Label htmlFor="reportToDoctor">医師への報告日時</Label>
+        <Label htmlFor="reportToDoctor">医師への報告日時
+          <Button type="button" onClick={copyReportTime} className="whitespace-nowrap">
+            所属長への報告日時と同じ
+          </Button>
+        </Label>
         <Input
           type="datetime-local"
           id="reportToDoctor"
@@ -486,9 +490,7 @@ type IncidentFormProps = {
           className="dark:border-gray-700"
           required
         />
-            <Button type="button" onClick={copyReportTime} className="whitespace-nowrap">
-            所属長への報告日時と同じ
-          </Button>
+            
       </div>
 
       <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>

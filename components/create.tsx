@@ -660,10 +660,11 @@ export default function Component() {
         </div>
 
         <div>
-          <Label htmlFor="reportToDoctor">医師への報告日時 </Label>
-          <Button type="button" onClick={copyReportTime} className="gap-4 text-blue-500 text-xs bg-gray-100">
-            所属長への報告日時と同じ
-          </Button>
+          <Label htmlFor="reportToDoctor">医師への報告日時 
+            <Button type="button" onClick={copyReportTime} className="gap-4 text-blue-500 text-xs bg-gray-100">
+              所属長への報告日時と同じ
+            </Button>
+          </Label>
           <Input
             type="datetime-local"
             id="reportToDoctor"
