@@ -451,8 +451,10 @@ export default function ReportListPage() {
               </TableHead>
               <TableHead className="w-[80px] dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('comment')}>コメント</Button>
-              </TableHead>            
-              <TableHead className="w-[80px] text-sm dark:border-gray-700">編集</TableHead>             
+              </TableHead>  
+            {session?.user.role === 'ADMIN' && (          
+              <TableHead className="w-[80px] text-sm dark:border-gray-700">編集</TableHead> 
+            )}            
               {session?.user.role === 'ADMIN' && (
               <TableHead className="w-[80px] text-sm dark:border-gray-700">操作</TableHead>
             )}
@@ -509,11 +511,13 @@ export default function ReportListPage() {
                     </Badge>
                   )}
                 </TableCell>
+                {session?.user.role === 'ADMIN' && (
                 <TableCell className="dark:border-gray-700">
                   <Button variant="outline" size="sm" onClick={() => handleEdit(incident)}>
                     <Pen className='text-green-500'/>
                   </Button>
                 </TableCell>
+                )}
                 {session?.user.role === 'ADMIN' && (
                   <TableCell>
                     {incident.isDeleted ? (

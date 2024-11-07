@@ -8,13 +8,14 @@ import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useSession } from "next-auth/react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import IncidentForm from "@/components/incident-form"
+import party from "party-js"
 
 type Incident = {
   id: number
@@ -78,6 +79,8 @@ export function TopPage() {
   const { data: session } = useSession()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -87,7 +90,7 @@ export function TopPage() {
       const [incidentsResponse, announcementsResponse, userReportsResponse] = await Promise.all([
         fetch('/api/incidents?page=1&perPage=100&sortField=occurrenceDateTime&sortOrder=desc'),
         fetch('/api/announcements?limit=5'),
-        fetch('/api/incidents/')
+        fetch('/api/incidents/my-report/')
       ])
 
       if (!incidentsResponse.ok || !announcementsResponse.ok || !userReportsResponse.ok) {
@@ -132,12 +135,15 @@ export function TopPage() {
         },
         body: JSON.stringify({ title: newAnnouncementTitle, content: newAnnouncementContent }),
       })
-
+      party.confetti(document.body, {
+        count: party.variation.range(20, 200)
+      })
       if (!response.ok) {
         throw new Error('Failed to add announcement')
       }
 
       const newAnnouncement = await response.json()
+      
       setAnnouncements([newAnnouncement, ...announcements])
       setNewAnnouncementTitle('')
       setNewAnnouncementContent('')
@@ -153,18 +159,35 @@ export function TopPage() {
 
   const handleIncidentSubmit = async (updatedIncident: Incident) => {
     try {
-      const response = await fetch(`/api/incidents/${updatedIncident.id}`, {
+
+      const formattedIncident = {
+        ...updatedIncident,
+        occurrenceDateTime: new Date(updatedIncident.occurrenceDateTime).toISOString(),
+        reportToDoctor: new Date(updatedIncident.reportToDoctor).toISOString(),
+        reportToSupervisor: new Date(updatedIncident.reportToSupervisor).toISOString(),
+        involvedPartyName: updatedIncident.involvedPartyName || '', // null の場合は空文字列にする
+        discovererName: updatedIncident.discovererName || '',
+        medicationDetail: updatedIncident.medicationDetail || '',
+      };
+
+
+      const response = await fetch(`/api/incidents/${formattedIncident.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedIncident),
+        body: JSON.stringify(formattedIncident),
       })
 
+        party.confetti(document.body, {
+          count: party.variation.range(100, 600)
+        })
+        setIsSuccessModalOpen(true)
+       
       if (!response.ok) {
         throw new Error('Failed to update incident')
       }
-
+     
       setSelectedIncident(null)
       fetchData() // Refresh the data after update
     } catch (error) {
@@ -562,6 +585,29 @@ export function TopPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+        <DialogContent >
+          <div className="rounded-lg shadow-lg p-6 bg-white border border-gray-300">
+            <DialogHeader className="text-center mb-4">
+              <DialogTitle className="text-xl font-bold text-blue-600">成功</DialogTitle>
+              <DialogDescription className="text-gray-600">
+                インシデントレポートが修正されました。
+              </DialogDescription>
+            </DialogHeader>
+            <div className="">
+              {/* アイコンや画像をここに追加する場合は、ここに記述 */}
+            </div>
+            <Button 
+              onClick={() => setIsSuccessModalOpen(false)} 
+              className="w-full mt-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200"
+            >
+              閉じる
+            </Button>          
+          </div>
+        </DialogContent>
+        
+      </Dialog> 
     </div>
   )
 }

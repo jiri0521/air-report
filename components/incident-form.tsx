@@ -527,7 +527,7 @@ type IncidentFormProps = {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="点滴">点滴</SelectItem>
-              <SelectItem value="内服">内服</SelectItem>
+              <SelectItem value="内服">内服薬</SelectItem>
               <SelectItem value="皮下注">皮下注</SelectItem>
               <SelectItem value="皮内注">皮内注</SelectItem>
               <SelectItem value="静注">静注</SelectItem>
