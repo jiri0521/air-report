@@ -3,7 +3,7 @@
 import CustomLink from "@/components/costum-link";
 import React from "react";
 import { usePathname } from "next/navigation";
-import { HomeIcon, AlertTriangle, FileText, PieChart } from "lucide-react";
+import { HomeIcon, AlertTriangle, FileText, PieChart, Pen } from "lucide-react";
 
 export function MainNav() {
     const pathname = usePathname();
@@ -37,7 +37,7 @@ export function MainNav() {
                 </CustomLink>
                 <CustomLink href="/create">
                     <div className={`md:hidden text-center`}>
-                        <AlertTriangle className="text-red-700" />
+                        <Pen className="text-red-700" />
                         <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/create') ? 'border-b-2 border-blue-500' : ''}`}>作成</div>
                     </div>
                 </CustomLink>

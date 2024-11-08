@@ -231,6 +231,83 @@ export function TopPage() {
   return (
     <div>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <div className="px-4 py-6 sm:px-0">
+          {/* Announcements Card - Now with a narrower width */}
+          <div className="max-w-3xl mx-auto mb-6">
+            <Card className="dark:border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Bell className="mr-2 text-yellow-500" />
+                  お知らせ
+                </div>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/announcements">
+                      <List className="mr-2 h-4 w-4" /> 一覧を見る
+                    </Link>
+                  </Button>
+                  {session?.user.role === 'ADMIN' && (
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Plus className="mr-2 h-4 w-4" /> 追加
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>新しいお知らせを追加</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="title">タイトル</Label>
+                            <Input
+                              id="title"
+                              value={newAnnouncementTitle}
+                              onChange={(e) => setNewAnnouncementTitle(e.target.value)}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="content">内容</Label>
+                            <Textarea
+                              id="content"
+                              value={newAnnouncementContent}
+                              onChange={(e) => setNewAnnouncementContent(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <Button onClick={handleAddAnnouncement}>追加</Button>
+                      </DialogContent>
+                    </Dialog>                   
+                  )}
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[200px]">
+                {loading ? (
+                  [...Array(5)].map((_, index) => (
+                    <div key={index} className="mb-4 p-4 border-b dark:border-gray-700">
+                      <Skeleton className="h-6 w-3/4" />
+                      <Skeleton className="h-4 w-1/2 mt-1" />
+                    </div>
+                  ))
+                ) : (
+                  announcements.map((announcement) => (
+                    <div key={announcement.id} className="mb-4 p-4 border-b dark:border-gray-700">
+                      <Link href={`/announcements/${announcement.id}`} className="font-semibold hover:underline">
+                        {announcement.title}
+                      </Link>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{formatDate(announcement.createdAt)}</p>
+                    </div>
+                  ))
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+          </div>
+          </div>
+          
         <div className="px-4 py-6 sm:px-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
@@ -460,81 +537,6 @@ export function TopPage() {
                         ))}
                       </TableBody>
                     </Table>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
-
-
-          <div className="mt-12">
-            <Card className="dark:border-gray-700">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Bell className="mr-2 text-yellow-500" />
-                    お知らせ
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href="/announcements">
-                        <List className="mr-2 h-4 w-4" /> 一覧を見る
-                      </Link>
-                    </Button>
-                    {session?.user.role === 'ADMIN' && (
-                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <Plus className="mr-2 h-4 w-4" /> 追加
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>新しいお知らせを追加</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="title">タイトル</Label>
-                              <Input
-                                id="title"
-                                value={newAnnouncementTitle}
-                                onChange={(e) => setNewAnnouncementTitle(e.target.value)}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label  htmlFor="content">内容</Label>
-                              <Textarea
-                                id="content"
-                                value={newAnnouncementContent}
-                                onChange={(e) => setNewAnnouncementContent(e.target.value)}
-                              />
-                            </div>
-                          </div>
-                          <Button onClick={handleAddAnnouncement}>追加</Button>
-                        </DialogContent>
-                      </Dialog>                   
-                    )}
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[250px]">
-                  {loading ? (
-                    [...Array(5)].map((_, index) => (
-                      <div key={index} className="mb-4 p-4 border-b dark:border-gray-700">
-                        <Skeleton className="h-6 w-3/4" />
-                        <Skeleton className="h-4 w-1/2 mt-1" />
-                      </div>
-                    ))
-                  ) : (
-                    announcements.map((announcement) => (
-                      <div key={announcement.id} className="mb-4 p-4 border-b dark:border-gray-700">
-                        <Link href={`/announcements/${announcement.id}`} className="text-lg font-semibold hover:underline">
-                          {announcement.title}
-                        </Link>
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{formatDate(announcement.createdAt)}</p>
-                      </div>
-                    ))
                   )}
                 </ScrollArea>
               </CardContent>
