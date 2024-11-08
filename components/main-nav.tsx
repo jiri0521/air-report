@@ -3,7 +3,7 @@
 import CustomLink from "@/components/costum-link";
 import React from "react";
 import { usePathname } from "next/navigation";
-import { HomeIcon, AlertTriangle, FileText, PieChart, Pen } from "lucide-react";
+import { HomeIcon, FileText, PieChart, Pen } from "lucide-react";
 
 export function MainNav() {
     const pathname = usePathname();
