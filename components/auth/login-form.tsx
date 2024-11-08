@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { LoginSchema } from "@/schemas";
@@ -28,6 +28,7 @@ export const LoginForm = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
+  const [shouldReload, setShouldReload] = useState(false);
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -36,6 +37,12 @@ export const LoginForm = () => {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (shouldReload) {
+      window.location.href = DEFAULT_LOGIN_REDIRECT;
+    }
+  }, [shouldReload]);
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError("");
@@ -48,12 +55,18 @@ export const LoginForm = () => {
             setError(data.error);
           } else if (data?.success) {
             setSuccess(data.success);
-            router.push(DEFAULT_LOGIN_REDIRECT);
+            if (data.needsReload) {
+              setShouldReload(true);
+            } else {
+              router.push(data.redirectTo || DEFAULT_LOGIN_REDIRECT);
+            }
           }
         })
         .catch(() => setError("An unexpected error occurred"));
     });
   };
+
+  
 
   return (
     <CardWrapper
@@ -62,7 +75,7 @@ export const LoginForm = () => {
       backButtonHref="/register"
       //showSocial
     >
-      <Form {...form}>
+     <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <FormField
@@ -111,9 +124,8 @@ export const LoginForm = () => {
           >
             ログイン
           </Button>
-          <br></br><br></br>
-          <div className="flex items-center justify-center">
-          <Link href="/password-reset/request" className="text-sm text-blue-600 hover:underline">
+          <div className="flex items-center justify-center mt-4">
+            <Link href="/password-reset/request" className="text-sm text-blue-600 hover:underline">
               パスワードを忘れた場合
             </Link>
           </div>
