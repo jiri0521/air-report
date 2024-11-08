@@ -19,7 +19,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   const existingUser = await getUserByEmail(email);
 
   if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: "Email does not exist!" };
+    return { error: "入力したメールアドレスは存在しません" };
   }
 
   try {
@@ -30,7 +30,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     });
 
     return { 
-      success: "Logged in successfully!",
+      success: "成功!",
       redirectTo: DEFAULT_LOGIN_REDIRECT,
       needsReload: true // Add this flag
     };
