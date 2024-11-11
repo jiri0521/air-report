@@ -477,6 +477,17 @@ type IncidentFormProps = {
       </div>
      
       <div>
+        <Label htmlFor="location">発生場所</Label>
+        <Input
+          id="location"
+          name="location"
+          value={formData.location}
+          onChange={handleInputChange}
+          className="dark:border-gray-700"
+        />
+      </div>
+      
+      <div>
         <Label htmlFor="reportToSupervisor">所属長への報告日時</Label>
         <Input
           type="datetime-local"

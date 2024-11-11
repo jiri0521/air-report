@@ -184,6 +184,7 @@ export default function ReportListPage() {
         involvedPartyName: updatedIncident.involvedPartyName || '', // null の場合は空文字列にする
         discovererName: updatedIncident.discovererName || '',
         medicationDetail: updatedIncident.medicationDetail || '',
+        location: updatedIncident.location || '', // Ensure location is included
       };
   
       const response = await fetch(`/api/incidents/${formattedIncident.id}`, {
@@ -751,6 +752,7 @@ export default function ReportListPage() {
               discovererName: selectedIncident.discovererName || '', // 追加
               medicationDetail: selectedIncident.medicationDetail || '',
               tubeDetail: selectedIncident.tubeDetail || '',
+              location: selectedIncident.location || '', // Ensure location is included
             }}
               onSubmit={handleUpdateIncident}
               onCancel={() => setIsEditDialogOpen(false)}
