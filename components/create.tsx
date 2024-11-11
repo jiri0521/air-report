@@ -19,10 +19,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import party from "party-js";
 import { Card } from './ui/card';
-import { Loader2 } from "lucide-react"
+import { Loader2, ArrowUp, Info } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Info } from "lucide-react"
+
 
 
 
@@ -277,6 +277,20 @@ export default function Component() {
   const [isCardLoading, setIsCardLoading] = useState(true)
   const { data: session } = useSession();
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.pageYOffset > 300)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   useEffect(() => {
     // Simulate loading delay
@@ -964,7 +978,15 @@ export default function Component() {
 
         </DialogContent>
       </Dialog>
-
+      {showScrollTop && (
+        <Button
+          className="fixed bottom-4 right-20 rounded-full p-2 bg-yellow-500 text-white shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-opacity duration-300"
+          onClick={scrollToTop}
+          aria-label="ページ上部へ戻る"
+        >上部へ戻る
+          <ArrowUp className="h-6 w-6" />
+        </Button>
+      )}
     </div>
   )
 }
