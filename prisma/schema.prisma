@@ -131,3 +131,16 @@ model PasswordResetToken {
 
   @@map("password_reset_tokens")
 }
+
+model NearMissReport {
+  id         Int      @id @default(autoincrement())
+  department String
+  fileUrl    String
+  fileType   String
+  count      Int
+  date       DateTime
+  createdAt  DateTime @default(now())
+  isDeleted  Boolean  @default(false)
+
+  @@map("near_miss_reports")
+}
