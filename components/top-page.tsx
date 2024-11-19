@@ -657,7 +657,9 @@ export function TopPage() {
                         <TableHead>部署</TableHead>
                         <TableHead>ファイル</TableHead>
                         <TableHead>件数</TableHead>
+                        {session?.user.role === 'ADMIN' && (
                         <TableHead>操作</TableHead>
+                        )}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
