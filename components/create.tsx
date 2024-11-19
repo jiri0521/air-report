@@ -32,6 +32,7 @@ type Incident = {
   patientId: string
   patientGender: string
   patientAge: string
+  department: string
   patientRespirator: string
   patientDialysis: string
   involvedPartyProfession: string
@@ -239,6 +240,7 @@ export default function Component() {
     patientId: '',
     patientGender: '',
     patientAge: '',
+    department: '',
     patientRespirator: '',
     patientDialysis: '',
     involvedPartyProfession: '',
@@ -382,6 +384,7 @@ export default function Component() {
         patientId:'',
         patientGender: '',
         patientAge: '',
+        department: '',
         patientRespirator: '',
         patientDialysis: '',
         involvedPartyProfession: '',
@@ -500,46 +503,30 @@ export default function Component() {
       ) : (
         <Card className='shadow-xl'>
           <form onSubmit={handleSubmit} className="px-5 py-8 space-y-4 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4" >
-        <div>
-              <Label htmlFor="patientId">患者ID (任意)</Label>
-              <Input
-                id="patientId"
-                name="patientId"
-                value={formData.patientId}
-                onChange={handleInputChange}
-                className="dark:border-gray-700"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="patientId">患者ID (任意)</Label>
+                <Input
+                  id="patientId"
+                  name="patientId"
+                  value={formData.patientId}
+                  onChange={handleInputChange}
+                  className="dark:border-gray-700"
+                />
+              </div>
+              <div>
+                <Label htmlFor="patientAge">患者の年齢</Label>
+                <Input
+                  id="patientAge"
+                  name="patientAge"
+                  type="number"
+                  value={formData.patientAge}
+                  onChange={handleInputChange}
+                  className="dark:border-gray-700"
+                />
+              </div>
+              
             </div>
-          <div >
-            <Label htmlFor="patientGender">患者の性別</Label>
-            <Select
-              name="patientGender"
-              value={formData.patientGender}
-              onValueChange={(value) => handleInputChange(value, 'patientGender')}
-            >
-              <SelectTrigger id="patientGender" className="dark:border-gray-700">
-                <SelectValue placeholder="性別を選択" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="男性">男性</SelectItem>
-                <SelectItem value="女性">女性</SelectItem>
-                <SelectItem value="その他">その他</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="patientAge">患者の年齢</Label>
-            <Input
-              id="patientAge"
-              name="patientAge"
-              type="number"
-              value={formData.patientAge}
-              onChange={handleInputChange}
-              className="dark:border-gray-700"
-            />
-          </div>
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="patientRespirator">人工呼吸器の有無</Label>
@@ -652,6 +639,23 @@ export default function Component() {
                 className="dark:border-gray-700"
               />
             </div>
+            <div>
+                <Label htmlFor="department">部署</Label>
+                <Select
+                  name="department"
+                  value={formData.department}
+                  onValueChange={(value) => handleInputChange(value, 'department')}
+                >
+                  <SelectTrigger id="department" className="dark:border-gray-700">
+                    <SelectValue placeholder="部署を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['1病棟', '3病棟', '5病棟', '6病棟', '7病棟', '医局', '外来', '薬剤科', 'リハビリ科', '検査科', '放射線科', '臨床工学科', '栄養科', '医事課', '経理課', '人事課', '総務課', 'その他'].map((dept) => (
+                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
           </div> 
         <div>
           <Label htmlFor="occurrenceDateTime">発生日時</Label>

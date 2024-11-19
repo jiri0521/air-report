@@ -14,6 +14,7 @@ model Incident {
   patientId                  String?  
   patientGender              String
   patientAge                 String
+  department                 String @default("")
   patientRespirator          String
   patientDialysis            String
   involvedPartyProfession    String

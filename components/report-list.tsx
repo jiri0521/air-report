@@ -25,6 +25,7 @@ export type Incident = {
   patientId: string
   patientGender: string
   patientAge: string
+  department: string
   patientRespirator: string
   patientDialysis: string
   involvedPartyProfession: string
@@ -615,6 +616,10 @@ export default function ReportListPage() {
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">当事者の経験年数:</div>
                     <div className="col-span-2">{selectedIncident.involvedPartyExperience}</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 py-2">
+                    <div className="font-semibold">部署:</div>
+                    <div className="col-span-2">{selectedIncident.department}</div>
                   </div>
                   <div className="grid grid-cols-3 gap-4 py-2">
                     <div className="font-semibold">発見者の氏名:</div>

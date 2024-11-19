@@ -21,6 +21,7 @@ type Incident = {
   patientId: string
   patientGender: string
   patientAge: string
+  department: string
   patientRespirator: string
   patientDialysis: string
   involvedPartyProfession: string
@@ -461,6 +462,23 @@ type IncidentFormProps = {
             className="dark:border-gray-700"
           />
         </div>
+        <div>
+                <Label htmlFor="department">部署</Label>
+                <Select
+                  name="department"
+                  value={formData.department}
+                  onValueChange={(value) => handleInputChange(value, 'department')}
+                >
+                  <SelectTrigger id="department" className="dark:border-gray-700">
+                    <SelectValue placeholder="部署を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {['1病棟', '3病棟', '5病棟', '6病棟', '7病棟', '医局', '外来', '薬剤科', 'リハビリ科', '検査科', '放射線科', '臨床工学科', '栄養科', '医事課', '経理課', '人事課', '総務課'].map((dept) => (
+                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
       </div>
       
       <div>
@@ -486,7 +504,7 @@ type IncidentFormProps = {
           className="dark:border-gray-700"
         />
       </div>
-      
+
       <div>
         <Label htmlFor="reportToSupervisor">所属長への報告日時</Label>
         <Input

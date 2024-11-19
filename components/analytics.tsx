@@ -253,7 +253,24 @@ export function Analytics() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">全部門</SelectItem>
-             
+              <SelectItem value="1病棟">1病棟</SelectItem>
+              <SelectItem value="3病棟">3病棟</SelectItem>
+              <SelectItem value="5病棟">5病棟</SelectItem>
+              <SelectItem value="6病棟">6病棟</SelectItem>
+              <SelectItem value="7病棟">7病棟</SelectItem>
+              <SelectItem value="医局">医局</SelectItem>
+              <SelectItem value="外来">外来</SelectItem> 
+              <SelectItem value="薬剤科">薬剤科</SelectItem>
+              <SelectItem value="リハビリ科">リハビリ科</SelectItem>
+              <SelectItem value="検査科">検査科</SelectItem>
+              <SelectItem value="放射線科">放射線科</SelectItem>
+              <SelectItem value="臨床工学科">臨床工学科</SelectItem>
+              <SelectItem value="栄養科">栄養科</SelectItem>
+              <SelectItem value="医事課">医事課</SelectItem>
+              <SelectItem value="経理課">経理課</SelectItem>
+              <SelectItem value="人事課">人事課</SelectItem>
+              <SelectItem value="総務課">総務課</SelectItem>
+              <SelectItem value="その他">その他</SelectItem>
             </SelectContent>
           </Select>
         </div>

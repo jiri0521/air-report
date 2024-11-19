@@ -22,6 +22,7 @@ type Incident = {
   patientId: string
   patientGender: string
   patientAge: string
+  department: string
   patientRespirator: string
   patientDialysis: string
   involvedPartyProfession: string
