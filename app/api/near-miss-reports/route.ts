@@ -1,7 +1,7 @@
 // app/api/near-miss-reports/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
-import { writeFile, unlink } from 'fs/promises'
+import { writeFile } from 'fs/promises'
 import path from 'path'
 
 const prisma = new PrismaClient()
@@ -18,7 +18,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch near-miss reports' }, { status: 500 })
     }
   }
-  
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
