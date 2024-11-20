@@ -180,7 +180,7 @@ export function Analytics() {
     })).sort((a, b) => parseInt(a.hour) - parseInt(b.hour))
   }
 
-  const { totalIncidents, severeIncidents, recurrenceRate, trendData, categoryData, severityData, crossAnalysisData, timeOfDayData } = analyticsData
+  const { totalIncidents, severeIncidents, trendData, categoryData, severityData, crossAnalysisData, timeOfDayData } = analyticsData
 
   const adjustedTimeOfDayData = adjustTimeOfDayData(timeOfDayData)
 
