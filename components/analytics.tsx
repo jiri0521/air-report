@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Download, Repeat, TrendingUp } from "lucide-react"
+import { BarChart, Download, TrendingUp } from "lucide-react"
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend } from 'recharts'
 import DatePicker, { registerLocale } from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
@@ -280,7 +280,7 @@ export function Analytics() {
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 mb-6">
         <Card className='dark:border-white'>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">総インシデント数</CardTitle>
@@ -304,18 +304,6 @@ export function Analytics() {
             <p className="text-xs text-muted-foreground">
               前月比 {calculatePercentageChange(severeIncidents.current, severeIncidents.previous) > 0 ? '+' : ''}
               {calculatePercentageChange(severeIncidents.current, severeIncidents.previous)}%
-            </p>
-          </CardContent>
-        </Card>
-        <Card className='dark:border-white'>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">再発率</CardTitle>
-            <Repeat className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{recurrenceRate.current.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">
-              前月比 {(recurrenceRate.current - recurrenceRate.previous).toFixed(1)}%
             </p>
           </CardContent>
         </Card>
