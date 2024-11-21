@@ -653,9 +653,9 @@ export function TopPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>日付</TableHead>
-                        <TableHead>部署</TableHead>
                         <TableHead>ファイル</TableHead>
+                        <TableHead>日付</TableHead>
+                        <TableHead>部署</TableHead>  
                         <TableHead>件数</TableHead>
                         {session?.user.role === 'ADMIN' && (
                         <TableHead>操作</TableHead>
@@ -665,8 +665,6 @@ export function TopPage() {
                     <TableBody>
                       {nearMissReports.map((report) => (
                         <TableRow key={report.id}>
-                          <TableCell>{formatDate2(report.date)}</TableCell>
-                          <TableCell>{report.department}</TableCell>
                           <TableCell>
                             {report.fileType.startsWith('image/') ? (
                               <img src={report.fileUrl} alt={report.department} className="w-16 h-16 object-cover" />
@@ -676,7 +674,11 @@ export function TopPage() {
                               </a>
                             )}
                           </TableCell>
+                          <TableCell>{formatDate2(report.date)}</TableCell>
+                          <TableCell>{report.department}</TableCell>
+                          
                           <TableCell>{report.count}</TableCell>
+                          {session?.user.role === 'ADMIN' && (
                           <TableCell>
                             <Button
                               variant="ghost"
@@ -686,6 +688,7 @@ export function TopPage() {
                               <Trash2 className="h-4 w-4 text-red-500" />
                             </Button>
                           </TableCell>
+                          )}
                         </TableRow>
                       ))}
                     </TableBody>

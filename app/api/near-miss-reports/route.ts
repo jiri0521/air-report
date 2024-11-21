@@ -10,7 +10,7 @@ export async function GET() {
     try {
       const nearMissReports = await prisma.nearMissReport.findMany({
         where: { isDeleted: false },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { date: 'desc' },
       })
       return NextResponse.json({ nearMissReports })
     } catch (error) {
