@@ -39,15 +39,17 @@ export default {
     })
   ],
   session:{
-    // セッションの有効時間を設定
-    maxAge:60*60,//1時間
-    updateAge:60*60,//セッションが更新されるたびに有効時間がリセットされる
+    maxAge:60*60,
+    updateAge:60*60,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+      }
+      if (account) {
+        token.provider = account.provider;
       }
       return token;
     },
@@ -55,8 +57,10 @@ export default {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        
       }
       return session;
     },
   },
 } satisfies NextAuthConfig
+

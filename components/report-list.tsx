@@ -77,12 +77,88 @@ export default function ReportListPage() {
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null);
   
+  const printRef = useRef<HTMLDivElement>(null);
+
  // 印刷機能を実装する関数
  const handlePrint = () => {
-  if (formRef.current) {
-    window.print();
+  if (printRef.current) {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>インシデント詳細印刷</title>
+            <style>
+              body { font-family: Arial, sans-serif; }
+              .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-bottom: 8px; }
+              .font-semibold { font-weight: 600; }
+            </style>
+          </head>
+          <body>
+            ${printRef.current.innerHTML}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+      printWindow.close();
+    }
   }
 };
+
+const handlePrintBlankPage = () => {
+  const blankPage = `
+    <html>
+      <head>
+        <title>カンファレンス用紙</title>
+        <style>
+          body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+          }
+          .content {
+            border: 1px solid black;
+            width: 80%;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+          }
+          h1 {
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+          }
+          h2 {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="content">
+          <h1>カンファレンス用紙</h1>
+          <h2>インシデントID: ${incidents[0].id}</h2>
+        </div>
+      </body>
+    </html>
+  `;
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(blankPage);
+    printWindow.document.close();
+    printWindow.print();
+  }
+};
+
+
 
  
   const itemsPerPage = 10
@@ -568,19 +644,24 @@ export default function ReportListPage() {
       </div>
     <form ref={formRef}>
       <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            
-                  
-            <DialogTitle>
-              インシデント詳細 (ID: {selectedIncident?.id}) <Button type="button" onClick={handlePrint} className="ml-auto bg-gray-500 dark:bg-green-300 ">        
-             <Printer/>
-            </Button>       
-            </DialogTitle> 
-        
-          </DialogHeader>
-          <ScrollArea className="max-h-[80vh] overflow-y-auto">
-            <div className="space-y-2">
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>
+            インシデント詳細 (ID: {selectedIncident?.id})
+            <div className="flex space-x-2">
+              <Button type="button" onClick={handlePrint} className="ml-auto bg-gray-500 dark:bg-green-300">
+                <Printer className="mr-2" />
+                詳細印刷
+              </Button>
+              <Button type="button" onClick={handlePrintBlankPage} className="bg-blue-500 dark:bg-blue-300">
+                <Printer className="mr-2" />
+                カンファ印刷
+              </Button>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="max-h-[80vh] overflow-y-auto">
+          <div ref={printRef} className="space-y-2">
               {selectedIncident && (
                 <>
                   <div className="grid grid-cols-3 gap-4 py-2">
