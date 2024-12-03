@@ -145,7 +145,8 @@ const handlePrintBlankPage = () => {
       <body>
         <div class="content">
           <h1>カンファレンス用紙</h1>
-          <h2>インシデントID: ${incidents[0].id}</h2>
+          <p>レポートID: ${selectedIncident?.id}</p>
+          <p>詳細: ${selectedIncident?.details}</p>
         </div>
       </body>
     </html>
@@ -651,7 +652,7 @@ const handlePrintBlankPage = () => {
             <div className="flex space-x-2">
               <Button type="button" onClick={handlePrint} className="ml-auto bg-gray-500 dark:bg-green-300">
                 <Printer className="mr-2" />
-                詳細印刷
+                レポート印刷
               </Button>
               <Button type="button" onClick={handlePrintBlankPage} className="bg-blue-500 dark:bg-blue-300">
                 <Printer className="mr-2" />
