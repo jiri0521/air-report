@@ -50,6 +50,12 @@ export function MainNav() {
                         <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/reports') ? 'border-b-2 border-blue-500' : ''}`}>一覧</div>
                     </div>
                 </CustomLink>
+                <CustomLink href="/near-miss-reports">
+                    <div className={`md:hidden text-center`}>
+                        <FileText className="text-blue-500" />
+                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
+                    </div>
+                </CustomLink>
                 <CustomLink href="/analytics">
                     <div className={`md:hidden text-center`}>
                         <PieChart className="text-green-500" />
