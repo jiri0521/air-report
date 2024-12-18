@@ -23,6 +23,9 @@ export function MainNav() {
                 <CustomLink href="/reports">
                     <div className={`hover:text-blue-400 ${isActive('/reports') ? 'border-b-2 border-blue-500' : ''}`}>一覧</div>
                 </CustomLink>
+                <CustomLink href="/near-miss-reports">
+                    <div className={`hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
+                </CustomLink>
                 <CustomLink href="/analytics">
                     <div className={`hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
                 </CustomLink>               
