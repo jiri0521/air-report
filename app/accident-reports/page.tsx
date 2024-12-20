@@ -3,8 +3,12 @@
 import AccidentReportsPage from "@/components/accident-reports";
 
 
-export default function Page() {
-
-<AccidentReportsPage/>
-
-}
+const AccidentReports = () => {
+    return (
+      <div>
+        <AccidentReportsPage />
+      </div>
+    )
+  }
+  
+  export default AccidentReports

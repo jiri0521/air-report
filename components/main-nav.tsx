@@ -26,6 +26,9 @@ export function MainNav() {
                 <CustomLink href="/near-miss-reports">
                     <div className={`hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
                 </CustomLink>
+                <CustomLink href="/acdident-reports">
+                    <div className={`hover:text-blue-400 ${isActive('/accident-reports') ? 'border-b-2 border-blue-500' : ''}`}>事故</div>
+                </CustomLink>
                 <CustomLink href="/analytics">
                     <div className={`hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
                 </CustomLink>               
@@ -54,6 +57,12 @@ export function MainNav() {
                     <div className={`md:hidden text-center`}>
                         <FileText className="text-blue-300" />
                         <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
+                    </div>
+                </CustomLink>
+                <CustomLink href="/accident-reports">
+                    <div className={`md:hidden text-center`}>
+                        <FileText className="text-red-300" />
+                        <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/accident-reports') ? 'border-b-2 border-blue-500' : ''}`}>事故</div>
                     </div>
                 </CustomLink>
                 <CustomLink href="/analytics">
