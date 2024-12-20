@@ -52,7 +52,7 @@ export function MainNav() {
                 </CustomLink>
                 <CustomLink href="/near-miss-reports">
                     <div className={`md:hidden text-center`}>
-                        <FileText className="text-blue-500" />
+                        <FileText className="text-blue-300" />
                         <div className={`text-xs text-gray-500 hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
                     </div>
                 </CustomLink>
