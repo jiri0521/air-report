@@ -144,3 +144,15 @@ model NearMissReport {
 
   @@map("near_miss_reports")
 }
+
+model AccidentReport {
+  id         Int      @id @default(autoincrement())
+  department String
+  fileUrl    String
+  fileType   String
+  date       DateTime
+  createdAt  DateTime @default(now())
+  isDeleted  Boolean  @default(false)
+
+  @@map("accident_reports")
+}
