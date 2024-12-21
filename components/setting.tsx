@@ -110,31 +110,11 @@ export default function SettingsPage() {
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="profile">プロフィール</TabsTrigger>
           <TabsTrigger value="notifications">通知</TabsTrigger>
           <TabsTrigger value="display">表示</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
           {session?.user.role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>
-
-        <TabsContent value="profile">
-          <Card className='dark:border-gray-700'>
-            <CardHeader>
-              <CardTitle>プロフィール設定</CardTitle>
-              <CardDescription>あなたの個人情報を更新します。</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 dark:border-gray-700">
-              <div className="space-y-1">
-                <Label htmlFor="name">名前</Label>
-                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className='dark:border-gray-700'/>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={handleSave}>保存</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="notifications">
           <Card className='dark:border-white'>
             <CardHeader>
