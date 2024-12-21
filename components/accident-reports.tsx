@@ -5,10 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { AlertTriangle, Plus, Pen, FileText, Trash2 } from 'lucide-react'
+import { AlertTriangle, Plus, FileText, Trash2 } from 'lucide-react'
 import { useSession } from "next-auth/react"
 import { format } from 'date-fns'
-import Link from 'next/link'
 import { Skeleton } from "@/components/ui/skeleton"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
