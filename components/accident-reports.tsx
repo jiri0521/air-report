@@ -288,9 +288,6 @@ export default function AccidentReportsPage() {
             <DialogHeader>
               <DialogTitle className="flex justify-between items-center">
                 拡大画像
-                <Button variant="ghost" size="sm" onClick={() => setSelectedImage(null)}>
-                  <X className="h-4 w-4" />
-                </Button>
               </DialogTitle>
             </DialogHeader>
             <div className="mt-4">
