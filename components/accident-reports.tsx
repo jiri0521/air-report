@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { AlertTriangle, Plus, FileText, Trash2 } from 'lucide-react'
+import { AlertTriangle, Plus, FileText, Trash2, X } from 'lucide-react'
 import { useSession } from "next-auth/react"
 import { format } from 'date-fns'
 import { Skeleton } from "@/components/ui/skeleton"
@@ -39,6 +39,7 @@ export default function AccidentReportsPage() {
   const [newAccidentYear, setNewAccidentYear] = useState('')
   const [newAccidentMonth, setNewAccidentMonth] = useState('')
   const [newAccidentFile, setNewAccidentFile] = useState<File | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const fetchAccidentReports = useCallback(async () => {
     setLoading(true)
@@ -130,7 +131,6 @@ export default function AccidentReportsPage() {
           <TableHead><Skeleton className="h-4 w-16" /></TableHead>
           <TableHead><Skeleton className="h-4 w-20" /></TableHead>
           <TableHead><Skeleton className="h-4 w-16" /></TableHead>
-          <TableHead><Skeleton className="h-4 w-16" /></TableHead>
           {session?.user.role === 'ADMIN' && <TableHead><Skeleton className="h-4 w-16" /></TableHead>}
         </TableRow>
       </TableHeader>
@@ -139,7 +139,6 @@ export default function AccidentReportsPage() {
           <TableRow key={index}>
             <TableCell><Skeleton className="h-4 w-16" /></TableCell>
             <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-            <TableCell><Skeleton className="h-4 w-16" /></TableCell>
             <TableCell><Skeleton className="h-4 w-16" /></TableCell>
             {session?.user.role === 'ADMIN' && <TableCell><Skeleton className="h-4 w-16" /></TableCell>}
           </TableRow>
@@ -187,7 +186,12 @@ export default function AccidentReportsPage() {
                     <TableRow key={report.id}>
                       <TableCell>
                         {report.fileType.startsWith('image/') ? (
-                          <img src={report.fileUrl} alt={report.department} className="w-16 h-16 object-cover" />
+                          <img 
+                            src={report.fileUrl} 
+                            alt={report.department} 
+                            className="w-16 h-16 object-cover cursor-pointer" 
+                            onClick={() => setSelectedImage(report.fileUrl)}
+                          />
                         ) : (
                           <a href={report.fileUrl} target="_blank" rel="noopener noreferrer">
                             <FileText className="w-4 h-4" />
@@ -216,67 +220,84 @@ export default function AccidentReportsPage() {
         </CardContent>
       </Card>
       {session?.user.role === 'ADMIN' && (
-       <Dialog open={isAccidentDialogOpen} onOpenChange={setIsAccidentDialogOpen}>
-       <DialogContent>
-         <DialogHeader>
-           <DialogTitle>アクシデントレポートを追加</DialogTitle>
-         </DialogHeader>
-         <div className="space-y-4 py-4">
-           <div className="space-y-2">
-             <Label htmlFor="accident-department">部署</Label>
-             <Select
-               value={newAccidentDepartment}
-               onValueChange={setNewAccidentDepartment}
-             >
-               <SelectTrigger id="accident-department">
-                 <SelectValue placeholder="部署を選択" />
-               </SelectTrigger>
-               <SelectContent>
-                 {departments.map((dept) => (
-                   <SelectItem key={dept} value={dept}>
-                     {dept}
-                   </SelectItem>
-                 ))}
-               </SelectContent>
-             </Select>
-           </div>
-           <div className="grid grid-cols-2 gap-4">
-             <div className="space-y-2">
-               <Label htmlFor="accident-year">年</Label>
-               <Input
-                 id="accident-year"
-                 type="number"
-                 value={newAccidentYear}
-                 onChange={(e) => setNewAccidentYear(e.target.value)}
-                 placeholder="YYYY"
-               />
-             </div>
-             <div className="space-y-2">
-               <Label htmlFor="accident-month">月</Label>
-               <Input
-                 id="accident-month"
-                 type="number"
-                 value={newAccidentMonth}
-                 onChange={(e) => setNewAccidentMonth(e.target.value)}
-                 placeholder="MM"
-                 min="1"
-                 max="12"
-               />
-             </div>
-           </div>
-           <div className="space-y-2">
-             <Label htmlFor="accident-file">ファイル（画像またはPDF）</Label>
-             <Input
-               id="accident-file"
-               type="file"
-               accept="image/*,.pdf"
-               onChange={(e) => setNewAccidentFile(e.target.files?.[0] || null)}
-             />
-           </div>
-         </div>
-         <Button onClick={handleAddAccidentReport}>追加</Button>
-       </DialogContent>
-     </Dialog>
+        <Dialog open={isAccidentDialogOpen} onOpenChange={setIsAccidentDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>アクシデントレポートを追加</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="accident-department">部署</Label>
+                <Select
+                  value={newAccidentDepartment}
+                  onValueChange={setNewAccidentDepartment}
+                >
+                  <SelectTrigger id="accident-department">
+                    <SelectValue placeholder="部署を選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map((dept) => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="accident-year">年</Label>
+                  <Input
+                    id="accident-year"
+                    type="number"
+                    value={newAccidentYear}
+                    onChange={(e) => setNewAccidentYear(e.target.value)}
+                    placeholder="YYYY"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="accident-month">月</Label>
+                  <Input
+                    id="accident-month"
+                    type="number"
+                    value={newAccidentMonth}
+                    onChange={(e) => setNewAccidentMonth(e.target.value)}
+                    placeholder="MM"
+                    min="1"
+                    max="12"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="accident-file">ファイル（画像またはPDF）</Label>
+                <Input
+                  id="accident-file"
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => setNewAccidentFile(e.target.files?.[0] || null)}
+                />
+              </div>
+            </div>
+            <Button onClick={handleAddAccidentReport}>追加</Button>
+          </DialogContent>
+        </Dialog>
+      )}
+      {selectedImage && (
+        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+          <DialogContent className="sm:max-w-[800px]">
+            <DialogHeader>
+              <DialogTitle className="flex justify-between items-center">
+                拡大画像
+                <Button variant="ghost" size="sm" onClick={() => setSelectedImage(null)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="mt-4">
+              <img src={selectedImage} alt="拡大画像" className="w-full h-auto" />
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   )
