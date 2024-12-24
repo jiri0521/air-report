@@ -26,7 +26,7 @@ export function MainNav() {
                 <CustomLink href="/near-miss-reports">
                     <div className={`hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
                 </CustomLink>
-                <CustomLink href="/acdident-reports">
+                <CustomLink href="/accident-reports">
                     <div className={`hover:text-blue-400 ${isActive('/accident-reports') ? 'border-b-2 border-blue-500' : ''}`}>事故</div>
                 </CustomLink>
                 <CustomLink href="/analytics">
