@@ -336,7 +336,7 @@ export function TopPage() {
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link href="/announcements">
-                      <List className="mr-2 h-4 w-4" /> 一覧を見る
+                      <List className="mr-2 h-4 w-4" /> お知らせ一覧
                     </Link>
                   </Button>
                   {session?.user.role === 'ADMIN' && (

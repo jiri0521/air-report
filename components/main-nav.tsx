@@ -15,22 +15,22 @@ export function MainNav() {
             <div className="hidden md:flex gap-6 items-center"> {/* md以上で横並び */}
                
                 <CustomLink href="/">
-                    <div className={`hover:text-blue-400 ${isActive('/') ? 'border-b-2 border-blue-500' : ''}`}>ホーム</div>
+                    <div className={`border py-1 px-1 rounded-xl hover:text-blue-400 ${isActive('/') ? 'border-b-2 border-blue-500' : ''}`}>ホーム</div>
                 </CustomLink>
                 <CustomLink href="/create">
-                    <div className={`hover:text-blue-400 ${isActive('/create') ? 'border-b-2 border-blue-500' : ''}`}>作成</div>
+                    <div className={`border py-1 px-1 rounded-xl hover:text-blue-400 ${isActive('/create') ? 'border-b-2 border-blue-500' : ''}`}>作成</div>
                 </CustomLink>
                 <CustomLink href="/reports">
-                    <div className={`hover:text-blue-400 ${isActive('/reports') ? 'border-b-2 border-blue-500' : ''}`}>一覧</div>
+                    <div className={`border py-1 px-1 rounded-xl hover:text-blue-400 ${isActive('/reports') ? 'border-b-2 border-blue-500' : ''}`}>一覧</div>
                 </CustomLink>
                 <CustomLink href="/near-miss-reports">
-                    <div className={`hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
+                    <div className={`border py-1 px-1 rounded-xl hover:text-blue-400 ${isActive('/near-miss-reports') ? 'border-b-2 border-blue-500' : ''}`}>ヒヤリ</div>
                 </CustomLink>
                 <CustomLink href="/accident-reports">
-                    <div className={`hover:text-blue-400 ${isActive('/accident-reports') ? 'border-b-2 border-blue-500' : ''}`}>事故</div>
+                    <div className={`border py-1 px-1 rounded-xl hover:text-blue-400 ${isActive('/accident-reports') ? 'border-b-2 border-blue-500' : ''}`}>事故</div>
                 </CustomLink>
                 <CustomLink href="/analytics">
-                    <div className={`hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
+                    <div className={`border py-1 px-1 rounded-xl hover:text-blue-400 ${isActive('/analytics') ? 'border-b-2 border-blue-500' : ''}`}>分析</div>
                 </CustomLink>               
             </div>
 
