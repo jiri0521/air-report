@@ -638,25 +638,9 @@ export default function Component() {
                 onChange={handleInputChange}
                 className="dark:border-gray-700"
               />
-            </div>
-            <div>
-                <Label htmlFor="department">部署</Label>
-                <Select
-                  name="department"
-                  value={formData.department}
-                  onValueChange={(value) => handleInputChange(value, 'department')}
-                >
-                  <SelectTrigger id="department" className="dark:border-gray-700">
-                    <SelectValue placeholder="部署を選択" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {['1病棟', '3病棟', '5病棟', '6病棟', '7病棟', '医局', '外来', '薬剤科', 'リハビリ科', '検査科', '放射線科', '臨床工学科', '栄養科', '医事課', '経理課', '人事課', '総務課', 'その他'].map((dept) => (
-                      <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            </div>         
           </div> 
+
         <div>
           <Label htmlFor="occurrenceDateTime">発生日時</Label>
           <Input
@@ -669,17 +653,45 @@ export default function Component() {
             required
           />
         </div>
-        <div>
-          <Label htmlFor="location">発生場所</Label>
-          <Input
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            className="dark:border-gray-700"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-md dark:bg-gray-800 dark:text-white">
+                          <div>
+                              <Label htmlFor="department">発生元の部署</Label>
+                              <Select
+                                name="department"
+                                value={formData.department}
+                                onValueChange={(value) => handleInputChange(value, 'department')}
+                                required
+                              >
+                                <SelectTrigger id="department" className="dark:border-gray-700">
+                                  <SelectValue placeholder="部署を選択" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {['1病棟', '3病棟', '5病棟', '6病棟', '7病棟', '医局', '外来', '薬剤科', 'リハビリ科', '検査科', '放射線科', '臨床工学科', '栄養科', '医事課', '経理課', '人事課', '総務課', 'その他'].map((dept) => (
+                                    <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div>
+                              <Label htmlFor="location">発生場所</Label>
+                              <Select
+                                name="location"
+                                value={formData.location}
+                                onValueChange={(value) => handleInputChange(value, 'location')}
+                                required
+                              >
+                                <SelectTrigger id="location" className="dark:border-gray-700">
+                                  <SelectValue placeholder="発生場所を選択" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {['病室', 'ナースステーション', '廊下', 'トイレ', '浴室', '配膳室', '厨房', '食堂', '検査室', '調剤室', '透析室', 'リハビリ室', '事務所', '診察室', '処置室', 'その他'].map((location) => (
+                                    <SelectItem key={location} value={location}>{location}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
         </div>
-        
         <div>
           <Label htmlFor="reportToSupervisor">所属長への報告日時</Label>
           <Input
@@ -710,6 +722,8 @@ export default function Component() {
           />
              
         </div>
+
+
 
         <div className='bg-blue-100 p-4 rounded-md dark:bg-gray-800 dark:text-white'>
         <Label className="block mb-2">インシデントのカテゴリー</Label>
