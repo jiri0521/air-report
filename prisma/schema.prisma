@@ -101,6 +101,7 @@ model User {
   incidents     Incident[]
   announcements Announcement[]
   passwordResetTokens PasswordResetToken[]
+  lastLogin     DateTime?
 }
 
 enum Role {

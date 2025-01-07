@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTheme } from 'next-themes'
 import { useSession } from 'next-auth/react'
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Download } from 'lucide-react'
+import { Download, User, RefreshCw } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { toast } from "@/hooks/use-toast"
 import UserList from '@/components/userList';
@@ -20,7 +20,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { format } from 'date-fns'
+import { ja } from 'date-fns/locale'
 
+
+type LoggedInUser = {
+  id: string;
+  name: string;
+  role: string;
+  lastLogin: string;
+};
 
 export default function SettingsPage() {
   const [name, setName] = useState('')
@@ -31,15 +40,40 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const { data: session, status } = useSession()
   const [role, setRole] = useState('ADMIN')
+  const [loggedInUsers, setLoggedInUsers] = useState<LoggedInUser[]>([])
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const [mounted, setMounted] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+
+  const fetchLoggedInUsers = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const response = await fetch('/api/user/logged-in');
+      if (response.ok) {
+        const users = await response.json();
+        setLoggedInUsers(users);
+      } else {
+        throw new Error('Failed to fetch logged-in users');
+      }
+    } catch (error) {
+      console.error('Error fetching logged-in users:', error);
+      toast({
+        title: "エラー",
+        description: "ログインユーザーの取得に失敗しました。",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
     setMounted(true)
     if (status === 'authenticated' && session?.user) {
       fetchUserSettings()
       setRole(session.user.role)
+      fetchLoggedInUsers()
       console.log(" ログイン中の権限:", role)
     }
   }, [status, session])
@@ -60,6 +94,7 @@ export default function SettingsPage() {
       console.error('Failed to fetch user settings:', error)
     }
   }
+
 
   const handleSave = async () => {
     try {
@@ -99,7 +134,11 @@ export default function SettingsPage() {
     console.log('Exporting data...')
   }
 
-  
+  const formatLastLogin = (lastLogin: string) => {
+    const date = new Date(lastLogin)
+    return format(date, 'yyyy年MM月dd日 HH時mm分', { locale: ja })
+  }
+
 
   if (!mounted) return null
 
@@ -112,6 +151,7 @@ export default function SettingsPage() {
           <TabsTrigger value="notifications">通知</TabsTrigger>
           <TabsTrigger value="display">表示</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
+          <TabsTrigger value="users">ログインユーザー</TabsTrigger>
           {session?.user.role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>
         <TabsContent value="notifications">
@@ -203,19 +243,60 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="users">
+          <Card className='dark:border-white'>
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                <span>ログインユーザー</span>
+                <Button onClick={fetchLoggedInUsers} disabled={isRefreshing}>
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  {isRefreshing ? '更新中...' : '更新'}
+                </Button>
+              </CardTitle>
+              <CardDescription>過去10分以内にログインしたユーザーの一覧です。</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isRefreshing ? (
+                <div className="flex justify-center items-center h-20">
+                  <RefreshCw className="h-8 w-8 animate-spin text-gray-500" />
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {loggedInUsers.map((user) => (
+                    <li key={user.id} className="flex items-center space-x-2">
+                      <User className="h-5 w-5 text-gray-500" />
+                      <span>{user.name}</span>
+                      <span className="text-sm text-gray-500">(権限：{user.role})</span>
+                      <span className="text-sm text-gray-400">
+                        最終ログイン: {formatLastLogin(user.lastLogin)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {!isRefreshing && loggedInUsers.length === 0 && (
+                <p className="text-center text-gray-500 mt-4">
+                  過去10分以内にログインしたユーザーはいません。
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+
         {session?.user.role === 'ADMIN' && (
           <TabsContent value="permissions">
-          <Card className='dark:border-white'>
-          <CardHeader>
-          <CardTitle>権限管理</CardTitle>
-          <CardDescription>ユーザーの権限を管理します。</CardDescription>
-          </CardHeader>
-          <CardContent>
-          <UserList />
-          </CardContent>
-          </Card>
+            <Card className='dark:border-white'>
+              <CardHeader>
+                <CardTitle>権限管理</CardTitle>
+                <CardDescription>ユーザーの権限を管理します。</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <UserList />
+              </CardContent>
+            </Card>
           </TabsContent>
-          )}
+        )}
       </Tabs>
   
       <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
@@ -242,3 +323,4 @@ export default function SettingsPage() {
     </div>
   )
 }
+

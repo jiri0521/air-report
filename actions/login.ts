@@ -6,6 +6,7 @@ import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { getUserByEmail } from "@/data/user";
+import { db } from "@/lib/db";
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   const validatedFields = LoginSchema.safeParse(values);
@@ -27,6 +28,12 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       email,
       password,
       redirect: false, // Change this to false to prevent automatic redirect
+    });
+
+     // Update the lastLogin field
+     await db.user.update({
+      where: { email },
+      data: { lastLogin: new Date() },
     });
 
     return { 
