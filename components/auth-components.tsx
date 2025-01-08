@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { signIn, signOut } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
+import { db } from "@/lib/db";
 
 export function SignIn({
   provider,
@@ -21,9 +22,17 @@ export function SignOut({
 }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
   return (
     <form className="w-full"
+    
     action={async () => {
-      "use server";
-      await signOut();
+      "use server"
+      const session = await auth();
+    if (session?.user?.email) {
+      await db.user.update({
+        where: { email: session.user.email },
+        data: { lastLogout: new Date() },
+      });
+    }
+    await signOut();
     }}>
       <Button  variant="ghost" className="w-full p-0 bg-red-400 text-white" {...props}>
         ログアウト

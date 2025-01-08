@@ -14,13 +14,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 過去10分以内にログインしたユーザーを取得
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    // 過去1時間以内にログインしたユーザーを取得
+    const oneHourAgo = new Date(Date.now() -  60 * 60 * 1000);
 
     const recentlyLoggedInUsers = await prisma.user.findMany({
       where: {
         lastLogin: {
-          gte: tenMinutesAgo.toISOString()
+          gte: oneHourAgo.toISOString()
         }
       },
       select: {
@@ -29,6 +29,7 @@ export async function GET() {
         email: true,
         role: true,
         lastLogin: true, // 最終ログイン時間も含める
+        lastLogout: true,
       },
       orderBy: {
         lastLogin: 'desc'

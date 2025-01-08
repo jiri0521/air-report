@@ -102,6 +102,7 @@ model User {
   announcements Announcement[]
   passwordResetTokens PasswordResetToken[]
   lastLogin     DateTime?
+  lastLogout    DateTime?
 }
 
 enum Role {
