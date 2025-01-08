@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import IncidentForm from "@/components/incident-form"
-import { format } from 'date-fns';
 import party from "party-js"
 
 type Incident = {
@@ -90,14 +89,13 @@ export function TopPage() {
     setError(null)
 
     try {
-      const [incidentsResponse, announcementsResponse, userReportsResponse, nearMissResponse] = await Promise.all([
+      const [incidentsResponse, announcementsResponse, userReportsResponse] = await Promise.all([
         fetch('/api/incidents?page=1&perPage=100&sortField=occurrenceDateTime&sortOrder=desc'),
         fetch('/api/announcements?limit=5'),
-        fetch('/api/incidents/my-report/'),
-        fetch('/api/near-miss-reports')
+        fetch('/api/incidents/my-report/')
       ])
 
-      if (!incidentsResponse.ok || !announcementsResponse.ok || !userReportsResponse.ok || !nearMissResponse.ok) {
+      if (!incidentsResponse.ok || !announcementsResponse.ok || !userReportsResponse.ok) {
         console.log(error)
         throw new Error('Failed to fetch data')
       }
