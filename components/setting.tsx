@@ -39,7 +39,6 @@ export default function SettingsPage() {
   const [language, setLanguage] = useState('日本語')
   const { theme, setTheme } = useTheme()
   const { data: session, status } = useSession()
-  const [role, setRole] = useState('ADMIN')
   const [activeUsers, setActiveUsers] = useState<ActiveUser[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -72,7 +71,6 @@ export default function SettingsPage() {
     setMounted(true)
     if (status === 'authenticated' && session?.user) {
       fetchUserSettings()
-      setRole(session.user.role)
       fetchActiveUsers()
     }
   }, [status, session, fetchActiveUsers])
@@ -87,7 +85,6 @@ export default function SettingsPage() {
         setPushNotifications(settings.pushNotifications)
         setFontSize(settings.fontSize)
         setLanguage(settings.language)
-        setRole(settings.role)
       }
     } catch (error) {
       console.error('Failed to fetch user settings:', error)
@@ -132,7 +129,7 @@ export default function SettingsPage() {
     console.log('Exporting data...')
   }
 
-  const formatDateTime = (dateTime: string) => {
+  const formatDateTime = (dateTime: string | null) => {
     if (!dateTime) return 'N/A';
     const date = new Date(dateTime);
     return format(date, 'yyyy年MM月dd日 HH時mm分', { locale: ja });
@@ -149,7 +146,7 @@ export default function SettingsPage() {
           <TabsTrigger value="notifications">通知</TabsTrigger>
           <TabsTrigger value="display">表示</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
-          <TabsTrigger value="users">アクティブ</TabsTrigger>
+          <TabsTrigger value="users">ログインユーザー</TabsTrigger>
           {session?.user.role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>
         <TabsContent value="notifications">
@@ -251,7 +248,7 @@ export default function SettingsPage() {
                   {isRefreshing ? '更新中...' : '更新'}
                 </Button>
               </CardTitle>
-              <CardDescription>過去1時間以内にアクティブだったユーザーの一覧です。</CardDescription>
+              <CardDescription>過去10分以内にアクティブだったユーザーの一覧です。</CardDescription>
             </CardHeader>
             <CardContent>
               {isRefreshing ? (
@@ -277,7 +274,7 @@ export default function SettingsPage() {
               )}
               {!isRefreshing && activeUsers.length === 0 && (
                 <p className="text-center text-gray-500 mt-4">
-                  過去1時間以内にアクティブだったユーザーはいません。
+                  過去10分以内にアクティブだったユーザーはいません。
                 </p>
               )}
             </CardContent>
@@ -323,5 +320,4 @@ export default function SettingsPage() {
     </div>
   )
 }
-
 
