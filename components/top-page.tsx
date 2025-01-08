@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus, List, User, Trash2} from "lucide-react"
+import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus, List, User} from "lucide-react"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -12,7 +12,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useSession } from "next-auth/react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import IncidentForm from "@/components/incident-form"
@@ -69,22 +68,7 @@ type Announcement = {
   createdAt: string
 }
 
-type NearMissReport = {
-  id: number
-  department: string
-  fileUrl: string
-  fileType: string
-  count: number
-  createdAt: string
-  date: string // New field
-  isDeleted: boolean
-}
 
-
-const departments = [
-  '1病棟', '3病棟', '5病棟', '6病棟', '7病棟', '薬剤科', 'リハビリ科', 
-  '検査科', '放射線科', '臨床工学科', '栄養科', '事務部'
-]
 
 export function TopPage() {
   const [latestReports, setLatestReports] = useState<Incident[]>([])
@@ -100,13 +84,6 @@ export function TopPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-  const [nearMissReports, setNearMissReports] = useState<NearMissReport[]>([])
-  const [newNearMissCount, setNewNearMissCount] = useState('')
-  const [newNearMissDepartment, setNewNearMissDepartment] = useState('')
-  const [isNearMissDialogOpen, setIsNearMissDialogOpen] = useState(false)
-  const [newNearMissFile, setNewNearMissFile] = useState<File | null>(null)
-  const [newNearMissYear, setNewNearMissYear] = useState('')
-  const [newNearMissMonth, setNewNearMissMonth] = useState('')
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -137,7 +114,6 @@ export function TopPage() {
       setUnapprovedReports(allIncidents.filter((incident: Incident) => !incident.comment))
       setAnnouncements(announcementsData.announcements)
       setUserReports(userReportsData.incidents)
-      setNearMissReports(nearMissData.nearMissReports)
       setLoading(false)
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -229,64 +205,7 @@ export function TopPage() {
     }
   }
 
-  const handleAddNearMissReport = async () => {
-    if (!newNearMissFile || !newNearMissDepartment || !newNearMissCount || !newNearMissYear || !newNearMissMonth) {
-      alert('すべての項目を入力してください。')
-      return
-    }
-  
-    const formData = new FormData()
-    formData.append('file', newNearMissFile)
-    formData.append('department', newNearMissDepartment)
-    formData.append('count', newNearMissCount)
-    formData.append('date', `${newNearMissYear}-${newNearMissMonth.padStart(2, '0')}-01`)
-  
-    try {
-      const response = await fetch('/api/near-miss-reports', {
-        method: 'POST',
-        body: formData,
-      })
-  
-      if (!response.ok) {
-        throw new Error('Failed to add near-miss report')
-      }
-  
-      const newReport: NearMissReport = await response.json()
-      setNearMissReports([newReport, ...nearMissReports])
-      setNewNearMissDepartment('')
-      setNewNearMissCount('')
-      setNewNearMissYear('')
-      setNewNearMissMonth('')
-      setNewNearMissFile(null)
-      setIsNearMissDialogOpen(false)
-      party.confetti(document.body, {
-        count: party.variation.range(20, 200)
-      })
-    } catch (error) {
-      console.error('Error adding near-miss report:', error)
-    }
-  }
 
-
-  const handleDeleteNearMissReport = async (id: number) => {
-    if (!confirm('このヒヤリハットを削除してもよろしいですか？')) {
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/near-miss-reports?id=${id}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to delete near-miss report')
-      }
-
-      setNearMissReports(nearMissReports.filter(report => report.id !== id))
-    } catch (error) {
-      console.error('Error deleting near-miss report:', error)
-    }
-  }
   const CardSkeleton = () => (
     <Card className="dark:border-gray-700">
       <CardHeader>
@@ -336,7 +255,7 @@ export function TopPage() {
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link href="/announcements">
-                      <List className="mr-2 h-4 w-4" /> お知らせ一覧
+                      <List className="mr-2 h-4 w-4" /> 
                     </Link>
                   </Button>
                   {session?.user.role === 'ADMIN' && (
@@ -585,6 +504,55 @@ export function TopPage() {
               </CardContent>
             </Card>
           </div>
+
+          <div className="mt-12">
+            <Card className="dark:border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <User className="mr-2 text-purple-500" />
+                  自分の提出したレポート
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[250px]">
+                  {loading ? <TableSkeleton /> : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>日付</TableHead>
+                          <TableHead>カテゴリー</TableHead>
+                          <TableHead>影響度</TableHead>
+                          <TableHead>状態</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {userReports.map((report) => (
+                          <TableRow 
+                            key={report.id} 
+                            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                            onClick={() => handleIncidentClick(report)}
+                          >
+                            <TableCell>{formatDate(report.occurrenceDateTime)}</TableCell>
+                            <TableCell>{report.category}</TableCell>
+                            <TableCell>{report.impactLevel}</TableCell>
+                            <TableCell>
+                              {!report.countermeasures ? (
+                                <Badge variant="outline" className="bg-yellow-100 text-yellow-800">未対策</Badge>
+                              ) : !report.comment ? (
+                                <Badge variant="outline" className="bg-blue-100 text-blue-800">未承認</Badge>
+                              ) : (
+                                <Badge variant="outline" className="bg-green-100 text-green-800">完了</Badge>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
    
@@ -653,8 +621,6 @@ export function TopPage() {
         </DialogContent>
         
       </Dialog> 
-
-     
     </div>
   )
 }
