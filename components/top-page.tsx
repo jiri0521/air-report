@@ -105,7 +105,6 @@ export function TopPage() {
       const incidentsData = await incidentsResponse.json()
       const announcementsData = await announcementsResponse.json()
       const userReportsData = await userReportsResponse.json()
-      const nearMissData = await nearMissResponse.json()
 
       const allIncidents = incidentsData.incidents
 
@@ -131,10 +130,6 @@ export function TopPage() {
     return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`
   }
 
-  const formatDate2 = (dateString: string) => {
-    const yearmonth = new Date (dateString)
-    return format(yearmonth, "yyyy年MM月");
-  } 
 
   const handleAddAnnouncement = async () => {
     try {
