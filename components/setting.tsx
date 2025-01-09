@@ -146,7 +146,7 @@ export default function SettingsPage() {
           <TabsTrigger value="notifications">通知</TabsTrigger>
           <TabsTrigger value="display">表示</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
-          <TabsTrigger value="users">ログインユーザー</TabsTrigger>
+          <TabsTrigger value="users">アクティブユーザー</TabsTrigger>
           {session?.user.role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>
         <TabsContent value="notifications">
@@ -248,7 +248,7 @@ export default function SettingsPage() {
                   {isRefreshing ? '更新中...' : '更新'}
                 </Button>
               </CardTitle>
-              <CardDescription>過去10分以内にアクティブだったユーザーの一覧です。</CardDescription>
+              <CardDescription>過去1時間以内にアクティブだったユーザーの一覧です。</CardDescription>
             </CardHeader>
             <CardContent>
               {isRefreshing ? (
@@ -274,7 +274,7 @@ export default function SettingsPage() {
               )}
               {!isRefreshing && activeUsers.length === 0 && (
                 <p className="text-center text-gray-500 mt-4">
-                  過去10分以内にアクティブだったユーザーはいません。
+                  過去1時間以内にアクティブだったユーザーはいません。
                 </p>
               )}
             </CardContent>
