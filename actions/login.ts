@@ -8,9 +8,10 @@ import { DEFAULT_LOGIN_REDIRECT } from "@/routes"
 import { getUserByStaffNumber } from "@/data/user"
 import { db } from "@/lib/db"
 
+
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   const validatedFields = LoginSchema.safeParse(values)
-
+ 
   if (!validatedFields.success) {
     return { error: "Invalid fields!" }
   }
@@ -23,23 +24,24 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     return { error: "職員番号が存在しません!" }
   }
 
-  try {
-    await signIn("credentials", {
-      staffNumber,
-      password,
-      redirectTo:  DEFAULT_LOGIN_REDIRECT ,
-    })
-
+  try { 
     // Update the lastLogin field
     await db.user.update({
       where: { staffNumber },
       data: { lastLogin: new Date() },
     })
 
+    await signIn("credentials", {
+      staffNumber,
+      password,
+      redirectTo: DEFAULT_LOGIN_REDIRECT ,
+    })
+
     return {
       success: "ログインに成功しました!",
       needsReload: true,
     }
+    
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
