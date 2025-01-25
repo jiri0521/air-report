@@ -34,11 +34,12 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     await signIn("credentials", {
       staffNumber,
       password,
-      redirectTo: DEFAULT_LOGIN_REDIRECT ,
+      redirect: false ,
     })
 
     return {
       success: "ログインに成功しました!",
+      redirectTo: DEFAULT_LOGIN_REDIRECT ,
       needsReload: true,
     }
     
