@@ -22,9 +22,11 @@ import {
 } from "@/components/ui/dialog"
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
+import SessionData from './session-data';
 
 type ActiveUser = {
   id: string;
+  staffNumber: string;
   name: string;
   role: string;
   lastLogin: string;
@@ -46,48 +48,48 @@ export default function SettingsPage() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   const fetchActiveUsers = useCallback(async () => {
-    setIsRefreshing(true);
+    setIsRefreshing(true)
     try {
-      const response = await fetch('/api/user/logged-in');
+      const response = await fetch("/api/user/logged-in")
       if (response.ok) {
-        const users = await response.json();
-        setActiveUsers(users);
+        const users = await response.json()
+        setActiveUsers(users)
       } else {
-        throw new Error('Failed to fetch active users');
+        throw new Error("Failed to fetch active users")
       }
     } catch (error) {
-      console.error('Error fetching active users:', error);
+      console.error("Error fetching active users:", error)
       toast({
         title: "エラー",
         description: "アクティブユーザーの取得に失敗しました。",
         variant: "destructive",
-      });
+      })
     } finally {
-      setIsRefreshing(false);
+      setIsRefreshing(false)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     setMounted(true)
-    if (status === 'authenticated' && session?.user) {
+    if (status === "authenticated" && session?.user) {
       fetchUserSettings()
       fetchActiveUsers()
     }
   }, [status, session, fetchActiveUsers])
-
+  
   const fetchUserSettings = async () => {
     try {
-      const response = await fetch('/api/user/settings')
+      const response = await fetch("/api/user/settings")
       if (response.ok) {
         const settings = await response.json()
-        setName(settings.name || '')
+        setName(settings.name || "")
         setEmailNotifications(settings.emailNotifications)
         setPushNotifications(settings.pushNotifications)
         setFontSize(settings.fontSize)
         setLanguage(settings.language)
       }
     } catch (error) {
-      console.error('Failed to fetch user settings:', error)
+      console.error("Failed to fetch user settings:", error)
     }
   }
 
@@ -147,6 +149,7 @@ export default function SettingsPage() {
           <TabsTrigger value="display">表示</TabsTrigger>
           <TabsTrigger value="data">データ</TabsTrigger>
           <TabsTrigger value="users">アクティブユーザー</TabsTrigger>
+          <TabsTrigger value="session">セッション情報</TabsTrigger>
           {session?.user.role === 'ADMIN' && <TabsTrigger value="permissions">権限</TabsTrigger>}
         </TabsList>
         <TabsContent value="notifications">
@@ -239,16 +242,16 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="users">
-          <Card className='dark:border-white'>
+          <Card className="dark:border-white">
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
-                <span>アクティブユーザー</span>
+                <span>最近のアクティブユーザー</span>
                 <Button onClick={fetchActiveUsers} disabled={isRefreshing}>
-                  <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                  {isRefreshing ? '更新中...' : '更新'}
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+                  {isRefreshing ? "更新中..." : "更新"}
                 </Button>
               </CardTitle>
-              <CardDescription>過去1時間以内にアクティブだったユーザーの一覧です。</CardDescription>
+              <CardDescription>過去1週間以内にログインしたユーザーの一覧です。</CardDescription>
             </CardHeader>
             <CardContent>
               {isRefreshing ? (
@@ -273,10 +276,20 @@ export default function SettingsPage() {
                 </ul>
               )}
               {!isRefreshing && activeUsers.length === 0 && (
-                <p className="text-center text-gray-500 mt-4">
-                  過去1時間以内にアクティブだったユーザーはいません。
-                </p>
+                <p className="text-center text-gray-500 mt-4">過去1週間以内にログインしたユーザーはいません。</p>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="session">
+          <Card className="dark:border-white">
+            <CardHeader>
+              <CardTitle>セッション情報</CardTitle>
+              <CardDescription>現在のセッション情報を表示します。</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SessionData session={session} />
             </CardContent>
           </Card>
         </TabsContent>

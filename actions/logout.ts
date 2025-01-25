@@ -1,21 +1,22 @@
-"use server";
+"use server"
 
-import { signOut } from "@/auth";
-import { db } from "@/lib/db";
-import { auth } from "@/auth";
+import { signOut } from "@/auth"
+import { db } from "@/lib/db"
+import { auth } from "@/auth"
 
 export const logout = async () => {
   try {
-    const session = await auth();
-    if (session?.user?.email) {
+    const session = await auth()
+    if (session?.user?.staffNumber) {
       await db.user.update({
-        where: { email: session.user.email },
+        where: { staffNumber: session.user.staffNumber },
         data: { lastLogout: new Date() },
-      });
+      })
     }
-    await signOut();
+    await signOut()
   } catch (error) {
-    console.error("Error during logout:", error);
+    console.error("ログアウト中にエラーが発生しました:", error)
   }
-};
+}
+
 

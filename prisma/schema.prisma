@@ -89,21 +89,25 @@ model Announcement {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String        @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  accounts      Account[]
-  settings      UserSettings?
-  role          Role          @default(USER)
-  incidents     Incident[]
-  announcements Announcement[]
+  id                 String        @id @default(cuid())
+  name               String
+  staffNumber        String       @unique
+  email              String?      
+  emailVerified      DateTime?
+  image              String?
+  password           String
+  hasChangedPassword Boolean       @default(false)
+  accounts           Account[]
+  settings           UserSettings?
+  role               Role          @default(USER)
+  incidents          Incident[]
+  announcements      Announcement[]
   passwordResetTokens PasswordResetToken[]
-  lastLogin     DateTime?
-  lastLogout    DateTime?
+  lastLogin          DateTime?
+  lastLogout         DateTime?
 }
+
+
 
 enum Role {
   USER

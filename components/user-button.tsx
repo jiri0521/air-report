@@ -50,8 +50,8 @@ const userInitials = session.user.name ? session.user.name.slice(0, 2) : "";
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{session.user.name}</p>
+              <p className="text-xs leading-none text-muted-foreground">職員番号:{session.user.staffNumber}</p>
               <p className="text-xs leading-none text-muted-foreground">権限:{session.user.role}</p>
-              <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
               <br></br>
               <Link href="/settings">
               

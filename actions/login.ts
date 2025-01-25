@@ -1,56 +1,56 @@
-"use server";
+"use server"
 
-import * as z from "zod";
-import { LoginSchema } from "@/schemas";
-import { AuthError } from "next-auth";
-import { signIn } from "@/auth";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { getUserByEmail } from "@/data/user";
-import { db } from "@/lib/db";
+import type * as z from "zod"
+import { AuthError } from "next-auth"
+import { signIn } from "@/auth"
+import { LoginSchema } from "@/schemas"
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes"
+import { getUserByStaffNumber } from "@/data/user"
+import { db } from "@/lib/db"
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
-  const validatedFields = LoginSchema.safeParse(values);
+  const validatedFields = LoginSchema.safeParse(values)
 
   if (!validatedFields.success) {
-    return { error: "Invalid fields" };
+    return { error: "Invalid fields!" }
   }
 
-  const { email, password } = validatedFields.data;
+  const { staffNumber, password } = validatedFields.data
 
-  const existingUser = await getUserByEmail(email);
+  const existingUser = await getUserByStaffNumber(staffNumber)
 
-  if (!existingUser || !existingUser.email || !existingUser.password) {
-    return { error: "入力したメールアドレスは存在しません" };
+  if (!existingUser || !existingUser.staffNumber || !existingUser.password) {
+    return { error: "職員番号が存在しません!" }
   }
 
   try {
     await signIn("credentials", {
-      email,
+      staffNumber,
       password,
-      redirect: false, // Change this to false to prevent automatic redirect
-    });
+      redirectTo:  DEFAULT_LOGIN_REDIRECT ,
+    })
 
-     // Update the lastLogin field
-     await db.user.update({
-      where: { email },
+    // Update the lastLogin field
+    await db.user.update({
+      where: { staffNumber },
       data: { lastLogin: new Date() },
-    });
+    })
 
-    return { 
-      success: "成功!",
-      redirectTo: DEFAULT_LOGIN_REDIRECT,
-      needsReload: true // Add this flag
-    };
+    return {
+      success: "ログインに成功しました!",
+      needsReload: true,
+    }
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return { error: "認証エラー" };
+          return { error: "無効な認証情報です!" }
         default:
-          return { error: "Something went wrong!" };
+          return { error: "エラーが発生しました!" }
       }
     }
 
-    throw error;
+    throw error
   }
-};
+}
+

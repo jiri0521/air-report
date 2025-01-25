@@ -1,34 +1,41 @@
 "use server";
 
-import { z } from "zod";
+import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { RegisterSchema } from "@/schemas";
+import { getUserByStaffNumber } from "@/data/user";
 
-export async function register(values: z.infer<typeof RegisterSchema>) {
-  const { email, password, name } = values;
+export const register = async (values: z.infer<typeof RegisterSchema>) => {
+  const validatedFields = RegisterSchema.safeParse(values);
 
-  // メールアドレスの重複チェック
-  const existingUser = await db.user.findUnique({
-    where: { email },
-  });
-  if (existingUser) {
-    return { error: "このメールアドレスは既に登録されています" };
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
   }
 
-  // パスワードのハッシュ化
+  const { staffNumber, name, password } = validatedFields.data;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // ユーザーの作成
-  const newUser = await db.user.create({
-    data: {
-      email,
-      password: hashedPassword,
-      name,
-    },
-  });
+  const existingUser = await getUserByStaffNumber(staffNumber);
 
-  return { success:"アカウントの作成に成功しました" };
+  if (existingUser) {
+    return { error: "この職員番号は既に登録されています!" };
+  }
 
-  
-}
+  try {
+    await db.user.create({
+      data: {
+        name,
+        staffNumber,
+        password: hashedPassword,
+        // Do not include the email field at all
+      },
+    });
+
+    return { success: "ユーザー登録が完了しました!" };
+  } catch (error) {
+    console.error("Registration error:", error);
+    return { error: "ユーザー登録中にエラーが発生しました。" };
+  }
+};
+

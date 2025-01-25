@@ -47,7 +47,7 @@ export const config: NextAuthConfig = {
     authorized({ request, auth }) {
       try {
         const { pathname } = request.nextUrl;
-        const protectedPaths = ["/","/settings", "/create", "/reports"];
+        const protectedPaths = ["/","/settings", "/create", "/reports","/near-miss-reports","/accident-reports"];
         if (protectedPaths.includes(pathname)) return !!auth;
         return true;
       } catch (error) {

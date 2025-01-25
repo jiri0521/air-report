@@ -15,7 +15,7 @@ import { Button } from './ui/button';
 interface User {
   id: string;
   name: string;
-  email: string;
+  staffNumber: string;
   role: string;
 }
 
@@ -66,7 +66,7 @@ export default function UserList() {
     <div className="space-y-4">
       {uniqueUsers.map((user) => (
         <div key={user.id} className="flex items-center justify-between">
-          <p>{user.name} ({user.email})</p>
+          <p>{user.name} ({user.staffNumber})</p>
           <Select
             value={user.role}
             onValueChange={(newRole) => handleRoleChange(user.id, newRole)}

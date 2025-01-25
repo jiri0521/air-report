@@ -1,96 +1,69 @@
-"use client";
+"use client"
 
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { LoginSchema } from "@/schemas";
-import { CardWrapper } from "@/components/auth/card-wrapper";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form";
-import { FormError } from "@/components/form-error";
-import { FormSuccess } from "@/components/form-success";
-import { login } from "@/actions/login";
-import Link from 'next/link'
+import type * as z from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useState, useTransition, useEffect } from "react"
+import { useRouter } from "next/navigation"
+
+import { LoginSchema } from "@/schemas"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { CardWrapper } from "@/components/auth/card-wrapper"
+import { FormError } from "@/components/form-error"
+import { FormSuccess } from "@/components/form-success"
+import { login } from "@/actions/login"
 
 export const LoginForm = () => {
-  const router = useRouter();
-  const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
-  const [shouldReload, setShouldReload] = useState(false);
+  const router = useRouter()
+  const [error, setError] = useState<string | undefined>("")
+  const [success, setSuccess] = useState<string | undefined>("")
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
+      staffNumber: "",
       password: "",
     },
-  });
-
-  useEffect(() => {
-    if (shouldReload) {
-      window.location.href = DEFAULT_LOGIN_REDIRECT;
-    }
-  }, [shouldReload]);
+  })
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    setError("");
-    setSuccess("");
-    
+    setError("")
+    setSuccess("")
+
     startTransition(() => {
       login(values)
         .then((data) => {
           if (data?.error) {
-            setError(data.error);
-          } else if (data?.success) {
-            setSuccess(data.success);
+            form.reset()
+            setError(data.error)
+          }
+          if (data?.success) {
+            setSuccess(data.success)
             if (data.needsReload) {
-              setShouldReload(true);
-            } else {
-              router.push(data.redirectTo || DEFAULT_LOGIN_REDIRECT);
+              router.refresh()
             }
           }
         })
-        .catch(() => setError("An unexpected error occurred"));
-    });
-  };
-
-  
+        .catch(() => setError("エラーが発生しました"))
+    })
+  }
 
   return (
-    <CardWrapper
-      headerLabel="さぁ、始めよう！"
-      backButtonLabel="初めてのご利用はこちら➡︎"
-      backButtonHref="/register"
-      showSocial
-    >
-     <Form {...form}>
+    <CardWrapper headerLabel="ログイン" backButtonLabel="アカウントをお持ちでない方はこちら" backButtonHref="/register">
+      <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
-              render={({field}) => (
+              name="staffNumber"
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>メールアドレス</FormLabel>
+                  <FormLabel>職員番号</FormLabel>
                   <FormControl>
-                    <Input 
-                      {...field}
-                      disabled={isPending}
-                      placeholder="sample@mail.com"
-                      type="email"
-                    />
+                    <Input {...field} disabled={isPending} placeholder="職員番号を入力してください" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -99,16 +72,11 @@ export const LoginForm = () => {
             <FormField
               control={form.control}
               name="password"
-              render={({field}) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>パスワード</FormLabel>
                   <FormControl>
-                    <Input 
-                      {...field}
-                      disabled={isPending}
-                      placeholder="******"
-                      type="password"
-                    />
+                    <Input {...field} disabled={isPending} placeholder="******" type="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,20 +85,13 @@ export const LoginForm = () => {
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
-          <Button 
-            disabled={isPending}
-            type="submit"
-            className="w-full bg-blue-500"
-          >
+          <Button disabled={isPending} type="submit" className="w-full">
             ログイン
           </Button>
-          <div className="flex items-center justify-center mt-4">
-            <Link href="/password-reset/request" className="text-sm text-blue-600 hover:underline">
-              パスワードを忘れた場合
-            </Link>
-          </div>
         </form>
       </Form>
     </CardWrapper>
-  );
-};
+  )
+}
+
+

@@ -4,7 +4,8 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
-import { RegisterSchema } from "@/schemas";
+import { useRouter } from "next/navigation";
+import { ChangePasswordSchema } from "@/schemas";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,55 +19,65 @@ import {
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
-import { register } from "@/actions/register";
+import { changePassword } from "@/actions/change-password";
 
-export const RegisterForm = () => {
+export const ChangePasswordForm = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const form = useForm<z.infer<typeof RegisterSchema>>({
-    resolver: zodResolver(RegisterSchema),
+  const form = useForm<z.infer<typeof ChangePasswordSchema>>({
+    resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
-      staffNumber: "",
-      name: "",
-      password: "",
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+  const onSubmit = (values: z.infer<typeof ChangePasswordSchema>) => {
     setError("");
     setSuccess("");
     
     startTransition(() => {
-      register(values)
+      changePassword(values)
         .then((data) => {
-          setError(data.error);
-          setSuccess(data.success);
+          if (data.error) {
+            setError(data.error);
+          } else if (data.success) {
+            setSuccess(data.success);
+            if (data.shouldRedirect) {
+              setTimeout(() => {
+                router.push("/");
+              }, 1500); // Redirect after 1.5 seconds to allow the user to see the success message
+            }
+          }
         });
     });
   };
 
   return (
     <CardWrapper
-      headerLabel="アカウント作成"
-      backButtonLabel="ログインはこちら➡︎"
-      backButtonHref="/login"
+      headerLabel="パスワード変更"
+      backButtonLabel="あとで変更する"
+      backButtonHref="/"
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="staffNumber"
+              name="currentPassword"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>職員番号</FormLabel>
+                  <FormLabel>現在のパスワード</FormLabel>
                   <FormControl>
                     <Input 
                       {...field}
                       disabled={isPending}
-                      placeholder="職員番号を入力してください"
+                      placeholder="******"
+                      type="password"
                     />
                   </FormControl>
                   <FormMessage />
@@ -75,28 +86,28 @@ export const RegisterForm = () => {
             />
             <FormField
               control={form.control}
-              name="name"
+              name="newPassword"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>名前</FormLabel>
+                  <FormLabel>新しいパスワード</FormLabel>
                   <FormControl>
                     <Input 
                       {...field}
                       disabled={isPending}
-                      placeholder="山田太郎"
+                      placeholder="******"
+                      type="password"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
             <FormField
               control={form.control}
-              name="password"
+              name="confirmNewPassword"
               render={({field}) => (
                 <FormItem>
-                  <FormLabel>パスワード</FormLabel>
+                  <FormLabel>新しいパスワード（確認）</FormLabel>
                   <FormControl>
                     <Input 
                       {...field}
@@ -117,11 +128,13 @@ export const RegisterForm = () => {
             type="submit"
             className="w-full bg-blue-500"
           >
-            新規登録
+            パスワード変更
           </Button>
         </form>
       </Form>
     </CardWrapper>
   );
 };
+
+
 

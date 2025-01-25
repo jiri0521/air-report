@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { LoginSchema } from "@/schemas"
-import { getUserByEmail } from "@/data/user"
+import { getUserByStaffNumber} from "@/data/user"
 import bcrypt from "bcryptjs"
 import Google from "next-auth/providers/google"
 import Github from "next-auth/providers/github"
@@ -21,9 +21,9 @@ export default {
         const validatedFields = LoginSchema.safeParse(credentials)
 
         if (validatedFields.success) {
-          const { email, password } = validatedFields.data
+          const { staffNumber, password } = validatedFields.data
 
-          const user = await getUserByEmail(email)
+          const user = await getUserByStaffNumber(staffNumber)
           if (!user || !user.password) return null
 
           const passwordsMatch = await bcrypt.compare(
@@ -47,6 +47,7 @@ export default {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.staffNumber = user.staffNumber
       }
       if (account) {
         token.provider = account.provider;
@@ -57,8 +58,8 @@ export default {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
-        
-      }
+        session.user.staffNumber = token.staffNumber as string;
+      } 
       return session;
     },
   },

@@ -7,17 +7,15 @@ const prisma = new PrismaClient()
 export async function POST() {
   try {
     const session = await auth()
-    if (!session || !session.user?.email) {
+    if (!session || !session.user?.staffNumber) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
     // Update the lastLogout time in the database
     await prisma.user.update({
-      where: { email: session.user.email },
+      where: { id: session.user.staffNumber },
       data: { 
         lastLogout: new Date(),
-        // You can add additional fields here if needed, e.g.:
-        // logoutReason: reason
       },
     })
 

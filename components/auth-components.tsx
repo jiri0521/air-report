@@ -26,9 +26,9 @@ export function SignOut({
     action={async () => {
       "use server"
       const session = await auth();
-    if (session?.user?.email) {
+    if (session?.user?.staffNumber) {
       await db.user.update({
-        where: { email: session.user.email },
+        where: { staffNumber: session.user.staffNumber},
         data: { lastLogout: new Date() },
       });
     }

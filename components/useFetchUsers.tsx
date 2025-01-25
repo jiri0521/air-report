@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 interface User {
   id: string;
   name: string;
-  email: string;
+  staffNumber: string;
   role: string;
 }
 
