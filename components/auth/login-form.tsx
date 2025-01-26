@@ -4,7 +4,6 @@ import type * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
 
 import { LoginSchema } from "@/schemas"
 import { Input } from "@/components/ui/input"
@@ -16,7 +15,7 @@ import { FormSuccess } from "@/components/form-success"
 import { login } from "@/actions/login"
 
 export const LoginForm = () => {
-  const router = useRouter()
+  
   const [error, setError] = useState<string | undefined>("")
   const [success, setSuccess] = useState<string | undefined>("")
   const [isPending, startTransition] = useTransition()
