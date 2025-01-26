@@ -40,12 +40,7 @@ export const LoginForm = () => {
             form.reset()
             setError(data.error)
           }
-          if (data?.success) {
-            setSuccess(data.success)
-            if (data.needsReload) {
-              router.refresh()
-            }
-          }
+          
         })
         .catch(() => setError("エラーが発生しました"))
     })
