@@ -523,6 +523,10 @@ export default function Component() {
         <Card className="shadow-xl">
           <div className="px-5 py-8">
             <p className="text-red-500">職員番号が見つかりません。管理者に連絡してください。</p>
+            <Button onClick={handleReload} className="bg-gray-200 text-blue-500 ml-2">
+            ここをクリック
+          </Button>
+          <p className="text-red-500">ボタンを押しても変化がない時は管理者に連絡してください。</p>
           </div>
         </Card>
       </div>
