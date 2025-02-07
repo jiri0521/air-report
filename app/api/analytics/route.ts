@@ -18,34 +18,8 @@ interface RecurringIncident {
   occurrenceDateTime: Date;
 }
 
-interface Incident {
-  [key: string]: string[];
-  involvedPartyFactors: string[];
-  workBehavior: string[];
-  physicalCondition: string[];
-  psychologicalState: string[];
-  medicalEquipment: string[];
-  medication: string[];
-  system: string[];
-  cooperation: string[];
-  explanation: string[];
-}
 
-interface FactorsData {
-  [key: string]: { [item: string]: number };
-}
 
-const factorsData: FactorsData = {
-  involvedPartyFactors: {},
-  workBehavior: {},
-  physicalCondition: {},
-  psychologicalState: {},
-  medicalEquipment: {},
-  medication: {},
-  system: {},
-  cooperation: {},
-  explanation: {},
-}
 
 
 export async function GET(req: NextRequest) {
