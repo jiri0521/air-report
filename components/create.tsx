@@ -522,11 +522,17 @@ export default function Component() {
         <h1 className="text-2xl font-bold mb-4">エラー</h1>
         <Card className="shadow-xl">
           <div className="px-5 py-8">
-            <p className="text-red-500">職員番号が見つかりません。</p>
-              <p className="text-red-500">ボタンを押しても解決しない時は管理者に連絡してください。</p>
+          <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-10 w-1/4" />
             <Button onClick={handleReload} className="bg-gray-200 text-blue-500 ml-2">
-            ここをクリック
+            ログイン情報を再取得
           </Button>
+          <br></br>
+        ダメならログインをやり直してください。
+        <br></br>
+        申し訳ない m(._.)m
           
           </div>
         </Card>
@@ -541,7 +547,7 @@ export default function Component() {
         <p>
           違う場合は
           <Button onClick={handleReload} className="bg-gray-200 text-gray-800 ml-2">
-            ここをクリック
+            ログイン情報を再取得
           </Button>
         </p>
       </div>
