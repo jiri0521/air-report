@@ -540,7 +540,7 @@ export default function Component() {
         <p>{session?.user?.name}さんですか？</p>
         <p>
           違う場合は
-          <Button onClick={handleReload} className="bg-gray-200 ml-2">
+          <Button onClick={handleReload} className="bg-gray-200 text-gray-800 ml-2">
             ここをクリック
           </Button>
         </p>
