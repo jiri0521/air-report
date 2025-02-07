@@ -522,11 +522,12 @@ export default function Component() {
         <h1 className="text-2xl font-bold mb-4">エラー</h1>
         <Card className="shadow-xl">
           <div className="px-5 py-8">
-            <p className="text-red-500">職員番号が見つかりません。管理者に連絡してください。</p>
+            <p className="text-red-500">職員番号が見つかりません。</p>
+              <p className="text-red-500">ボタンを押しても解決しない時は管理者に連絡してください。</p>
             <Button onClick={handleReload} className="bg-gray-200 text-blue-500 ml-2">
             ここをクリック
           </Button>
-          <p className="text-red-500">ボタンを押しても変化がない時は管理者に連絡してください。</p>
+          
           </div>
         </Card>
       </div>
@@ -536,10 +537,10 @@ export default function Component() {
     <div className="container mx-auto max-w-[768px] p-10">
       <div className="mb-4 p-4 bg-gray-100 rounded-md">
         <p>職員番号: {session?.user?.staffNumber}</p>
-        <p>{session?.user?.name}さんがログインしていますか？</p>
+        <p>{session?.user?.name}さんですか？</p>
         <p>
           違う場合は
-          <Button onClick={handleReload} className="bg-gray-200 text-blue-500 ml-2">
+          <Button onClick={handleReload} className="bg-gray-200 ml-2">
             ここをクリック
           </Button>
         </p>
