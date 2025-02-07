@@ -25,6 +25,16 @@ interface AnalyticsData {
   severityData: Array<{ name: string; value: number }>
   crossAnalysisData: Record<string, Record<string, number>>
   timeOfDayData: Array<{ hour: string; incidents: number }>
+  causeData: Array<{ cause: string; incidents: number }>
+  medicationData: {
+    totalMedicationIncidents: number
+    medicationDetails: Array<{ detail: string; count: number }>
+  }
+  tubeData: {
+    totalTubeIncidents: number
+    tubeDetails: Array<{ detail: string; count: number }>
+  }
+  factorsData: Record<string, Array<{ name: string; count: number }>>
 }
 
 export function Analytics() {
@@ -198,7 +208,110 @@ export function Analytics() {
     ...levels,
   }))
 
-  
+  const renderMedicationAnalysis = () => {
+    if (!analyticsData || !analyticsData.medicationData) return null
+
+    const { totalMedicationIncidents, medicationDetails } =
+      analyticsData.medicationData
+
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>薬物関連インシデント分析</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Total: {totalMedicationIncidents}</p>
+            
+                <Tooltip />
+                <Legend />
+            <h3 className="text-lg font-semibold mt-4">薬物詳細カテゴリ</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <RechartsBarChart data={medicationDetails}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="detail" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" name="件数" fill="#82ca9d" />
+              </RechartsBarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const renderTubeAnalysis = () => {
+    if (!analyticsData || !analyticsData.tubeData) return null
+
+    const { totalTubeIncidents, tubeDetails } = analyticsData.tubeData
+
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>チューブ関連インシデント分析</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Total: {totalTubeIncidents}</p>
+            
+            <h3 className="text-lg font-semibold mt-4">チューブ詳細カテゴリ</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <RechartsBarChart data={tubeDetails}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="detail" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" name="件数" fill="#8884d8" />
+              </RechartsBarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const renderFactorsAnalysis = () => {
+    if (!analyticsData || !analyticsData.factorsData) return null
+
+    const factorTypes = [
+      { key: "involvedPartyFactors", title: "当事者要因" },
+      { key: "workBehavior", title: "作業行動" },
+      { key: "physicalCondition", title: "身体的状況" },
+      { key: "psychologicalState", title: "心理的状況" },
+      { key: "medicalEquipment", title: "医療機器" },
+      { key: "medication", title: "薬剤" },
+      { key: "system", title: "システム" },
+      { key: "cooperation", title: "協力体制" },
+      { key: "explanation", title: "説明" },
+    ]
+
+    return (
+      <div className="space-y-4">
+        {factorTypes.map(({ key, title }) => (
+          <Card key={key}>
+            <CardHeader>
+              <CardTitle>{title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <RechartsBarChart data={analyticsData.factorsData[key] || []}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" name="件数" fill="#8884d8" />
+                </RechartsBarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
 
   
 
@@ -317,6 +430,9 @@ export function Analytics() {
           <TabsTrigger value="severity">重要度別</TabsTrigger>
           <TabsTrigger value="cross-analysis">クロス分析</TabsTrigger>
           <TabsTrigger value="time-of-day">時間帯別</TabsTrigger>
+          <TabsTrigger value="medication-analysis">薬物分析</TabsTrigger>
+          <TabsTrigger value="tube-analysis">チューブ分析</TabsTrigger>
+          <TabsTrigger value="factors-analysis">要因分析</TabsTrigger>
         </TabsList>
         
         <TabsContent value="trends" className="space-y-4">
@@ -461,6 +577,16 @@ export function Analytics() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="medication-analysis" className="space-y-4">
+          {renderMedicationAnalysis()}
+        </TabsContent>
+        <TabsContent value="tube-analysis" className="space-y-4">
+          {renderTubeAnalysis()}
+        </TabsContent>
+        <TabsContent value="factors-analysis" className="space-y-4">
+          {renderFactorsAnalysis()}
         </TabsContent>
       </Tabs>
     </div>

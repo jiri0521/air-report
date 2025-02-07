@@ -22,6 +22,7 @@ import { Card } from './ui/card';
 import { Loader2, ArrowUp, Info } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useRouter } from 'next/navigation';
 
 
 
@@ -280,15 +281,31 @@ export default function Component() {
   const { data: session } = useSession();
   const [isTooltipOpen, setIsTooltipOpen] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
+ 
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      if (session?.user?.staffNumber) {
+        setIsCardLoading(false)
+      } else {
+        console.error("Staff number not found in session")
+        setIsCardLoading(false)
+      }
+    } else if (status === "unauthenticated") {
+      setIsCardLoading(false)
+    }
+  }, [session, status])
 
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.pageYOffset > 300)
     }
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -493,10 +510,36 @@ export default function Component() {
     return ''
   }
 
+  const handleReload = () => {
+    router.refresh() // Refresh React Server Components
+    window.location.reload() // Force a full browser refresh
+  }
 
 
+  if (!session?.user?.staffNumber) {
+    return (
+      <div className="container mx-auto max-w-[768px] p-10">
+        <h1 className="text-2xl font-bold mb-4">エラー</h1>
+        <Card className="shadow-xl">
+          <div className="px-5 py-8">
+            <p className="text-red-500">職員番号が見つかりません。管理者に連絡してください。</p>
+          </div>
+        </Card>
+      </div>
+    )
+  }
   return (
     <div className="container mx-auto max-w-[768px] p-10">
+      <div className="mb-4 p-4 bg-gray-100 rounded-md">
+        <p>職員番号: {session?.user?.staffNumber}</p>
+        <p>{session?.user?.name}さんがログインしていますか？</p>
+        <p>
+          違う場合は
+          <Button onClick={handleReload} className="bg-gray-200 text-blue-500 ml-2">
+            ここをクリック
+          </Button>
+        </p>
+      </div>
       <h1 className="text-2xl font-bold mb-4">レポート作成</h1>
       {isCardLoading ? (
         <CardSkeleton />

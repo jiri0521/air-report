@@ -18,30 +18,60 @@ interface RecurringIncident {
   occurrenceDateTime: Date;
 }
 
+interface Incident {
+  [key: string]: string[];
+  involvedPartyFactors: string[];
+  workBehavior: string[];
+  physicalCondition: string[];
+  psychologicalState: string[];
+  medicalEquipment: string[];
+  medication: string[];
+  system: string[];
+  cooperation: string[];
+  explanation: string[];
+}
+
+interface FactorsData {
+  [key: string]: { [item: string]: number };
+}
+
+const factorsData: FactorsData = {
+  involvedPartyFactors: {},
+  workBehavior: {},
+  physicalCondition: {},
+  psychologicalState: {},
+  medicalEquipment: {},
+  medication: {},
+  system: {},
+  cooperation: {},
+  explanation: {},
+}
+
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth()
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { searchParams } = new URL(req.url);
-    const dateRange = searchParams.get('dateRange');
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-    const department = searchParams.get('department') || 'all';
+    const { searchParams } = new URL(req.url)
+    const dateRange = searchParams.get("dateRange")
+    const startDate = searchParams.get("startDate")
+    const endDate = searchParams.get("endDate")
+    const department = searchParams.get("department") || "all"
 
-    let dateRangeStart: Date;
-    let dateRangeEnd: Date = new Date();
+    let dateRangeStart: Date
+    let dateRangeEnd: Date = new Date()
 
     if (startDate && endDate) {
-      dateRangeStart = parseISO(startDate);
-      dateRangeEnd = parseISO(endDate);
+      dateRangeStart = parseISO(startDate)
+      dateRangeEnd = parseISO(endDate)
     } else {
-      dateRangeStart = getDateRangeStart(dateRange || 'last30days');
+      dateRangeStart = getDateRangeStart(dateRange || "last30days")
     }
 
-    const previousPeriodStart = getPreviousPeriodStart(dateRangeStart, dateRangeEnd);
+    const previousPeriodStart = getPreviousPeriodStart(dateRangeStart, dateRangeEnd)
 
     const [
       totalIncidents,
@@ -51,7 +81,10 @@ export async function GET(req: NextRequest) {
       categoryData,
       severityData,
       crossAnalysisData,
-      timeOfDayData
+      timeOfDayData,
+      factorsData,
+      medicationData,
+      tubeData,
     ] = await Promise.all([
       fetchTotalIncidents(dateRangeStart, dateRangeEnd, previousPeriodStart, department),
       fetchSevereIncidents(dateRangeStart, dateRangeEnd, previousPeriodStart, department),
@@ -60,8 +93,11 @@ export async function GET(req: NextRequest) {
       fetchCategoryData(dateRangeStart, dateRangeEnd, department),
       fetchSeverityData(dateRangeStart, dateRangeEnd, department),
       fetchCrossAnalysisData(dateRangeStart, dateRangeEnd, department),
-      fetchTimeOfDayData(dateRangeStart, dateRangeEnd, department)
-    ]);
+      fetchTimeOfDayData(dateRangeStart, dateRangeEnd, department),
+      fetchFactorsData(dateRangeStart, dateRangeEnd, department),
+      fetchMedicationData(dateRangeStart, dateRangeEnd, department),
+      fetchTubeData(dateRangeStart, dateRangeEnd, department),
+    ])
 
     return NextResponse.json({
       totalIncidents,
@@ -71,13 +107,17 @@ export async function GET(req: NextRequest) {
       categoryData,
       severityData,
       crossAnalysisData,
-      timeOfDayData
-    });
+      timeOfDayData,
+      factorsData,
+      medicationData,
+      tubeData,
+    })
   } catch (error) {
-    console.error('Error fetching analytics data:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Error fetching analytics data:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
 
 function getDateRangeStart(dateRange: string): Date {
   const now = new Date();
@@ -325,4 +365,117 @@ function calculateRecurrenceRate(incidents: RecurringIncident[]): number {
       hour: `${hour}:00`,
       incidents
     }));
+}
+
+async function fetchMedicationData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== "all" ? { department } : {}),
+    occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd },
+    category: "medication",
+  }
+
+  const medicationIncidents = await prisma.incident.findMany({
+    where: whereClause,
+    select: {
+      medicationDetail: true,
+    },
+  })
+
+  const medicationDetails = medicationIncidents.reduce(
+    (acc, incident) => {
+      if (incident.medicationDetail) {
+        acc[incident.medicationDetail] = (acc[incident.medicationDetail] || 0) + 1
+      }
+      return acc
+    },
+    {} as Record<string, number>,
+  )
+
+  return {
+    totalMedicationIncidents: medicationIncidents.length,
+    medicationDetails: Object.entries(medicationDetails).map(([detail, count]) => ({ detail, count })),
+  }
+}
+
+async function fetchTubeData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== "all" ? { department } : {}),
+    occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd },
+    category: "tube",
+  }
+
+  const tubeIncidents = await prisma.incident.findMany({
+    where: whereClause,
+    select: {
+      tubeDetail: true,
+    },
+  })
+
+  const tubeDetails = tubeIncidents.reduce(
+    (acc, incident) => {
+      if (incident.tubeDetail) {
+        acc[incident.tubeDetail] = (acc[incident.tubeDetail] || 0) + 1
+      }
+      return acc
+    },
+    {} as Record<string, number>,
+  )
+
+  return {
+    totalTubeIncidents: tubeIncidents.length,
+    tubeDetails: Object.entries(tubeDetails).map(([detail, count]) => ({ detail, count })),
+  }
+}
+
+async function fetchFactorsData(dateRangeStart: Date, dateRangeEnd: Date, department: string) {
+  const whereClause = {
+    isDeleted: false,
+    ...(department !== "all" ? { department } : {}),
+    occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd },
+  }
+
+  const incidents = await prisma.incident.findMany({
+    where: whereClause,
+    select: {
+      involvedPartyFactors: true,
+      workBehavior: true,
+      physicalCondition: true,
+      psychologicalState: true,
+      medicalEquipment: true,
+      medication: true,
+      system: true,
+      cooperation: true,
+      explanation: true,
+    },
+  })
+
+  const factorsData: Record<string, Record<string, number>> = {
+    involvedPartyFactors: {},
+    workBehavior: {},
+    physicalCondition: {},
+    psychologicalState: {},
+    medicalEquipment: {},
+    medication: {},
+    system: {},
+    cooperation: {},
+    explanation: {},
+  }
+
+  incidents.forEach((incident) => {
+    Object.keys(factorsData).forEach((factor) => {
+      ;(incident[factor as keyof typeof incident] as string[]).forEach((item) => {
+        factorsData[factor][item] = (factorsData[factor][item] || 0) + 1
+      })
+    })
+  })
+
+  return Object.entries(factorsData).reduce(
+    (acc, [factor, data]) => {
+      acc[factor] = Object.entries(data).map(([name, count]) => ({ name, count }))
+      return acc
+    },
+    {} as Record<string, Array<{ name: string; count: number }>>,
+  )
 }

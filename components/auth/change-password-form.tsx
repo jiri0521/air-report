@@ -60,7 +60,7 @@ export const ChangePasswordForm = () => {
   return (
     <CardWrapper
       headerLabel="パスワード変更"
-      backButtonLabel="あとで変更する"
+      backButtonLabel="やっぱりあとで変更する"
       backButtonHref="/"
     >
       <Form {...form}>

@@ -52,9 +52,12 @@ const userInitials = session.user.name ? session.user.name.slice(0, 2) : "";
               <p className="text-sm font-medium leading-none">{session.user.name}</p>
               <p className="text-xs leading-none text-muted-foreground">職員番号:{session.user.staffNumber}</p>
               <p className="text-xs leading-none text-muted-foreground">権限:{session.user.role}</p>
-              <br></br>
-              <Link href="/settings">
               
+              <Link href="/change-password">
+                <Button className="bg-pink-100 py-2 w-full rounded-md leading-none text-muted-foreground hover:bg-pink-400 hover:text-black" >
+                  パスワード変更　<Settings className="text-gray-500" /></Button>
+                  </Link>
+                  <Link href="/settings">
                 <Button className="bg-orange-100 py-2 w-full rounded-md leading-none text-muted-foreground hover:bg-orange-400 hover:text-black" >
                   設定　<Settings className="text-gray-500" /></Button>
               </Link>
