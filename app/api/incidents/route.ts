@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { auth } from "@/auth";
-import { sendTeamsNotification } from "@/lib/teamsNotification"
 
 const prisma = new PrismaClient()
 
@@ -124,7 +123,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  try {
+ 
     const session = await auth()
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -141,18 +140,7 @@ export async function POST(req: NextRequest) {
       data: incidentData,
     })
 
-    // Send notification to Microsoft Teams
-    try {
-      await sendTeamsNotification(newIncident)
-    } catch (error) {
-      console.error("Failed to send Teams notification:", error)
-      // Continue with the response even if the notification fails
-    }
-    return NextResponse.json(newIncident)
-  } catch (error) {
-    console.error('Error creating incident:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
+  
 }
 
   export async function DELETE(req: NextRequest) {
