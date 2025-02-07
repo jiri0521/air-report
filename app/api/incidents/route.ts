@@ -136,10 +136,6 @@ export async function POST(req: NextRequest) {
     if (incidentData.reportToSupervisor === '') {
       incidentData.reportToSupervisor = null
     }
-    const newIncident = await prisma.incident.create({
-      data: incidentData,
-    })
-
   
 }
 
