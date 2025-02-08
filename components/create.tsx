@@ -526,14 +526,14 @@ export default function Component() {
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-20 w-full" />
         <Skeleton className="h-10 w-1/4" />
-            <Button onClick={handleReload} className="bg-gray-200 text-blue-500 ml-2">
+          
+          <br></br>
+        入力フォームが正常に表示されない場合、<br></br>
+        下のボタンを押してください。
+        <br></br>
+        <Button onClick={handleReload} className="bg-blue-200 text-blue-800 ml-2 hover:text-pink-100">
             ログイン情報を再取得
           </Button>
-          <br></br>
-        ダメならログインをやり直してください。
-        <br></br>
-        申し訳ない m(._.)m
-          
           </div>
         </Card>
       </div>
