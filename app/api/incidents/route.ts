@@ -21,7 +21,16 @@ interface WhereClause {
 
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || "デフォルトのウェブフックURL"
 
-async function sendDiscordNotification(incident: any) {
+interface IncidentNotification {
+  category: string
+  department: string
+  location: string
+  occurrenceDateTime: Date | string
+  impactLevel: string
+  details: string
+}
+
+async function sendDiscordNotification(incident: IncidentNotification) {
   try {
     const message = {
       content: "新規インシデントレポートが登録されました",
