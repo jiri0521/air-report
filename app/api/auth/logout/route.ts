@@ -11,6 +11,7 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     
+    
     // Update the lastLogout time in the database
     await prisma.user.update({
       where: { id: session.user.staffNumber },

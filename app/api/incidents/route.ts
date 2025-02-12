@@ -19,6 +19,70 @@ interface WhereClause {
   };
 }
 
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || "デフォルトのウェブフックURL"
+
+async function sendDiscordNotification(incident: any) {
+  try {
+    const message = {
+      content: "新規インシデントレポートが登録されました",
+      embeds: [
+        {
+          title: "インシデント詳細",
+          color: 0x0099ff,
+          fields: [
+            {
+              name: "カテゴリ",
+              value: incident.category,
+              inline: true,
+            },
+            {
+              name: "発生部署",
+              value: incident.department,
+              inline: true,
+            },
+            {
+              name: "発生場所",
+              value: incident.location,
+              inline: true,
+            },
+            {
+              name: "発生日時",
+              value: new Date(incident.occurrenceDateTime).toLocaleString("ja-JP"),
+              inline: true,
+            },
+            {
+              name: "影響レベル",
+              value: incident.impactLevel,
+              inline: true,
+            },
+            {
+              name: "詳細",
+              value: incident.details,
+              inline: true,
+            },
+            {
+              name: "レポッチ",
+              value: "http://192.168.100.234:3000",
+              inline: true,
+            },
+          ],
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    }
+
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    })
+  } catch (error) {
+    console.error("Discord notification error:", error)
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth()
@@ -124,19 +188,32 @@ export async function PUT(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
  
+  try {
     const session = await auth()
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const incidentData = await req.json()
-    if (incidentData.reportToDoctor === '') {
+    if (incidentData.reportToDoctor === "") {
       incidentData.reportToDoctor = null
     }
-    if (incidentData.reportToSupervisor === '') {
+    if (incidentData.reportToSupervisor === "") {
       incidentData.reportToSupervisor = null
     }
-  
+
+    const newIncident = await prisma.incident.create({
+      data: incidentData,
+    })
+
+    // Send Discord notification
+    await sendDiscordNotification(newIncident)
+
+    return NextResponse.json(newIncident)
+  } catch (error) {
+    console.error("Error creating incident:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
 }
 
   export async function DELETE(req: NextRequest) {
