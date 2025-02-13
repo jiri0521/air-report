@@ -183,7 +183,7 @@ const handlePrintBlankPage = () => {
   const [localFilterCategory, setLocalFilterCategory] = useState('all')
   const [localFilterYear, setLocalFilterYear] = useState('')
   const [localFilterMonth, setLocalFilterMonth] = useState('')
-  const [ setIsCardLoading] = useState(true)
+
   const router = useRouter()
 
   const fetchIncidents = useCallback(async () => {
