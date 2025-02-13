@@ -211,8 +211,7 @@ export function Analytics() {
   const renderMedicationAnalysis = () => {
     if (!analyticsData || !analyticsData.medicationData) return null
 
-    const { totalMedicationIncidents, medicationDetails } =
-      analyticsData.medicationData
+    const { totalMedicationIncidents, medicationDetails } = analyticsData.medicationData
 
     return (
       <div className="space-y-4">
@@ -222,9 +221,6 @@ export function Analytics() {
           </CardHeader>
           <CardContent>
             <p>Total: {totalMedicationIncidents}</p>
-            
-                <Tooltip />
-                <Legend />
             <h3 className="text-lg font-semibold mt-4">薬物詳細カテゴリ</h3>
             <ResponsiveContainer width="100%" height={300}>
               <RechartsBarChart data={medicationDetails}>
@@ -255,7 +251,6 @@ export function Analytics() {
           </CardHeader>
           <CardContent>
             <p>Total: {totalTubeIncidents}</p>
-            
             <h3 className="text-lg font-semibold mt-4">チューブ詳細カテゴリ</h3>
             <ResponsiveContainer width="100%" height={300}>
               <RechartsBarChart data={tubeDetails}>
@@ -272,6 +267,7 @@ export function Analytics() {
       </div>
     )
   }
+
 
   const renderFactorsAnalysis = () => {
     if (!analyticsData || !analyticsData.factorsData) return null

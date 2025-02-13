@@ -19,9 +19,6 @@ interface RecurringIncident {
 }
 
 
-
-
-
 export async function GET(req: NextRequest) {
   try {
     const session = await auth()
@@ -346,7 +343,7 @@ async function fetchMedicationData(dateRangeStart: Date, dateRangeEnd: Date, dep
     isDeleted: false,
     ...(department !== "all" ? { department } : {}),
     occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd },
-    category: "medication",
+    category: "薬物",
   }
 
   const medicationIncidents = await prisma.incident.findMany({
@@ -377,7 +374,7 @@ async function fetchTubeData(dateRangeStart: Date, dateRangeEnd: Date, departmen
     isDeleted: false,
     ...(department !== "all" ? { department } : {}),
     occurrenceDateTime: { gte: dateRangeStart, lte: dateRangeEnd },
-    category: "tube",
+    category: "チューブ類",
   }
 
   const tubeIncidents = await prisma.incident.findMany({
