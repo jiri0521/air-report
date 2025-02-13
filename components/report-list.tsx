@@ -183,7 +183,7 @@ const handlePrintBlankPage = () => {
   const [localFilterCategory, setLocalFilterCategory] = useState('all')
   const [localFilterYear, setLocalFilterYear] = useState('')
   const [localFilterMonth, setLocalFilterMonth] = useState('')
-  const [isCardLoading, setIsCardLoading] = useState(true)
+  const [ setIsCardLoading] = useState(true)
   const router = useRouter()
 
   const fetchIncidents = useCallback(async () => {
@@ -204,18 +204,6 @@ const handlePrintBlankPage = () => {
     }
   }, [currentPage, itemsPerPage, sortField, sortOrder, searchParams, showDeleted])
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      if (session?.user?.staffNumber) {
-        setIsCardLoading(false)
-      } else {
-        console.error("Staff number not found in session")
-        setIsCardLoading(false)
-      }
-    } else if (status === "unauthenticated") {
-      setIsCardLoading(false)
-    }
-  }, [session, status])
 
   useEffect(() => {
     fetchIncidents()
