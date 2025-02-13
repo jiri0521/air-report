@@ -17,8 +17,7 @@ import IncidentForm from './incident-form'
 import { useSession } from 'next-auth/react'
 import { toast } from "@/hooks/use-toast"
 import { Skeleton } from "@/components/ui/skeleton"
-
-
+import { useRouter } from "next/navigation"
 
 export type Incident = {
   id: number
@@ -78,6 +77,7 @@ export default function ReportListPage() {
   const formRef = useRef<HTMLFormElement>(null);
   
   const printRef = useRef<HTMLDivElement>(null);
+  
 
  // 印刷機能を実装する関数
  const handlePrint = () => {
@@ -183,6 +183,8 @@ const handlePrintBlankPage = () => {
   const [localFilterCategory, setLocalFilterCategory] = useState('all')
   const [localFilterYear, setLocalFilterYear] = useState('')
   const [localFilterMonth, setLocalFilterMonth] = useState('')
+  const [isCardLoading, setIsCardLoading] = useState(true)
+  const router = useRouter()
 
   const fetchIncidents = useCallback(async () => {
     setIsLoading(true)
@@ -201,6 +203,19 @@ const handlePrintBlankPage = () => {
       setIsLoading(false)
     }
   }, [currentPage, itemsPerPage, sortField, sortOrder, searchParams, showDeleted])
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      if (session?.user?.staffNumber) {
+        setIsCardLoading(false)
+      } else {
+        console.error("Staff number not found in session")
+        setIsCardLoading(false)
+      }
+    } else if (status === "unauthenticated") {
+      setIsCardLoading(false)
+    }
+  }, [session, status])
 
   useEffect(() => {
     fetchIncidents()
@@ -389,9 +404,50 @@ const handlePrintBlankPage = () => {
 
   if (error) return <div>エラーが発生しました: {error}</div>
 
+  const handleReload = () => {
+    router.refresh() // Refresh React Server Components
+    window.location.reload() // Force a full browser refresh
+  }
+
+  if (!session?.user?.staffNumber) {
+    return (
+      <div className="container mx-auto max-w-[768px] p-10">
+        <h1 className="text-2xl font-bold mb-4">エラー</h1>
+        <Card className="shadow-xl">
+          <div className="px-5 py-8">
+          <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-10 w-1/4" />
+          
+          <br></br>
+        正常に表示されない場合、<br></br>
+        下のボタンを押してください。
+        <br></br>
+        <Button onClick={handleReload} className="bg-blue-200 text-blue-800 ml-2 hover:text-pink-100">
+            ログイン情報を再取得
+          </Button>
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
+
 
   return (
     <div className="container mx-auto p-4">
+
+      <div className="mb-4 p-4 bg-gray-100 rounded-md">
+        <p>職員番号: {session?.user?.staffNumber}</p>
+        <p>{session?.user?.name}さんがログインしていますか？</p>
+        <p>
+          違う場合は
+          <Button onClick={handleReload} className="bg-gray-200 text-blue-500 ml-2">
+            ここをクリック
+          </Button>
+        </p>
+      </div>
       <h1 className="text-2xl font-bold mb-4">インシデントレポート一覧</h1>
 
       <Card className="mb-4 dark:border-gray-700 max-w-[768px]">
