@@ -35,14 +35,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-    
-    const id = parseInt(params.id)
+
+    const id = Number.parseInt(params.id)
     const incidentData = await req.json()
     const { ...updateData } = incidentData
 
     // Format date fields
-    const dateFields = ['occurrenceDateTime', 'reportToDoctor', 'reportToSupervisor']
-    dateFields.forEach(field => {
+    const dateFields = ["occurrenceDateTime", "reportToDoctor", "reportToSupervisor"]
+    dateFields.forEach((field) => {
       if (updateData[field]) {
         const formattedDate = formatDateTimeForPrisma(updateData[field])
         if (formattedDate) {
@@ -53,6 +53,29 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       }
     })
 
+    // Handle the 'cause' field
+    if (Array.isArray(updateData.cause)) {
+      updateData.cause = updateData.cause.join(", ")
+    }
+
+    // Handle array fields
+    const arrayFields = [
+      "involvedPartyFactors",
+      "workBehavior",
+      "physicalCondition",
+      "psychologicalState",
+      "medicalEquipment",
+      "medication",
+      "system",
+      "cooperation",
+      "explanation",
+    ]
+    arrayFields.forEach((field) => {
+      if (Array.isArray(updateData[field])) {
+        updateData[field] = { set: updateData[field] }
+      }
+    })
+
     const updatedIncident = await prisma.incident.update({
       where: { id },
       data: updateData,
@@ -60,7 +83,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     return NextResponse.json(updatedIncident)
   } catch (error) {
-    console.error('Error updating incident:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Error updating incident:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

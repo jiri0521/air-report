@@ -325,10 +325,13 @@ function calculateRecurrenceRate(incidents: RecurringIncident[]): number {
     hourCounts[i.toString().padStart(2, '0')] = 0;
   }
 
-  incidents.forEach(incident => {
-    const hour = new Date(incident.occurrenceDateTime).getHours().toString().padStart(2, '0');
-    hourCounts[hour]++;
-  });
+  incidents.forEach((incident) => {
+    const date = new Date(incident.occurrenceDateTime)
+    // 日本時間に調整（UTC+9）
+    date.setHours(date.getHours() + 9)
+    const hour = date.getHours().toString().padStart(2, "0")
+    hourCounts[hour]++
+  })
 
   return Object.entries(hourCounts)
     .sort(([a], [b]) => parseInt(a) - parseInt(b))
