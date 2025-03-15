@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback , useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus, List, User} from "lucide-react"
@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import IncidentForm from "@/components/incident-form"
 import party from "party-js"
+import { useRouter } from "next/navigation"
 
 type Incident = {
   id: number
@@ -84,10 +85,12 @@ export function TopPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
+  const router = useRouter()
+  const isFirstRender = useRef(true)
+
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
-
     try {
       const [incidentsResponse, announcementsResponse, userReportsResponse] = await Promise.all([
         fetch('/api/incidents?page=1&perPage=100&sortField=occurrenceDateTime&sortOrder=desc'),
@@ -118,15 +121,23 @@ export function TopPage() {
       setLoading(false)
     }
   }, [])
+  
+
+  const handleReload = () => {
+    router.refresh() // Refresh React Server Components
+    window.location.reload() // Force a full browser refresh
+  }
 
   useEffect(() => {
     fetchData()
+   handleReload
   }, [fetchData])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`
   }
+
 
 
   const handleAddAnnouncement = async () => {
@@ -198,7 +209,7 @@ export function TopPage() {
     }
   }
 
-
+  
   const CardSkeleton = () => (
     <Card className="dark:border-gray-700">
       <CardHeader>
@@ -231,7 +242,13 @@ export function TopPage() {
       </TableBody>
     </Table>
   )
-
+if (!session?.user?.staffNumber) {
+    return (
+      <div className="container mx-auto max-w-[768px] p-10">
+        <h1 className="text-2xl font-bold mb-4">読み込み中...</h1>
+      </div>
+    )
+  }
   return (
     <div>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -312,6 +329,9 @@ export function TopPage() {
           </div>
           </div>
           
+
+
+
         <div className="px-4 py-6 sm:px-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
@@ -552,7 +572,7 @@ export function TopPage() {
       <footer className="bg-white shadow mt-8 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm dark:text-white">
-            © 2024 医療安全インシデントレポートシステム. All rights reserved.
+            © 2025 医療安全インシデントレポートシステム. All rights reserved.
           </p>
         </div>
       </footer>

@@ -465,18 +465,7 @@ const handlePrintBlankPage = () => {
                   className="dark:border-gray-700"
                 />
               </div>
-              <div>
-                <Label htmlFor="patientIdSearch">患者ID検索</Label>
-                <Input
-                  id="patientIdSearch"
-                  name="patientIdSearch"
-                  type="text"
-                  placeholder="患者IDを入力..."
-                  value={localPatientIdSearch}
-                  onChange={(e) => setLocalPatientIdSearch(e.target.value)}
-                  className="dark:border-gray-700"
-                />
-              </div>
+             
             </div>
             <div>
               <Label htmlFor="filterCategory">カテゴリーフィルター</Label>

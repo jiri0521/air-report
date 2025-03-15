@@ -580,6 +580,24 @@ export default function Component() {
                   className="dark:border-gray-700"
                 />
               </div>
+
+              <div>
+          <Label htmlFor="patientGender">患者の性別</Label>
+          <Select
+            name="patientGender"
+            value={formData.patientGender}
+            onValueChange={(value) => handleInputChange(value, 'patientGender')}
+          >
+            <SelectTrigger id="patientGender" className="dark:border-gray-700">
+              <SelectValue placeholder="性別を選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="男性">男性</SelectItem>
+              <SelectItem value="女性">女性</SelectItem>
+              <SelectItem value="その他">その他</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
               
             </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
