@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp, Printer, ChevronUp, ChevronDown, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, AlertTriangle, FileText, Pen, Trash2, CloudUpload, Stamp, Printer, Menu, X, Search } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import party from "party-js"
@@ -447,7 +447,17 @@ const handlePrintBlankPage = () => {
             onClick={toggleFilterCard}
             aria-label={isFilterCardOpen ? "Close filter" : "Open filter"}
           >
-            {isFilterCardOpen ? <ChevronUp /> : <ChevronDown />}
+              {isFilterCardOpen ? (
+                  <>
+                    <X />
+                    <span>検索窓を閉じる</span>
+                  </>
+                ) : (
+                  <>
+                    <Menu />
+                    <span>検索窓を開く</span>
+                  </>
+                )}
           </Button>
         </CardHeader>
         {isFilterCardOpen && (
