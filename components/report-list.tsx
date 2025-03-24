@@ -179,7 +179,7 @@ const handlePrintBlankPage = () => {
     filterMonth: '',
   })
   const [localSearchTerm, setLocalSearchTerm] = useState('')
-  const [localPatientIdSearch, setLocalPatientIdSearch] = useState('')
+  const [localPatientIdSearch] = useState('')
   const [localFilterCategory, setLocalFilterCategory] = useState('all')
   const [localFilterYear, setLocalFilterYear] = useState('')
   const [localFilterMonth, setLocalFilterMonth] = useState('')

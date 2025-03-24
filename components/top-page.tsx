@@ -86,7 +86,7 @@ export function TopPage() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   const router = useRouter()
-  const isFirstRender = useRef(true)
+ 
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -242,18 +242,17 @@ export function TopPage() {
       </TableBody>
     </Table>
   )
-if (!session?.user?.staffNumber) {
-    return (
-      <div className="container mx-auto max-w-[768px] p-10">
-        <h1 className="text-2xl font-bold mb-4">読み込み中...</h1>
-      </div>
-    )
-  }
+
   return (
     <div>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
           {/* Announcements Card - Now with a narrower width */}
+          <div>
+          <Button onClick={handleReload} className="flex justify-end bg-gray-200 text-gray-800 ml-2">
+          ログイン情報を再取得
+          </Button>
+          </div>
           <div className="max-w-3xl mx-auto mb-6">
             <Card className="dark:border-gray-700">
             <CardHeader>
