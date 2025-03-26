@@ -39,8 +39,8 @@ export default {
     })
   ],
   session:{
-    maxAge:60*60,
-    updateAge:60*60,
+   // クッキーに有効期限を設定しない（ブラウザセッションで自動的に終了）
+   maxAge: 0,  // これでクッキーがブラウザのセッション終了時に消える
   },
   callbacks: {
     async jwt({ token, user, account }) {

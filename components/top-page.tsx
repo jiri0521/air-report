@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, PieChart, Settings, Clock, Stamp, AlertTriangle, Pen, Bell, Plus, List, User} from "lucide-react"
@@ -69,7 +69,6 @@ type Announcement = {
 }
 
 
-
 export function TopPage() {
   const [latestReports, setLatestReports] = useState<Incident[]>([])
   const [noCountermeasuresReports, setNoCountermeasuresReports] = useState<Incident[]>([])
@@ -84,21 +83,21 @@ export function TopPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-
   const router = useRouter()
- 
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
+
     try {
-      const [incidentsResponse, announcementsResponse, userReportsResponse] = await Promise.all([
+      const [incidentsResponse, announcementsResponse, userReportsResponse, nearMissResponse] = await Promise.all([
         fetch('/api/incidents?page=1&perPage=100&sortField=occurrenceDateTime&sortOrder=desc'),
         fetch('/api/announcements?limit=5'),
-        fetch('/api/incidents/my-report/')
+        fetch('/api/incidents/my-report/'),
+        fetch('/api/near-miss-reports')
       ])
 
-      if (!incidentsResponse.ok || !announcementsResponse.ok || !userReportsResponse.ok) {
+      if (!incidentsResponse.ok || !announcementsResponse.ok || !userReportsResponse.ok || !nearMissResponse.ok) {
         console.log(error)
         throw new Error('Failed to fetch data')
       }
@@ -121,20 +120,17 @@ export function TopPage() {
       setLoading(false)
     }
   }, [])
-  
 
-  const handleReload = () => {
-    router.refresh() // Refresh React Server Components
-    window.location.reload() // Force a full browser refresh
-  }
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`
   }
 
-
-
+  
   const handleAddAnnouncement = async () => {
     try {
       const response = await fetch('/api/announcements', {
@@ -204,8 +200,12 @@ export function TopPage() {
     }
   }
 
-  
+  const handleReload = () => {
+    router.refresh() // Refresh React Server Components
+    window.location.reload() // Force a full browser refresh
+  }
   const CardSkeleton = () => (
+  
     <Card className="dark:border-gray-700">
       <CardHeader>
         <Skeleton className="h-6 w-3/4" />
@@ -240,14 +240,12 @@ export function TopPage() {
 
   return (
     <div>
+      <Button onClick={handleReload} className="flex justify-end bg-gray-200 text-gray-800 ml-2">
+          ログイン情報を再取得
+      </Button>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
           {/* Announcements Card - Now with a narrower width */}
-          <div>
-          <Button onClick={handleReload} className="flex justify-end bg-gray-200 text-gray-800 ml-2">
-          ログイン情報を再取得
-          </Button>
-          </div>
           <div className="max-w-3xl mx-auto mb-6">
             <Card className="dark:border-gray-700">
             <CardHeader>
@@ -259,7 +257,7 @@ export function TopPage() {
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link href="/announcements">
-                      <List className="mr-2 h-4 w-4" /> 
+                      <List className="mr-2 h-4 w-4" /> お知らせ一覧
                     </Link>
                   </Button>
                   {session?.user.role === 'ADMIN' && (
@@ -323,9 +321,6 @@ export function TopPage() {
           </div>
           </div>
           
-
-
-
         <div className="px-4 py-6 sm:px-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
@@ -560,13 +555,14 @@ export function TopPage() {
               </CardContent>
             </Card>
           </div>
+         
         </div>
       </main>
    
       <footer className="bg-white shadow mt-8 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm dark:text-white">
-            © 2025 医療安全インシデントレポートシステム. All rights reserved.
+            © 2024 医療安全インシデントレポートシステム. All rights reserved.
           </p>
         </div>
       </footer>
@@ -628,6 +624,7 @@ export function TopPage() {
         </DialogContent>
         
       </Dialog> 
+
     </div>
   )
 }
