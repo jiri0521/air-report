@@ -14,7 +14,7 @@ export async function POST() {
     
     // Update the lastLogout time in the database
     await prisma.user.update({
-      where: { id: session.user.staffNumber },
+      where: { id: session.user.id },
       data: { 
         lastLogout: new Date(),
       },

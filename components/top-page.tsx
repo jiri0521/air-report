@@ -119,7 +119,7 @@ export function TopPage() {
       setError('データの取得中にエラーが発生しました。')
       setLoading(false)
     }
-  }, [])
+  }, [error])
 
   useEffect(() => {
     fetchData()

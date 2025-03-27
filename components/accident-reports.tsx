@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import party from "party-js"
+import Image from "next/image"
 
 type AccidentReport = {
   id: number
@@ -186,12 +187,18 @@ export default function AccidentReportsPage() {
                     <TableRow key={report.id}>
                       <TableCell>
                         {report.fileType.startsWith('image/') ? (
-                          <img 
-                            src={report.fileUrl} 
+                          <div 
+                          className="relative w-16 h-16 cursor-pointer"
+                          onClick={() => setSelectedImage(report.fileUrl)}
+                        >
+                          <Image 
+                            src={report.fileUrl || "/placeholder.svg"} 
                             alt={report.department} 
-                            className="w-16 h-16 object-cover cursor-pointer" 
-                            onClick={() => setSelectedImage(report.fileUrl)}
+                            fill
+                            sizes="64px"
+                            className="object-cover"
                           />
+                        </div>
                         ) : (
                           <a href={report.fileUrl} target="_blank" rel="noopener noreferrer">
                             <FileText className="w-4 h-4" />
@@ -290,8 +297,14 @@ export default function AccidentReportsPage() {
                 拡大画像
               </DialogTitle>
             </DialogHeader>
-            <div className="mt-4">
-              <img src={selectedImage} alt="拡大画像" className="w-full h-auto" />
+            <div className="mt-4 relative w-full h-[500px]">
+              <Image 
+                src={selectedImage || "/placeholder.svg"} 
+                alt="拡大画像" 
+                fill
+                sizes="(max-width: 800px) 100vw, 800px"
+                className="object-contain"
+              />
             </div>
           </DialogContent>
         </Dialog>

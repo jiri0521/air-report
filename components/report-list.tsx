@@ -586,7 +586,7 @@ const handlePrintBlankPage = () => {
             {incidents.map((incident) => (
                <TableRow key={incident.id} className={`${getRowBackgroundColor(incident.impactLevel)} dark:border-gray-700`}>
                 <TableCell className="dark:border-gray-700">
-                  <Button variant="outline" size="sm" onClick={() => handleViewDetails(incident)}>
+                  <Button variant="outline" size="sm" onClick={() => handleViewDetails(incident)}>閲覧
                     <FileText className='text-blue-500'/>
                   </Button>
                 </TableCell>              

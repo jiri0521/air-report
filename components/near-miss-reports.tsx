@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import Image from "next/image"
 
 type NearMissReport = {
   id: number
@@ -302,12 +303,16 @@ export default function NearMissReportsPage() {
                           {reports.map((report) => (
                             <TableRow key={report.id}>
                               <TableCell>
-                                {report.fileType.startsWith("image/") ? (
-                                  <img
-                                    src={report.fileUrl || "/placeholder.svg"}
-                                    alt={report.department}
-                                    className="w-16 h-16 object-cover"
-                                  />
+                              {report.fileType.startsWith("image/") ? (
+                                  <div className="relative w-16 h-16">
+                                    <Image
+                                      src={report.fileUrl || "/placeholder.svg"}
+                                      alt={report.department}
+                                      fill
+                                      sizes="64px"
+                                      className="object-cover"
+                                    />
+                                  </div>
                                 ) : (
                                   <a href={report.fileUrl} target="_blank" rel="noopener noreferrer">
                                     <FileText className="w-4 h-4" />

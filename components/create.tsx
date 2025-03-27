@@ -284,18 +284,7 @@ export default function Component() {
  
   const router = useRouter()
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      if (session?.user?.staffNumber) {
-        setIsCardLoading(false)
-      } else {
-        console.error("Staff number not found in session")
-        setIsCardLoading(false)
-      }
-    } else if (status === "unauthenticated") {
-      setIsCardLoading(false)
-    }
-  }, [session, status])
+ 
 
   useEffect(() => {
     const handleScroll = () => {
