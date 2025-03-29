@@ -13,6 +13,7 @@ import { CardWrapper } from "@/components/auth/card-wrapper"
 import { FormError } from "@/components/form-error"
 import { FormSuccess } from "@/components/form-success"
 import { login } from "@/actions/login"
+import Link from "next/link"
 
 export const LoginForm = () => {
   
@@ -76,12 +77,16 @@ export const LoginForm = () => {
                 </FormItem>
               )}
             />
+            <Button variant="link" className="px-0 font-normal" asChild>
+              <Link href="/forgot-password">パスワードを忘れた方へ</Link>
+            </Button>
           </div>
           <FormError message={error} />
           <FormSuccess message={success} />
           <Button disabled={isPending} type="submit" className="w-full">
             ログイン
           </Button>
+          
         </form>
       </Form>
     </CardWrapper>
