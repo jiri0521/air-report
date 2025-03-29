@@ -40,6 +40,11 @@ async function sendDiscordNotification(incident: IncidentNotification) {
           color: 0x0099ff,
           fields: [
             {
+              name: "レポッチ",
+              value: "http://192.168.100.234:3000",
+              inline: true,
+            },
+            {
               name: "カテゴリ",
               value: incident.category,
               inline: true,
@@ -67,11 +72,6 @@ async function sendDiscordNotification(incident: IncidentNotification) {
             {
               name: "詳細",
               value: incident.details,
-              inline: true,
-            },
-            {
-              name: "レポッチ",
-              value: "http://192.168.100.234:3000",
               inline: true,
             },
           ],
