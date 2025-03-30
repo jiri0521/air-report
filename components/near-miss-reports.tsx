@@ -315,7 +315,9 @@ export default function NearMissReportsPage() {
                                   </div>
                                 ) : (
                                   <a href={report.fileUrl} target="_blank" rel="noopener noreferrer">
+                                    <Button variant="outline" size="sm">閲覧
                                     <FileText className="w-4 h-4" />
+                                    </Button>
                                   </a>
                                 )}
                               </TableCell>
