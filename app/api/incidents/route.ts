@@ -45,6 +45,11 @@ async function sendDiscordNotification(incident: IncidentNotification) {
               inline: true,
             },
             {
+              name: "影響レベル",
+              value: incident.impactLevel,
+              inline: true,
+            },
+            {
               name: "カテゴリ",
               value: incident.category,
               inline: true,
@@ -62,11 +67,6 @@ async function sendDiscordNotification(incident: IncidentNotification) {
             {
               name: "発生日時",
               value: new Date(incident.occurrenceDateTime).toLocaleString("ja-JP"),
-              inline: true,
-            },
-            {
-              name: "影響レベル",
-              value: incident.impactLevel,
               inline: true,
             },
             {

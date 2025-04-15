@@ -554,6 +554,9 @@ const handlePrintBlankPage = () => {
             <TableRow className="dark:border-gray-700">
               <TableHead className="w-[80px] text-sm dark:border-gray-700">詳細</TableHead>
               <TableHead className="w-[120px] text-sm dark:border-gray-700">
+                <Button className='text-sm' variant="ghost" onClick={() => handleSort('department')}>部署</Button>
+              </TableHead>
+              <TableHead className="w-[120px] text-sm dark:border-gray-700">
                 <Button className='text-sm' variant="ghost" onClick={() => handleSort('occurrenceDateTime')}>発生日時</Button>
               </TableHead>
               <TableHead className="w-[80px] text-sm dark:border-gray-700">
@@ -589,7 +592,8 @@ const handlePrintBlankPage = () => {
                   <Button variant="outline" size="sm" onClick={() => handleViewDetails(incident)}>閲覧
                     <FileText className='text-blue-500'/>
                   </Button>
-                </TableCell>              
+                </TableCell>
+                <TableCell className='text-sm dark:border-gray-700'>{incident.department}</TableCell>              
                 <TableCell className='text-sm dark:border-gray-700'>{formatDate(incident.occurrenceDateTime)}</TableCell>
                 <TableCell className='text-sm dark:border-gray-700'>{incident.category}</TableCell>
                 <TableCell className='text-sm dark:border-gray-700'>{incident.impactLevel}</TableCell>
