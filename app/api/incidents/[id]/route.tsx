@@ -87,3 +87,30 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const session = await auth()
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const id = Number.parseInt(params.id)
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 })
+    }
+
+    const incident = await prisma.incident.findUnique({
+      where: { id },
+    })
+
+    if (!incident) {
+      return NextResponse.json({ error: "Incident not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(incident)
+  } catch (error) {
+    console.error("Error fetching incident:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}

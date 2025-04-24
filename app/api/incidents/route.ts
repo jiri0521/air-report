@@ -19,9 +19,10 @@ interface WhereClause {
   };
 }
 
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL || "デフォルトのウェブフックURL"
+const TEAMS_WEBHOOK_URL = process.env.TEAMS_WEBHOOK_URL || "デフォルトのウェブフックURL"
 
 interface IncidentNotification {
+  id: number
   category: string
   department: string
   location: string
@@ -41,7 +42,7 @@ async function sendDiscordNotification(incident: IncidentNotification) {
           fields: [
             {
               name: "レポッチ",
-              value: "http://192.168.100.234:3000",
+              value: `http://192.168.100.234:3000/reports/${incident.id}`,
               inline: true,
             },
             {
@@ -80,7 +81,7 @@ async function sendDiscordNotification(incident: IncidentNotification) {
       ],
     }
 
-    await fetch(DISCORD_WEBHOOK_URL, {
+    await fetch(TEAMS_WEBHOOK_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +89,7 @@ async function sendDiscordNotification(incident: IncidentNotification) {
       body: JSON.stringify(message),
     })
   } catch (error) {
-    console.error("Discord notification error:", error)
+    console.error("TEAMS notification error:", error)
   }
 }
 
