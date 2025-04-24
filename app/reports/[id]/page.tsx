@@ -60,8 +60,6 @@ export default function IncidentDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { data: session } = useSession()
-  const router = useRouter()
-  const { toast } = useToast()
   const [showScrollTop, setShowScrollTop] = useState(false)
 
   const isAdminOrManager = session?.user?.role === "ADMIN" || session?.user?.role === "MANAGER"
