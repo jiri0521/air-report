@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Printer, ArrowUp } from "lucide-react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { useToast } from "@/hooks/use-toast"
+
 
 interface Incident {
   id: number
