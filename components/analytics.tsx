@@ -423,11 +423,11 @@ export function Analytics() {
         <TabsList className='dark:border-white'>
           <TabsTrigger value="trends">トレンド</TabsTrigger>
           <TabsTrigger value="categories">カテゴリー別</TabsTrigger>
-          <TabsTrigger value="severity">重要度別</TabsTrigger>
-          <TabsTrigger value="cross-analysis">クロス分析</TabsTrigger>
-          <TabsTrigger value="time-of-day">時間帯別</TabsTrigger>
           <TabsTrigger value="medication-analysis">薬物分析</TabsTrigger>
           <TabsTrigger value="tube-analysis">チューブ分析</TabsTrigger>
+          <TabsTrigger value="severity">重要度別</TabsTrigger>
+          <TabsTrigger value="cross-analysis">クロス分析</TabsTrigger>
+          <TabsTrigger value="time-of-day">時間帯別</TabsTrigger>        
           <TabsTrigger value="factors-analysis">要因分析</TabsTrigger>
         </TabsList>
         
@@ -472,7 +472,12 @@ export function Analytics() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+        <TabsContent value="medication-analysis" className="space-y-4">
+          {renderMedicationAnalysis()}
+        </TabsContent>
+        <TabsContent value="tube-analysis" className="space-y-4">
+          {renderTubeAnalysis()}
+        </TabsContent>
         <TabsContent value="severity" className="space-y-4">
           <Card>
             <CardHeader>
@@ -573,13 +578,6 @@ export function Analytics() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="medication-analysis" className="space-y-4">
-          {renderMedicationAnalysis()}
-        </TabsContent>
-        <TabsContent value="tube-analysis" className="space-y-4">
-          {renderTubeAnalysis()}
         </TabsContent>
         <TabsContent value="factors-analysis" className="space-y-4">
           {renderFactorsAnalysis()}
